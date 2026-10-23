@@ -463,3 +463,18 @@ if "lang/de_de.snbt" not in readme_text:
 Kopiere zusätzlich lang/de_de.snbt in config/ftbquests/quests/lang/de_de.snbt. FTB Quests 1.20.1 speichert Kapitel-/Questtitel und Untertitel in diesem Lokalisierungsfile; die SNBT-Kapiteldatei enthält IDs, Aufgaben, Abhängigkeiten und Belohnungen.
 """
     readme_path.write_text(readme_text, encoding="utf-8")
+
+
+# Spawn eggs are an item registry entry, which is populated before entity types. Forge's
+# DeferredSpawnEggItem delays resolving the entity RegistryObject until it is actually used.
+p = ROOT / "src/main/java/de/sporenwerk/registry/ModItems.java"
+s = p.read_text(encoding="utf-8")
+s = s.replace("import net.minecraft.world.item.SpawnEggItem;", "import net.minecraftforge.common.DeferredSpawnEggItem;")
+s = s.replace(
+    "new SpawnEggItem(ModEntities.DAEMMERLING.get(), 0x263D2D, 0xB23843, new Item.Properties())",
+    "new DeferredSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())"
+)
+if "new SpawnEggItem(ModEntities.DAEMMERLING.get()" in s or "new DeferredSpawnEggItem(ModEntities.DAEMMERLING," not in s:
+    raise SystemExit("Could not install deferred spawn-egg registration safely")
+p.write_text(s, encoding="utf-8")
+
