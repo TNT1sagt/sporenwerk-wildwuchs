@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add localized English fallback and machine tooltips for Sporenwerk 1.1.4."""
+"""Add localized English fallback and machine tooltips for Sporenwerk 1.1.5."""
 from pathlib import Path
 import json, re, sys
 
@@ -63,6 +63,91 @@ public final class ModBlocks {
 }
 ''')
 
+# Give Rotwurzel a modest, tangible use in the early-game medicine loop.
+p = root / "src/main/java/de/sporenwerk/registry/ModItems.java"
+s = p.read_text(encoding="utf-8")
+if "WURZELKONZENTRAT" not in s:
+    s = s.replace(
+        "import de.sporenwerk.item.FeldhandbuchItem;",
+        "import de.sporenwerk.item.FeldhandbuchItem;\nimport de.sporenwerk.item.WurzelkonzentratItem;"
+    )
+    marker = 'public static final RegistryObject<Item> ROTWURZEL = basic("rotwurzel");'
+    if marker not in s:
+        raise SystemExit("Could not add Wurzelkonzentrat item registration")
+    s = s.replace(marker, marker + '\n    public static final RegistryObject<Item> WURZELKONZENTRAT = ITEMS.register("wurzelkonzentrat", () -> new WurzelkonzentratItem(new Item.Properties().stacksTo(16)));', 1)
+    p.write_text(s, encoding="utf-8")
+
+write("src/main/java/de/sporenwerk/item/WurzelkonzentratItem.java", '''
+package de.sporenwerk.item;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+
+/** Early-game field medicine: modest healing, cooldown, and an empty bottle returned on use. */
+public final class WurzelkonzentratItem extends Item {
+    public WurzelkonzentratItem(Properties properties) { super(properties); }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, net.minecraft.world.entity.player.Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.getHealth() >= player.getMaxHealth()) {
+            return InteractionResultHolder.fail(stack);
+        }
+        if (level.isClientSide) return InteractionResultHolder.sidedSuccess(stack, true);
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.pass(stack);
+
+        player.heal(4.0F);
+        player.getCooldowns().addCooldown(this, 100);
+        if (!player.getAbilities().instabuild) {
+            stack.shrink(1);
+            ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);
+            if (!player.getInventory().add(bottle)) player.spawnAtLocation(bottle);
+        }
+        serverPlayer.displayClientMessage(Component.literal("Rotwurzel-Konzentrat: 2 Herzen regeneriert.")
+                .withStyle(ChatFormatting.RED), true);
+        return InteractionResultHolder.success(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("tooltip.sporenwerk.wurzelkonzentrat.heal")
+                .withStyle(ChatFormatting.RED));
+        tooltip.add(Component.translatable("tooltip.sporenwerk.wurzelkonzentrat.cooldown")
+                .withStyle(ChatFormatting.GRAY));
+    }
+}
+''')
+
+write("src/main/resources/assets/sporenwerk/models/item/wurzelkonzentrat.json", '''
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "sporenwerk:item/wurzelkonzentrat" }
+}
+''')
+
+write("src/main/resources/data/sporenwerk/recipes/wurzelkonzentrat.json", '''
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" R ", " S ", " B "],
+  "key": {
+    "R": { "item": "sporenwerk:rotwurzel" },
+    "S": { "item": "minecraft:sugar" },
+    "B": { "item": "minecraft:glass_bottle" }
+  },
+  "result": { "item": "sporenwerk:wurzelkonzentrat", "count": 1 }
+}
+''')
+
 de_path = res / "de_de.json"
 de = json.loads(de_path.read_text(encoding="utf-8"))
 de.update({
@@ -84,6 +169,9 @@ en = {
   "item.sporenwerk.faser": "Fiber",
   "item.sporenwerk.bernsteinkappe": "Ambercap",
   "item.sporenwerk.rotwurzel": "Redroot",
+  "item.sporenwerk.wurzelkonzentrat": "Redroot Concentrate",
+  "tooltip.sporenwerk.wurzelkonzentrat.heal": "Restores 2 hearts.",
+  "tooltip.sporenwerk.wurzelkonzentrat.cooldown": "5-second cooldown. Returns an empty glass bottle.",
   "item.sporenwerk.filtermoos": "Filter Moss",
   "item.sporenwerk.faserrohr_samen": "Fiber Reed Seeds",
   "item.sporenwerk.bernsteinkappe_sporen": "Ambercap Spores",
@@ -133,12 +221,12 @@ en = {
 
 build = root / "build.gradle"
 s = build.read_text(encoding="utf-8")
-s = re.sub(r"version = '[^']+'", "version = '1.1.4'", s, count=1)
+s = re.sub(r"version = '[^']+'", "version = '1.1.5'", s, count=1)
 build.write_text(s, encoding="utf-8")
 
 readme = root / "README.md"
 s = readme.read_text(encoding="utf-8")
-s = s.replace("1.1.2", "1.1.4").replace("V1.1.2", "V1.1.4")
-s += "\n\n## English localization and tooltips\nVersion 1.1.4 includes en_us fallback strings and first-use tooltips for all three machines.\n"
+s = s.replace("1.1.2", "1.1.5").replace("V1.1.2", "V1.1.5")
+s += "\n\n## English localization and tooltips\nVersion 1.1.5 includes en_us fallback strings and first-use tooltips for all three machines.\n"
 readme.write_text(s, encoding="utf-8")
 print("Added en_us localization and machine tooltips.")
