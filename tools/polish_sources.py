@@ -73,6 +73,28 @@ if "public ItemStackHandler getItemHandler()" not in s:
     s = s.replace(marker, methods + marker, 1)
 p.write_text(s, encoding="utf-8")
 
+# Mekanism FE compatibility: allow the machine's internal processor to drain its buffer,
+# while exposing a receive-only capability externally so cables cannot pull energy back out.
+p = ROOT / "src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java"
+s = p.read_text(encoding="utf-8")
+s = s.replace("        @Override\\n        public boolean canExtract() { return false; }\\n", "")
+old_energy_capability = "private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);"
+new_energy_capability = """private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new IEnergyStorage() {
+        @Override public int receiveEnergy(int maxReceive, boolean simulate) { return energyStorage.receiveEnergy(maxReceive, simulate); }
+        @Override public int extractEnergy(int maxExtract, boolean simulate) { return 0; }
+        @Override public int getEnergyStored() { return energyStorage.getEnergyStored(); }
+        @Override public int getMaxEnergyStored() { return energyStorage.getMaxEnergyStored(); }
+        @Override public boolean canExtract() { return false; }
+        @Override public boolean canReceive() { return true; }
+    });"""
+if old_energy_capability in s:
+    s = s.replace(old_energy_capability, new_energy_capability, 1)
+if old_energy_capability in s or "private final LazyOptional<IEnergyStorage> energyCapability" not in s:
+    raise SystemExit("Could not patch external receive-only FE capability")
+if "public boolean canExtract() { return false; }" in s[s.find("private final EnergyStorage energyStorage"):s.find("private final LazyOptional<IEnergyStorage> energyCapability")]:
+    raise SystemExit("Internal FE storage still disables extraction")
+p.write_text(s, encoding="utf-8")
+
 # Minecraft 1.20.1 exposes AMBIENT_CAVE as a Holder in these Forge mappings.
 p = ROOT / "src/main/java/de/sporenwerk/client/ClientHorrorEvents.java"
 s = p.read_text(encoding="utf-8").replace("SoundEvents.AMBIENT_CAVE,", "SoundEvents.AMBIENT_CAVE.value(),")
