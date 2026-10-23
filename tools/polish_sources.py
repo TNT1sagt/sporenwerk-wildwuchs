@@ -640,3 +640,21 @@ s = s.replace("new BlockItem(block.get(), new Item.Properties())", "new MachineB
 if "new MachineBlockItem(block.get(), name, new Item.Properties())" not in s:
     raise SystemExit("Could not install machine item tooltips")
 p.write_text(s, encoding="utf-8")
+
+
+
+# Critical farming loop fix: a mature manual harvest always drops one base produce item.
+# Harvest skills are additional yield, not a replacement for the base yield.
+p = ROOT / "src/main/java/de/sporenwerk/block/crop/AbstractSporeCropBlock.java"
+s = p.read_text(encoding="utf-8")
+old = """        int extra = data.harvestBonus();
+        if (extra > 0) {
+            Block.popResource(level, pos, new ItemStack(produceItem(), extra));
+        }"""
+new = """        int produceCount = 1 + data.harvestBonus();
+        Block.popResource(level, pos, new ItemStack(produceItem(), produceCount));"""
+if old in s:
+    s = s.replace(old, new, 1)
+elif new not in s:
+    raise SystemExit("Critical harvest-yield fix could not locate AbstractSporeCropBlock reward code")
+p.write_text(s, encoding="utf-8")
