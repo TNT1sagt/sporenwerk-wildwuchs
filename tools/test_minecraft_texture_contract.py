@@ -66,4 +66,29 @@ require("ModBlocks.FASERROHR.get(), RenderType.cutout()" in client
         and "ModBlocks.ROTWURZEL.get(), RenderType.cutout()" in client
         and "ModBlocks.FILTERMOOS.get(), RenderType.cutout()" in client,
         "each of the four custom crops must be registered for cutout rendering")
-print("Minecraft block-face opacity, texture/model references, and crop cutout rendering passed.")
+
+# Each plant has 8 growth ages x 4 field-strength states, including distinct visual models.
+crop_base = (root / "src/main/java/de/sporenwerk/block/crop/AbstractSporeCropBlock.java").read_text(encoding="utf-8")
+require('IntegerProperty.create("mutagen_level", 0, 3)' in crop_base
+        and "builder.add(MUTAGEN_LEVEL)" in crop_base
+        and "MutationField.mutagenStrengthAt(level, pos)" in crop_base,
+        "crop mutation must be represented by a synchronized server-driven block-state property")
+for name in ("faserrohr", "bernsteinkappe", "rotwurzel", "filtermoos"):
+    state_file = assets / "blockstates" / f"{name}.json"
+    state = json.loads(state_file.read_text(encoding="utf-8"))
+    require(len(state.get("variants", {})) == 32,
+            f"{name} must have all 8 ages x 4 mutagen variants")
+    require("age=7,mutagen_level=3" in state["variants"],
+            f"{name} must include its fully grown highest-strength variant")
+    for stage in range(3):
+        for strength in range(1, 4):
+            stem = f"{name}_stage{stage}_mutagen{strength}"
+            texture_path = textures / "block" / f"{stem}.png"
+            model_path = assets / "models" / "block" / f"{stem}.json"
+            require(texture_path.is_file() and model_path.is_file(),
+                    f"{name} is missing visual mutation asset {stem}")
+            with Image.open(texture_path) as image:
+                rgba = image.convert("RGBA")
+                require(rgba.size == (16, 16) and any(px[3] == 0 for px in rgba.getdata()),
+                        f"{stem}.png must be a 16x16 transparent cutout sprite")
+print("Minecraft block-face opacity, crop cutout rendering, and 128 growth/mutation variants passed.")
