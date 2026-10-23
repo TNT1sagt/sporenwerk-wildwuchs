@@ -29,8 +29,9 @@ for locale in ("de_de.json", "en_us.json"):
             locale + " missing the Mutagen Bloom warning")
 require("Version 1.15.0" in read("README.md"), "release notes missing 1.15.0")
 build = read("build.gradle")
-require(re.search(r"version\s*=\s*['\"]1\.16\.0['\"]", build) is not None,
-        "produced artifact must be version 1.16.0")
+version_match = re.search(r"version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)['\"]", build)
+require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 17, 0),
+        "produced artifact must include the 1.17.0 Spore Ward milestone")
 
 entity = read("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java")
 for token in ("new BloomScentGoal(this)", "private static final class BloomScentGoal extends Goal",
