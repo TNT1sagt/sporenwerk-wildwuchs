@@ -468,4 +468,19 @@ for recipe in ("infektionsserum", "infektionshingabe", "steriler_kern"):
     json.loads((root / f"src/main/resources/data/sporenwerk/recipes/{recipe}.json").read_text(encoding="utf-8"))
 print("Infection progression, choice items, world persistence, and recipe checks passed.")
 ''')
+
+# Mark the milestone clearly in the built artifact.
+build = ROOT / "build.gradle"
+build_text = build.read_text(encoding="utf-8")
+build_text = re.sub(r"version = '[^']+'", "version = '1.3.0'", build_text, count=1)
+build.write_text(build_text, encoding="utf-8")
+readme = ROOT / "README.md"
+readme_text = readme.read_text(encoding="utf-8")
+readme_text += """
+
+## 1.3.0 — infection foundation
+Adds persistent player infection, context-sensitive exposure from the Dämmerling in darkness, a serum cure route, a surrender route with distinct late-stage benefits, and a persistent world-level sterile-core ending. This is the first infection milestone; controlled containment zones and cinematic story sequences remain separate follow-up systems.
+"""
+readme.write_text(readme_text, encoding="utf-8")
+
 print("Installed Sporenwerk infection progression v0: exposure, cure, surrender, and world sterilization.")
