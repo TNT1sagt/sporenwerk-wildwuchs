@@ -13,7 +13,7 @@ W, H = 1400, 1320
 canvas = Image.new("RGB", (W, H), (17, 25, 21))
 draw = ImageDraw.Draw(canvas)
 font = ImageFont.load_default()
-draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.13.0  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
+draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.14.0  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
 draw.line((24, 35, W-24, 35), fill=(103, 132, 100), width=1)
 
 def panel(x, y, w, h, title):
@@ -83,7 +83,7 @@ items = [
     "faser", "bernsteinkappe", "rotwurzel", "filtermoos", "faserrohr_samen",
     "bernsteinkappe_sporen", "rotwurzel_samen", "filtermoos_sporen",
     "pflanzenreste", "biomasse", "feldwissen", "maschinenteil", "filter",
-    "feldhandbuch", "wurzelkonzentrat", "myzelkompost", "verwitterte_notiz",
+    "feldhandbuch", "wurzelkonzentrat", "myzelkompost", "verwitterte_notiz", "sporenfiltermaske",
     "mutagenprobe", "mutagenextrakt", "mutagene_sporen", "feldscanner"
 ]
 for idx, name in enumerate(items):
