@@ -60,6 +60,10 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_machine_io_contract.py
 
+      - name: Validate farming loop and optional integrations
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_crop_loop.py
+
       - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/validate_resources.py
@@ -93,6 +97,9 @@ jobs:
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_panel.png'
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
+          jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'de/sporenwerk/item/MyzelkompostItem.class'
+          jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'assets/sporenwerk/textures/item/myzelkompost.png'
+          jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'data/sporenwerk/advancements/compost_loop.json'
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
 
       - name: Smoke-test dedicated server startup without optional mods
