@@ -161,6 +161,135 @@ if call not in node:
     node = node.replace(anchor, anchor + "\n            " + call, 1)
 node_path.write_text(node, encoding="utf-8")
 
+
+# A recent bloom leaves a bounded scent trail. Existing Dämmerlinge investigate it,
+# then fall back to their mature-crop threat behavior near the field.
+node_data_path = SRC / "infection/MutationNodeData.java"
+node_data = node_data_path.read_text(encoding="utf-8")
+if "public BlockPos nearestRecentBloom(" not in node_data:
+    anchor = "    @Override\n    public CompoundTag save(CompoundTag tag) {"
+    method = """
+    /**
+     * Finds the nearest still-fresh bloom among active sources. Only registered sources
+     * are queried; this does not scan a volume of blocks or the full world.
+     */
+    public BlockPos nearestRecentBloom(BlockPos center, int radius, long gameTime, long scentTicks) {
+        long bestDistance = Long.MAX_VALUE;
+        long radiusSquared = (long) radius * radius;
+        BlockPos best = null;
+        for (Map.Entry<Long, Boolean> entry : nodes.entrySet()) {
+            if (!entry.getValue()) continue;
+            long lastBloom = lastBlooms.getOrDefault(entry.getKey(), -24000L);
+            if (lastBloom < 0L || gameTime < lastBloom || gameTime - lastBloom > scentTicks) continue;
+            BlockPos candidate = BlockPos.of(entry.getKey());
+            long dx = (long) candidate.getX() - center.getX();
+            long dy = (long) candidate.getY() - center.getY();
+            long dz = (long) candidate.getZ() - center.getZ();
+            if (dx * dx + dz * dz > radiusSquared || Math.abs(dy) > 8L) continue;
+            long distance = dx * dx + dy * dy + dz * dz;
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = candidate;
+            }
+        }
+        return best;
+    }
+
+"""
+    if anchor not in node_data:
+        raise SystemExit("Cannot locate MutationNodeData save method for bloom scent query")
+    node_data = node_data.replace(anchor, method + anchor, 1)
+node_data_path.write_text(node_data, encoding="utf-8")
+
+entity_path = SRC / "entity/DaemmerlingEntity.java"
+entity = entity_path.read_text(encoding="utf-8")
+if "import de.sporenwerk.infection.MutationNodeData;" not in entity:
+    anchor = "import de.sporenwerk.registry.ModBlocks;"
+    if anchor not in entity:
+        raise SystemExit("Cannot locate Dämmerling imports")
+    entity = entity.replace(anchor, anchor + "\nimport de.sporenwerk.infection.MutationNodeData;\nimport net.minecraft.server.level.ServerLevel;", 1)
+if "new BloomScentGoal(this)" not in entity:
+    anchor = "        this.goalSelector.addGoal(5, new CropThreatGoal(this));"
+    if anchor not in entity:
+        raise SystemExit("Cannot locate Dämmerling crop-threat goal")
+    entity = entity.replace(anchor, "        this.goalSelector.addGoal(4, new BloomScentGoal(this));\n" + anchor, 1)
+if "private static final class BloomScentGoal extends Goal" not in entity:
+    anchor = "    private static final class CropThreatGoal extends Goal {"
+    goal = """
+    /**
+     * Briefly investigates a recently bloomed tier-3 field. The goal yields within
+     * three blocks so the lower-priority crop goal can take over naturally.
+     */
+    private static final class BloomScentGoal extends Goal {
+        private static final int SEARCH_RADIUS = 24;
+        private static final long SCENT_TICKS = 2400L;
+        private final DaemmerlingEntity mob;
+        private BlockPos target;
+
+        private BloomScentGoal(DaemmerlingEntity mob) {
+            this.mob = mob;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!mob.isAlive() || mob.getTarget() != null) return false;
+            target = findTarget();
+            return target != null && outsideArrivalRange(target);
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            if (!mob.isAlive() || mob.getTarget() != null) return false;
+            target = findTarget();
+            return target != null && outsideArrivalRange(target);
+        }
+
+        @Override
+        public void start() {
+            moveToBloom();
+        }
+
+        @Override
+        public void tick() {
+            if (target == null) return;
+            mob.getLookControl().setLookAt(target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D);
+            if (mob.getNavigation().isDone()) moveToBloom();
+        }
+
+        @Override
+        public void stop() {
+            mob.getNavigation().stop();
+            target = null;
+        }
+
+        private BlockPos findTarget() {
+            if (!(mob.level() instanceof ServerLevel serverLevel)) return null;
+            BlockPos bloom = MutationNodeData.get(serverLevel).nearestRecentBloom(
+                    mob.blockPosition(), SEARCH_RADIUS, serverLevel.getGameTime(), SCENT_TICKS);
+            if (bloom == null || mob.getNavigation().createPath(bloom.above(), 0) == null) return null;
+            return bloom;
+        }
+
+        private boolean outsideArrivalRange(BlockPos bloom) {
+            return mob.distanceToSqr(bloom.getX() + 0.5D, bloom.getY() + 1.0D,
+                    bloom.getZ() + 0.5D) > 9.0D;
+        }
+
+        private void moveToBloom() {
+            if (target != null) {
+                mob.getNavigation().moveTo(target.getX() + 0.5D, target.getY() + 1.0D,
+                        target.getZ() + 0.5D, 0.78D);
+            }
+        }
+    }
+
+"""
+    if anchor not in entity:
+        raise SystemExit("Cannot locate Dämmerling crop-threat goal declaration")
+    entity = entity.replace(anchor, goal + anchor, 1)
+entity_path.write_text(entity, encoding="utf-8")
+
 # Player-facing text is available in both supported languages.
 translations = {
     "de_de.json": {
@@ -179,9 +308,9 @@ for filename, additions in translations.items():
 # Bump the produced artifact version after all earlier milestone generators have run.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.15.0'", build, count=1)
+build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.16.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.15.0")
+    raise SystemExit("Could not bump build.gradle to version 1.16.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
@@ -200,4 +329,20 @@ Der automatische Server-Smoke-Test ersetzt keinen manuellen Test im laufenden Mi
 """
 if heading not in readme:
     readme_path.write_text(section + readme, encoding="utf-8")
-print("Installed persistent tier-3 Mutagen Bloom events and their mask/anchor counterplay.")
+
+bloom_scent_heading = "## Version 1.16.0 — Dämmerling und Mutagenblüten"
+bloom_scent_section = """## Version 1.16.0 — Dämmerling und Mutagenblüten
+
+- **Feldreaktion:** Eine Mutagenblüte hinterlässt eine begrenzte Duftspur. Bereits vorhandene Dämmerlinge in bis zu 24 Blöcken Entfernung können sie untersuchen.
+- **Druck auf Forschungsanlagen:** Nach der Ankunft am Feld übernimmt die bestehende KI zur Bedrohung reifer Sporenwerk-Pflanzen. Beleuchtung, Zäune und Feldsammler bleiben Gegenmaßnahmen; die Blüte erzeugt keine zusätzlichen Gegner.
+- **Begrenzte KI-Arbeit:** Die Suche prüft nur die gespeicherten aktiven Feldherde und akzeptiert Blüten höchstens 2.400 Ticks lang. Der Dämmerling respektiert den Navigationspfad und kehrt im Nahbereich zur bisherigen Pflanzen-KI zurück.
+- **Persistente Daten:** Der Duft basiert auf dem pro Herd gespeicherten Blütezeitpunkt; er wird nach einem Neustart nicht durch einen statischen Speicher verloren.
+- **Qualitätssicherung:** Neue Vertragsprüfungen decken Suchradius, Duftzeitfenster, Wegfindung und Übergabe an die Pflanzenbedrohung ab. Danach folgen Ressourcenvalidierung, Forge-Build, JAR-Prüfung und dedizierter Serverstart.
+
+Der Server-Smoke-Test ersetzt keinen manuellen Test im laufenden Minecraft-Client.
+
+"""
+if bloom_scent_heading not in readme:
+    readme_path.write_text(bloom_scent_section + readme, encoding="utf-8")
+
+print("Installed Sporenwerk 1.16.0 bloom scent and Dämmerling research-facility pressure.")

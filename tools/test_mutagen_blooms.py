@@ -30,5 +30,16 @@ for locale in ("de_de.json", "en_us.json"):
 require("Version 1.15.0" in read("README.md"), "release notes missing 1.15.0")
 build = read("build.gradle")
 require(re.search(r"version\s*=\s*['\"]1\.15\.0['\"]", build) is not None,
-        "produced artifact must be version 1.15.0")
+        "produced artifact must be version 1.16.0")
+
+entity = read("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java")
+for token in ("new BloomScentGoal(this)", "private static final class BloomScentGoal extends Goal",
+              "SEARCH_RADIUS = 24", "SCENT_TICKS = 2400L",
+              "nearestRecentBloom(", "mob.getNavigation().createPath(bloom.above(), 0) == null",
+              "outsideArrivalRange(target)", "new CropThreatGoal(this)"):
+    require(token in entity, "Dämmerling bloom response is missing " + token)
+require("nearestRecentBloom(BlockPos center, int radius, long gameTime, long scentTicks)" in nodes,
+        "saved field registry must expose only bounded recent blooms")
+require("Version 1.16.0" in read("README.md"), "release notes missing 1.16.0")
+
 print("Mutagen Bloom strength gate, saved cooldown, crop boost, mask counterplay, anchor protection and locales passed.")
