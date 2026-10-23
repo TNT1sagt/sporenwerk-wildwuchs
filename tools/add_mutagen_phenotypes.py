@@ -758,7 +758,7 @@ for name, stages in age_stages.items():
             variant = state["variants"].get(f"age={age},mutagen_level={strength}")
             require(variant is not None, f"{name} missing age={age}, mutagen_level={strength}")
             model_name = variant["model"].split(":", 1)[1]
-            model_path = f"src/main/resources/assets/{model_name}.json"
+            model_path = f"src/main/resources/assets/sporenwerk/models/{model_name}.json"
             require((root / model_path).is_file(), name + " references missing variant model " + model_name)
             model = json.loads(read(model_path))
             expected_texture = (f"sporenwerk:block/{name}_stage{stage}" if strength == 0
