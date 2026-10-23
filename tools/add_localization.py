@@ -5,6 +5,64 @@ import json, re, sys
 
 root = Path(sys.argv[1]).resolve()
 res = root / "src/main/resources/assets/sporenwerk/lang"
+# Ensure machine block items really use the tooltip-enabled item class.
+def write(rel, content):
+    p = root / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(content.lstrip(), encoding="utf-8")
+
+write("src/main/java/de/sporenwerk/registry/ModBlocks.java", '''
+package de.sporenwerk.registry;
+
+import de.sporenwerk.Sporenwerk;
+import de.sporenwerk.block.MachineBlock;
+import de.sporenwerk.block.crop.BernsteinkappeBlock;
+import de.sporenwerk.block.crop.FaserrohrBlock;
+import de.sporenwerk.block.crop.FiltermoosBlock;
+import de.sporenwerk.block.crop.RotwurzelBlock;
+import de.sporenwerk.item.MachineBlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+
+public final class ModBlocks {
+    public static final DeferredRegister<Block> BLOCKS =
+            DeferredRegister.create(ForgeRegistries.BLOCKS, Sporenwerk.MODID);
+
+    public static final RegistryObject<Block> FASERROHR = BLOCKS.register("faserrohr",
+            () -> new FaserrohrBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT)
+                    .noCollission().randomTicks().instabreak().sound(SoundType.CROP)));
+    public static final RegistryObject<Block> BERNSTEINKAPPE = BLOCKS.register("bernsteinkappe",
+            () -> new BernsteinkappeBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT)
+                    .noCollission().randomTicks().instabreak().sound(SoundType.FUNGUS)));
+    public static final RegistryObject<Block> ROTWURZEL = BLOCKS.register("rotwurzel",
+            () -> new RotwurzelBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT)
+                    .noCollission().randomTicks().instabreak().sound(SoundType.CROP)));
+    public static final RegistryObject<Block> FILTERMOOS = BLOCKS.register("filtermoos",
+            () -> new FiltermoosBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT)
+                    .noCollission().randomTicks().instabreak().sound(SoundType.MOSS)));
+
+    public static final RegistryObject<Block> FELDSAMMLER = machine("feldsammler", MapColor.METAL);
+    public static final RegistryObject<Block> SAATGUTPRESSE = machine("saatgutpresse", MapColor.COLOR_BROWN);
+    public static final RegistryObject<Block> BIOMASSE_BIOREAKTOR = machine("biomasse_bioreaktor", MapColor.COLOR_GREEN);
+
+    private static RegistryObject<Block> machine(String name, MapColor color) {
+        RegistryObject<Block> block = BLOCKS.register(name, () -> new MachineBlock(
+                BlockBehaviour.Properties.of().mapColor(color).strength(2.0f).sound(SoundType.METAL)
+                        .requiresCorrectToolForDrops()));
+        ModItems.ITEMS.register(name, () -> new MachineBlockItem(block.get(), name, new Item.Properties()));
+        return block;
+    }
+
+    private ModBlocks() {}
+}
+''')
+
 de_path = res / "de_de.json"
 de = json.loads(de_path.read_text(encoding="utf-8"))
 de.update({
