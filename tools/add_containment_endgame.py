@@ -225,6 +225,35 @@ field_source = field_source.replace(
     "                || !level.getBlockState(origin).is(ModBlocks.INFEKTIONSHERD.get())\n"
     "                || !MutationNodeData.get(level).isActive(origin)\n"
     "                || hasAnchor(level, pos)) return;")
+
+# Use absolute world time rather than player.tickCount modulo values. A scheduled source
+# may be out of phase with a player's join tick, which must not make exposure or healing stall.
+old_cure = """            if (infection > 0 && player.tickCount % 40 == 0) InfectionState.cure(player, 2);"""
+new_cure = """            long now = level.getGameTime();
+            long nextCure = player.getPersistentData().getLong("SporenwerkAnchorCureAt");
+            if (infection > 0 && now >= nextCure) {
+                InfectionState.cure(player, 2);
+                player.getPersistentData().putLong("SporenwerkAnchorCureAt", now + 40);
+            }"""
+if new_cure not in field_source:
+    if old_cure not in field_source:
+        raise SystemExit("Containment patch cannot locate anchor cure cadence")
+    field_source = field_source.replace(old_cure, new_cure, 1)
+
+old_exposure = """            if (player.tickCount % 100 == 0 && !hasAnchor(level, player.blockPosition())) {
+                InfectionState.setLevel(player, InfectionState.level(player) + 1);
+            }"""
+new_exposure = """            long now = level.getGameTime();
+            long nextExposure = player.getPersistentData().getLong("SporenwerkControlledExposureAt");
+            if (now >= nextExposure && !hasAnchor(level, player.blockPosition())) {
+                InfectionState.setLevel(player, InfectionState.level(player) + 1);
+                player.getPersistentData().putLong("SporenwerkControlledExposureAt", now + 100);
+            }"""
+if new_exposure not in field_source:
+    if old_exposure not in field_source:
+        raise SystemExit("Containment patch cannot locate controlled exposure cadence")
+    field_source = field_source.replace(old_exposure, new_exposure, 1)
+
 field_path.write_text(field_source, encoding="utf-8")
 
 # The Sterile Core is the actual endgame switch across every loaded dimension.
@@ -285,6 +314,8 @@ require("MutationNodeData.get(serverLevel).activate(pos)" in block, "newly place
 require("registerIfMissing(pos, !InfectionWorldData.get(level).isSterilized())" in block,
         "legacy sources must not reactivate automatically after the ending")
 require("MutationNodeData.get(level).isActive(origin)" in field, "terrain spread must require an active source")
+require("SporenwerkControlledExposureAt" in field and "SporenwerkAnchorCureAt" in field,
+        "controlled exposure and anchor healing must use elapsed-time cooldowns")
 require("level.setBlock(pos, record.originalState(), 3)" in terrain,
         "terrain owned by a stopped source must restore its saved original state")
 require("serverLevel.getServer().getAllLevels()" in core and "MutationNodeData.get(dimension).deactivateAll()" in core,
