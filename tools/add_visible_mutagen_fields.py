@@ -64,7 +64,9 @@ public final class MutagenFieldVisuals {
                     BlockPos pos = center.offset(dx, dy, dz);
                     BlockState state = level.getBlockState(pos);
                     if (state.is(ModBlocks.MUTAGEN_BODEN.get())) {
-                        if (level.random.nextFloat() < 0.18F) {
+                        // A dense turquoise spore plume makes the contaminated footprint
+                        // readable at a glance instead of relying on the scanner.
+                        if (level.random.nextFloat() < 0.42F) {
                             level.addParticle(ParticleTypes.WARPED_SPORE,
                                     pos.getX() + 0.15D + level.random.nextDouble() * 0.7D,
                                     pos.getY() + 1.01D,
@@ -73,7 +75,18 @@ public final class MutagenFieldVisuals {
                                     0.008D + level.random.nextDouble() * 0.012D,
                                     (level.random.nextDouble() - 0.5D) * 0.012D);
                         }
-                        if (level.random.nextFloat() < 0.025F) {
+                        // High-contrast magenta-violet sparks provide a second, unmistakable
+                        // particle signature for Mutagen rather than ordinary ambient spores.
+                        if (level.random.nextFloat() < 0.16F) {
+                            level.addParticle(ParticleTypes.SOUL_FIRE_FLAME,
+                                    pos.getX() + 0.18D + level.random.nextDouble() * 0.64D,
+                                    pos.getY() + 0.88D + level.random.nextDouble() * 0.22D,
+                                    pos.getZ() + 0.18D + level.random.nextDouble() * 0.64D,
+                                    (level.random.nextDouble() - 0.5D) * 0.006D,
+                                    0.012D + level.random.nextDouble() * 0.018D,
+                                    (level.random.nextDouble() - 0.5D) * 0.006D);
+                        }
+                        if (level.random.nextFloat() < 0.05F) {
                             level.addParticle(ParticleTypes.PORTAL,
                                     pos.getX() + 0.2D + level.random.nextDouble() * 0.6D,
                                     pos.getY() + 0.8D + level.random.nextDouble() * 0.35D,
