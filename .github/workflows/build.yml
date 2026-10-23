@@ -1,4 +1,4 @@
-name: Build Sporenwerk 1.1.8 for Forge 1.20.1
+name: Build Sporenwerk 1.1.9 for Forge 1.20.1
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
       - name: Apply V1.0.1 gameplay, GUI, and art update
         run: |
           set -euo pipefail
-          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py source/sporenwerk-wildwuchs/tools/
+          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py tools/add_machine_geometry.py source/sporenwerk-wildwuchs/tools/
           python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_daemmerling.py source/sporenwerk-wildwuchs
@@ -52,6 +52,7 @@ jobs:
           python3 source/sporenwerk-wildwuchs/tools/add_localization.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_machine_visuals.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/harden_machine_io.py source/sporenwerk-wildwuchs
+          python3 source/sporenwerk-wildwuchs/tools/add_machine_geometry.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/test_machine_io_contract.py source/sporenwerk-wildwuchs
 
       - name: Validate machine automation and energy boundaries
@@ -70,22 +71,28 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: |
           set -euo pipefail
-          test -s build/libs/sporenwerk-1.1.8.jar
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'META-INF/mods.toml'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'assets/sporenwerk/lang/en_us.json'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'de/sporenwerk/item/MachineBlockItem.class'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'de/sporenwerk/item/WurzelkonzentratItem.class'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'assets/sporenwerk/textures/item/wurzelkonzentrat.png'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'data/sporenwerk/recipes/wurzelkonzentrat.json'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_side.png'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_top.png'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_back.png'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
-          jar tf build/libs/sporenwerk-1.1.8.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
+          test -s build/libs/sporenwerk-1.1.9.jar
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'META-INF/mods.toml'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/lang/en_us.json'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'de/sporenwerk/item/MachineBlockItem.class'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'de/sporenwerk/item/WurzelkonzentratItem.class'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/item/wurzelkonzentrat.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'data/sporenwerk/recipes/wurzelkonzentrat.json'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_side.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_top.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_back.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/models/block/feldsammler.json'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/models/block/saatgutpresse.json'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/models/block/biomasse_bioreaktor.json'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_panel.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_panel.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_panel.png'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
+          jar tf build/libs/sporenwerk-1.1.9.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
 
       - name: Smoke-test dedicated server startup without optional mods
         working-directory: source/sporenwerk-wildwuchs
@@ -125,7 +132,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.1.8-forge-1.20.1
-          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.1.8.jar
+          name: sporenwerk-1.1.9-forge-1.20.1
+          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.1.9.jar
           if-no-files-found: error
           retention-days: 14
