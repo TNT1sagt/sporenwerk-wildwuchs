@@ -53,6 +53,30 @@ if "canExtract() { return false; }" not in external_window:
 if "consumeInternally(" not in s:
     raise SystemExit("Internal FE consumption path was not found")
 
+# Complete the final biomass step with a tangible output instead of only an invisible counter.
+reactor_pattern = re.compile(
+    r"\} else if \(input\.is\(ModItems\.BIOMASSE\.get\(\)\)\) \{.*?\n        \} else progress = 0;",
+    flags=re.DOTALL,
+)
+reactor_match = reactor_pattern.search(s)
+if reactor_match is not None:
+    new_reactor_branch = """} else if (input.is(ModItems.BIOMASSE.get())) {
+            ItemStack medicine = new ItemStack(ModItems.WURZELKONZENTRAT.get());
+            if (!canFitOutput(medicine) || !consumePower(80)) { progress = 0; return; }
+            progress = 0;
+            if (!insertOutput(medicine)) return;
+            inventory.extractItem(0, 1, false);
+            storedPoints = Math.min(1_000_000, storedPoints + 10);
+            skills.addCraft();
+            setChanged();
+        } else progress = 0;"""
+    s = s[:reactor_match.start()] + new_reactor_branch + s[reactor_match.end():]
+elif "ModItems.WURZELKONZENTRAT.get()" not in s:
+    raise SystemExit("Could not find bioreactor's biomass branch to add a tangible output")
+items_path = root / "src/main/java/de/sporenwerk/registry/ModItems.java"
+if "WURZELKONZENTRAT" not in items_path.read_text(encoding="utf-8"):
+    raise SystemExit("Rotwurzel-Konzentrat is not registered before bioreactor patch")
+
 be_path.write_text(s, encoding="utf-8")
 
 # Large production worlds can exceed a vanilla container-data short. Split Feldwissen
