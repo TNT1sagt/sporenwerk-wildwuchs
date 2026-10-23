@@ -221,7 +221,7 @@ readme = readme_path.read_text(encoding="utf-8")
 heading = "## Version 1.13.0 — Sichtbare Mutagenfelder und Feldanalyse"
 section = """## Version 1.13.0 — Sichtbare Mutagenfelder und Feldanalyse
 
-- **Sichtbarer Befall:** Infizierter Boden gibt schwaches Licht ab und wirbelt türkis-violette Sporenpartikel auf; mutierte Pflanzen bekommen zusätzliche Sporenmotes. Die Effekte hängen an synchronisierten Blockzuständen und verschwinden, wenn der Server den Boden zurückführt oder Pflanzen normalisiert.
+- **Sichtbarer Befall:** Infizierter Boden gibt schwaches Licht ab und wirbelt türkis-violette Sporenpartikel auf. Mutierte Pflanzen zeigen nun drei erkennbare Partikelstufen: Sporen bei Stufe 1, Portal-Schimmer ab Stufe 2 und helle Endstab-Funken auf Stufe 3. Die Stufe stammt aus dem synchronisierten Pflanzenzustand; alle Effekte teilen sich ein festes Partikelbudget.
 - **Scanner mit zwei Modi:** Rechtsklick auf einen Block untersucht Herd, Heilanker, Barriere oder Boden. Rechtsklick in die Luft analysiert einen 12-Block-Radius und zählt aktive/inaktive Herde, befallenen Boden und mutierte Pflanzen; die Spitzenstärke stammt aus Serverdaten.
 - **Release-Prüfung:** Eigener Test für Lichtlevel, Partikel-Event, Scanner-Modi und Übersetzungen, dazu Forge-Build, JAR-Validierung und Server-Smoke-Test.
 
