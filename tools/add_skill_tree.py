@@ -92,7 +92,7 @@ public final class SkillTreeMenu extends AbstractContainerMenu {
 menus = ROOT / "src/main/java/de/sporenwerk/registry/ModMenus.java"
 m = menus.read_text(encoding="utf-8")
 if "FIELD_SKILLS" not in m:
-    m = m.replace("import de.sporenwerk.client.menu.MachineMenu;", "import de.sporenwerk.client.menu.MachineMenu;\\nimport de.sporenwerk.client.menu.SkillTreeMenu;")
+    m = m.replace("import de.sporenwerk.client.menu.MachineMenu;", "import de.sporenwerk.client.menu.MachineMenu;\nimport de.sporenwerk.client.menu.SkillTreeMenu;")
     field = '''
     public static final RegistryObject<MenuType<SkillTreeMenu>> FIELD_SKILLS = MENUS.register(
             "field_skills", () -> IForgeMenuType.create((id, inventory, data) ->
@@ -144,9 +144,9 @@ public final class FeldhandbuchItem extends Item {
 clientEvents = ROOT / "src/main/java/de/sporenwerk/client/ClientModEvents.java"
 s = clientEvents.read_text(encoding="utf-8")
 if "SkillTreeScreen" not in s:
-    s = s.replace("import de.sporenwerk.client.menu.MachineScreen;", "import de.sporenwerk.client.menu.MachineScreen;\\nimport de.sporenwerk.client.menu.SkillTreeScreen;")
+    s = s.replace("import de.sporenwerk.client.menu.MachineScreen;", "import de.sporenwerk.client.menu.MachineScreen;\nimport de.sporenwerk.client.menu.SkillTreeScreen;")
     s = s.replace("MenuScreens.register(ModMenus.MACHINE.get(), MachineScreen::new);",
-                  "MenuScreens.register(ModMenus.MACHINE.get(), MachineScreen::new);\\n            MenuScreens.register(ModMenus.FIELD_SKILLS.get(), SkillTreeScreen::new);")
+                  "MenuScreens.register(ModMenus.MACHINE.get(), MachineScreen::new);\n            MenuScreens.register(ModMenus.FIELD_SKILLS.get(), SkillTreeScreen::new);")
     clientEvents.write_text(s, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/client/menu/SkillTreeScreen.java", '''
@@ -342,17 +342,17 @@ public final class ModItems {
 # Restore spawn egg registration added by the Dämmerling step, because ModItems is rewritten.
 replace_once("src/main/java/de/sporenwerk/registry/ModItems.java",
              "import net.minecraft.world.item.ItemStack;",
-             "import net.minecraft.world.item.ItemStack;\\nimport net.minecraft.world.item.SpawnEggItem;")
+             "import net.minecraft.world.item.ItemStack;\nimport net.minecraft.world.item.SpawnEggItem;")
 replace_once("src/main/java/de/sporenwerk/registry/ModItems.java",
              'public static final RegistryObject<Item> MASCHINENTEIL = basic("maschinenteil");',
-             'public static final RegistryObject<Item> DAEMMERLING_SPAWN_EGG = ITEMS.register("daemmerling_spawn_egg", () -> new SpawnEggItem(ModEntities.DAEMMERLING.get(), 0x263D2D, 0xB23843, new Item.Properties()));\\n    public static final RegistryObject<Item> MASCHINENTEIL = basic("maschinenteil");')
+             'public static final RegistryObject<Item> DAEMMERLING_SPAWN_EGG = ITEMS.register("daemmerling_spawn_egg", () -> new SpawnEggItem(ModEntities.DAEMMERLING.get(), 0x263D2D, 0xB23843, new Item.Properties()));\n    public static final RegistryObject<Item> MASCHINENTEIL = basic("maschinenteil");')
 
 # Screen translations and creative tab.
 lang_path = RES / "assets/sporenwerk/lang/de_de.json"
 lang = json.loads(lang_path.read_text(encoding="utf-8"))
 lang["gui.sporenwerk.skill_title"] = "Feldhandbuch – Wissensbaum"
 lang["item.sporenwerk.feldhandbuch"] = "Feldhandbuch"
-lang_path.write_text(json.dumps(lang, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+lang_path.write_text(json.dumps(lang, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 p = ROOT / "build.gradle"
 s = p.read_text(encoding="utf-8")
@@ -362,6 +362,6 @@ p.write_text(s, encoding="utf-8")
 readme = ROOT / "README.md"
 s = readme.read_text(encoding="utf-8")
 s = s.replace("1.0.2", "1.1.0").replace("V1.0.2", "V1.1.0")
-s += "\\n\\n## V1.1.0 Skill tree\\nRight-click the Feldhandbuch to open the custom three-branch skill tree. Costs and levels are synced from the server. Upgrade buttons execute server commands which validate and save the purchase; world progression is not client-authored.\\n"
+s += "\n\n## V1.1.0 Skill tree\nRight-click the Feldhandbuch to open the custom three-branch skill tree. Costs and levels are synced from the server. Upgrade buttons execute server commands which validate and save the purchase; world progression is not client-authored.\n"
 readme.write_text(s, encoding="utf-8")
 print("Installed the V1.1.0 skill-tree screen.")
