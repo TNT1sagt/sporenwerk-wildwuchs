@@ -481,3 +481,72 @@ s = s.replace(
 if "new ForgeSpawnEggItem(ModEntities.DAEMMERLING," not in s:
     raise SystemExit("Could not install supplier-based ForgeSpawnEggItem registration")
 p.write_text(s, encoding="utf-8")
+
+
+
+# Ship two explicit FTB Quests import layouts. Standard Forge 1.20.1 uses the classic
+# embedded-title/legacy-item format; the newer lang layout is only for packs with Quest Lang Files
+# or an FTB Quests build that supports translations in lang/*.snbt.
+quest_path = ROOT / "extras/ftbquests/config/ftbquests/quests/chapters/sporenwerk_wildwuchs.snbt"
+lang_path = ROOT / "extras/ftbquests/config/ftbquests/quests/lang/de_de.snbt"
+modern_chapter = quest_path.read_text(encoding="utf-8")
+modern_lang = lang_path.read_text(encoding="utf-8")
+
+variant_root = ROOT / "extras/ftbquests/variants/quest-lang-files/config/ftbquests/quests"
+(variant_root / "chapters").mkdir(parents=True, exist_ok=True)
+(variant_root / "lang").mkdir(parents=True, exist_ok=True)
+(variant_root / "chapters/sporenwerk_wildwuchs.snbt").write_text(modern_chapter, encoding="utf-8")
+(variant_root / "lang/de_de.snbt").write_text(modern_lang, encoding="utf-8")
+
+legacy = modern_chapter
+legacy = legacy.replace('default_quest_shape: ""', 'default_quest_shape: "circle"')
+legacy = legacy.replace('icon: { id: "sporenwerk:feldhandbuch" }', 'icon: "sporenwerk:feldhandbuch"')
+legacy = re.sub(r'item: \{ id: "([^"]+)", count: (\d+L) \}', r'item: "\1", count: \2', legacy)
+legacy = re.sub(r'item: \{ count: (\d+), id: "([^"]+)" \}', r'item: { Count: \1, id: "\2", tag: { Damage: 0 } }', legacy)
+
+legacy_quests = {
+    "53504F52454E0101": ("&2Ein Stück Erde", "Saatgut finden, die erste Pflanze setzen und die erste Faser ernten."),
+    "53504F52454E0102": ("&eNichts verkommt", "Verarbeite Pflanzenreste zu Biomasse und starte die Saatgutkette."),
+    "53504F52454E0103": ("&6Die erste Maschine", "Baue die Saatgutpresse und füttere deine erste Produktionskette."),
+    "53504F52454E0104": ("&aEine größere Ernte", "Richte den Feldsammler ein und versorge ihn mit passenden Samen."),
+    "53504F52454E0105": ("&5Das Feld hinter dem Glas", "Finde das seltene Feldprotokoll. Es stammt von der falschen Seite der Scheibe.")
+}
+for quest_id, (title, subtitle) in legacy_quests.items():
+    needle = f'      id: "{quest_id}"\\n'
+    if needle not in legacy:
+        raise SystemExit(f"Cannot create legacy FTB chapter; quest id {quest_id} missing")
+    replacement = needle + f'      title: "{title}"\\n      subtitle: "{subtitle}"\\n'
+    legacy = legacy.replace(needle, replacement, 1)
+
+if '  title: "&2Sporenwerk: Wildwuchs"' not in legacy:
+    head, sep, tail = legacy.rpartition("\\n}")
+    if not sep:
+        raise SystemExit("Cannot add chapter title to classic FTB Quests file")
+    legacy = head + '\\n  title: "&2Sporenwerk: Wildwuchs"' + sep + tail
+
+quest_path.write_text(legacy, encoding="utf-8")
+if lang_path.exists():
+    lang_path.unlink()
+
+write("extras/ftbquests/README.md", '''
+# Sporenwerk: Wildwuchs — FTB Quests import for Minecraft 1.20.1
+
+The archive includes two variants. Choose only one for a given instance.
+
+## Default: classic FTB Quests for Forge 1.20.1
+Copy the file at config/ftbquests/quests/chapters/sporenwerk_wildwuchs.snbt into the same path in your instance or server. It uses the classic 1.20.1 chapter format with embedded German quest text and item stacks. Back up the existing quest folder first.
+
+## Alternative: language-file layout
+For a modpack that explicitly installs Quest Lang Files (or a FTB Quests build that supports the modern per-language SNBT layout), copy the files inside variants/quest-lang-files/config/ into the matching config folder. Do not copy this variant on top of the classic chapter: choose one layout.
+
+After copying, restart the instance/world or run /ftbquests reload as an administrator. Open the Quest Book and verify the five objectives and rewards. The chapter intentionally has no group entry, so it does not overwrite the pack's existing chapter groups.
+
+The Minecraft mod itself has no FTB Quests dependency; the import is separate. The package is schema-checked for ID uniqueness and archive integrity, but should still be previewed in the exact FTB Quests build used by the target modpack before pack release.
+''')
+
+# Validate that the default package is classic 1.20.1 and the alternative retains modern localization.
+if 'icon: "sporenwerk:feldhandbuch"' not in legacy or 'title: "&2Ein Stück Erde"' not in legacy:
+    raise SystemExit("Classic FTB Quests compatibility layout was not generated correctly")
+if 'icon: { id: "sporenwerk:feldhandbuch" }' not in modern_chapter or 'quest.53504F52454E0101.title:' not in modern_lang:
+    raise SystemExit("Modern FTB Quests language-file variant was not generated correctly")
+print("FTB Quests bundle contains classic 1.20.1 and separate language-file variants.")
