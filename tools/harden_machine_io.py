@@ -123,7 +123,7 @@ test_script = r'''#!/usr/bin/env python3
 from pathlib import Path
 import re, sys
 
-root = Path(sys.argv[1]).resolve()
+root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
 p = root / "src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java"
 s = p.read_text(encoding="utf-8")
 
