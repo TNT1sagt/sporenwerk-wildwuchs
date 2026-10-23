@@ -197,6 +197,7 @@ jobs:
           jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'data/sporenwerk/advancements/mutation_harvest.json'
           jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'assets/sporenwerk/textures/item/mutagene_sporen.png'
           jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'de/sporenwerk/item/SporeFilterMaterial.class'
+          jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'de/sporenwerk/item/SporeFilterMaskItem.class'
           jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'assets/sporenwerk/textures/item/sporenfiltermaske.png'
           jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'assets/sporenwerk/textures/models/armor/sporenfilter_layer_1.png'
           jar tf build/libs/sporenwerk-1.14.0.jar | grep -q 'data/sporenwerk/recipes/sporenfiltermaske.json'

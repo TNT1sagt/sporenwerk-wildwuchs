@@ -38,7 +38,7 @@ if "import net.minecraft.world.item.ArmorItem;" not in items:
     items = items.replace(anchor, anchor + "\nimport net.minecraft.world.item.ArmorItem;", 1)
 if "SPORENFILTERMASKE" not in items:
     anchor = '    public static final RegistryObject<Item> FELDSCANNER = ITEMS.register("feldscanner", () -> new FeldscannerItem(new Item.Properties().stacksTo(1)));'
-    field = '    public static final RegistryObject<Item> SPORENFILTERMASKE = ITEMS.register("sporenfiltermaske", () -> new ArmorItem(de.sporenwerk.item.SporeFilterMaterial.MATERIAL, ArmorItem.Type.HELMET, new Item.Properties()));'
+    field = '    public static final RegistryObject<Item> SPORENFILTERMASKE = ITEMS.register("sporenfiltermaske", () -> new de.sporenwerk.item.SporeFilterMaskItem(de.sporenwerk.item.SporeFilterMaterial.MATERIAL, new Item.Properties()));'
     if anchor not in items:
         raise SystemExit("Cannot locate field scanner registration for the spore filter helmet")
     items = items.replace(anchor, anchor + "\n" + field, 1)
@@ -51,6 +51,36 @@ if "output.accept(ModItems.SPORENFILTERMASKE.get());" not in creative:
     if anchor not in creative:
         raise SystemExit("Cannot locate field scanner in creative tab")
     creative_path.write_text(creative.replace(anchor, anchor + "\n                        output.accept(ModItems.SPORENFILTERMASKE.get());", 1), encoding="utf-8")
+
+write("src/main/java/de/sporenwerk/item/SporeFilterMaskItem.java", """
+package de.sporenwerk.item;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+
+/** Wearable field respirator with an in-game explanation of its durability-based protection. */
+public final class SporeFilterMaskItem extends ArmorItem {
+    public SporeFilterMaskItem(ArmorMaterial material, Properties properties) {
+        super(material, Type.HELMET, properties);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltermaske.1")
+                .withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltermaske.2")
+                .withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, level, tooltip, flag);
+    }
+}
+""")
 
 write("src/main/java/de/sporenwerk/item/SporeFilterMaterial.java", """
 package de.sporenwerk.item;
@@ -242,8 +272,12 @@ def read(path): return (root / path).read_text(encoding="utf-8")
 def require(ok, message):
     if not ok: raise SystemExit("Spore filter regression: " + message)
 items = read("src/main/java/de/sporenwerk/registry/ModItems.java")
-require("SPORENFILTERMASKE" in items and "ArmorItem.Type.HELMET" in items,
-        "mask must be a registered, wearable helmet")
+require("SPORENFILTERMASKE" in items and "SporeFilterMaskItem" in items,
+        "mask must be registered with its explanatory helmet item class")
+mask_item = read("src/main/java/de/sporenwerk/item/SporeFilterMaskItem.java")
+require("appendHoverText" in mask_item and "tooltip.sporenwerk.sporenfiltermaske.1" in mask_item
+        and "tooltip.sporenwerk.sporenfiltermaske.2" in mask_item,
+        "mask must show its protective function in the in-game tooltip")
 creative = read("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java")
 require("output.accept(ModItems.SPORENFILTERMASKE.get())" in creative,
         "mask must appear in the creative catalogue")
