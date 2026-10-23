@@ -1,4 +1,4 @@
-name: Build Sporenwerk 1.7.0 for Forge 1.20.1
+name: Build Sporenwerk 1.8.0 for Forge 1.20.1
 
 on:
   push:
@@ -44,10 +44,10 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Apply Sporenwerk 1.7.0 gameplay, UI, and resource patches
+      - name: Apply Sporenwerk 1.8.0 gameplay, UI, and resource patches
         run: |
           set -euo pipefail
-          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py tools/add_machine_geometry.py tools/add_compost_and_machine_status.py tools/make_art_preview.py tools/fix_advancement_schemas.py tools/complete_machine_farming_loop.py tools/add_infection_system.py tools/add_mutation_containment.py tools/add_reversible_infection.py tools/add_containment_endgame.py tools/add_mutagen_research.py source/sporenwerk-wildwuchs/tools/
+          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py tools/add_machine_geometry.py tools/add_compost_and_machine_status.py tools/make_art_preview.py tools/fix_advancement_schemas.py tools/complete_machine_farming_loop.py tools/add_infection_system.py tools/add_mutation_containment.py tools/add_reversible_infection.py tools/add_containment_endgame.py tools/add_mutagen_research.py tools/add_mutagen_harvest.py source/sporenwerk-wildwuchs/tools/
           python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_daemmerling.py source/sporenwerk-wildwuchs
@@ -65,6 +65,7 @@ jobs:
           python3 source/sporenwerk-wildwuchs/tools/add_reversible_infection.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_containment_endgame.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_mutagen_research.py source/sporenwerk-wildwuchs
+          python3 source/sporenwerk-wildwuchs/tools/add_mutagen_harvest.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/test_machine_io_contract.py source/sporenwerk-wildwuchs
 
       - name: Validate machine automation and energy boundaries
@@ -103,6 +104,10 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_mutagen_research.py .
 
+      - name: Validate Mutagen field harvest and recycling
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_mutagen_harvest.py .
+
       - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/validate_resources.py
@@ -119,56 +124,59 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: |
           set -euo pipefail
-          test -s build/libs/sporenwerk-1.7.0.jar
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'META-INF/mods.toml'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/lang/en_us.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/MachineBlockItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/WurzelkonzentratItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/item/wurzelkonzentrat.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/recipes/wurzelkonzentrat.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_side.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_top.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_back.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/models/block/feldsammler.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/models/block/saatgutpresse.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/models/block/biomasse_bioreaktor.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_panel.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_panel.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_panel.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity\$CropThreatGoal.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/MyzelkompostItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/item/myzelkompost.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/advancements/compost_loop.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/gui/machine_interface.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/gui/skilltree_interface.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/infection/InfectionEvents.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/infection/InfectionWorldData.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/InfectionSerumItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/InfectionEmbraceItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/SterileCoreItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/block/MutationNodeBlock.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/block/MutationAnchorBlock.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/infection/MutationField.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/block/InfestedTerrainBlock.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/block/entity/InfestedTerrainBlockEntity.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/infection/MutationAnchorData.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/infection/MutationNodeData.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/MutagenProbeItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'de/sporenwerk/item/MutagenExtractItem.class'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/advancements/mutagen_laboratory.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/recipes/mutagenprobe.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/item/mutagenextrakt.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'assets/sporenwerk/textures/block/mutagen_boden.png'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/recipes/infektionsherd.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/recipes/mutationsanker.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/recipes/sporenresistenter_block.json'
-          jar tf build/libs/sporenwerk-1.7.0.jar | grep -q 'data/sporenwerk/recipes/steriler_kern.json'
+          test -s build/libs/sporenwerk-1.8.0.jar
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'META-INF/mods.toml'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/lang/en_us.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/MachineBlockItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/WurzelkonzentratItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/item/wurzelkonzentrat.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/recipes/wurzelkonzentrat.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_side.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_top.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_back.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/models/block/feldsammler.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/models/block/saatgutpresse.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/models/block/biomasse_bioreaktor.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/feldsammler_panel.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/saatgutpresse_panel.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/biomasse_bioreaktor_panel.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity\$CropThreatGoal.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/MyzelkompostItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/item/myzelkompost.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/advancements/compost_loop.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/gui/machine_interface.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/gui/skilltree_interface.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/infection/InfectionEvents.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/infection/InfectionWorldData.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/InfectionSerumItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/InfectionEmbraceItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/SterileCoreItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/block/MutationNodeBlock.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/block/MutationAnchorBlock.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/infection/MutationField.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/block/InfestedTerrainBlock.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/block/entity/InfestedTerrainBlockEntity.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/infection/MutationAnchorData.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/infection/MutationNodeData.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/MutagenProbeItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/MutagenExtractItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'de/sporenwerk/item/MutageneSporenItem.class'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/advancements/mutation_harvest.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/item/mutagene_sporen.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/advancements/mutagen_laboratory.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/recipes/mutagenprobe.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/item/mutagenextrakt.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'assets/sporenwerk/textures/block/mutagen_boden.png'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/recipes/infektionsherd.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/recipes/mutationsanker.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/recipes/sporenresistenter_block.json'
+          jar tf build/libs/sporenwerk-1.8.0.jar | grep -q 'data/sporenwerk/recipes/steriler_kern.json'
 
       - name: Smoke-test dedicated server startup without optional mods
         working-directory: source/sporenwerk-wildwuchs
@@ -234,7 +242,7 @@ jobs:
       - name: Upload visual QA sheet
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.7.0-art-preview
+          name: sporenwerk-1.8.0-art-preview
           path: source/sporenwerk-wildwuchs/qa-output/sporenwerk-art-preview.png
           if-no-files-found: error
           retention-days: 14
@@ -242,7 +250,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.7.0-forge-1.20.1
-          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.7.0.jar
+          name: sporenwerk-1.8.0-forge-1.20.1
+          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.8.0.jar
           if-no-files-found: error
           retention-days: 14
