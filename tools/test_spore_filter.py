@@ -9,7 +9,11 @@ def read(path): return (root / path).read_text(encoding="utf-8")
 def require(ok, message):
     if not ok: raise SystemExit("Spore filter regression: " + message)
 items = read("src/main/java/de/sporenwerk/registry/ModItems.java")
-require("SPORENFILTERMASKE" in items and "ArmorItem.Type.HELMET" in items, "mask must be a registered wearable helmet")
+require("SPORENFILTERMASKE" in items and "SporeFilterMaskItem" in items, "mask must be a registered wearable helmet")
+mask_item = read("src/main/java/de/sporenwerk/item/SporeFilterMaskItem.java")
+require("appendHoverText" in mask_item and "tooltip.sporenwerk.sporenfiltermaske.1" in mask_item
+        and "tooltip.sporenwerk.sporenfiltermaske.2" in mask_item,
+        "mask must show its protective function in the in-game tooltip")
 require("output.accept(ModItems.SPORENFILTERMASKE.get())" in read("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java"), "mask missing creative tab")
 material = read("src/main/java/de/sporenwerk/item/SporeFilterMaterial.java")
 for token in ("implements ArmorMaterial", "getDurabilityForType", "getDefenseForType", "getRepairIngredient", "getEquipSound", "getKnockbackResistance"):
