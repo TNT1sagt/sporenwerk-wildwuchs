@@ -153,7 +153,7 @@ if "import de.sporenwerk.infection.MutagenBloom;" not in node:
     if anchor not in node:
         raise SystemExit("Cannot locate MutationNodeBlock infection imports")
     node = node.replace(anchor, anchor + "\nimport de.sporenwerk.infection.MutagenBloom;", 1)
-call = "MutationBloom.tryTrigger(level, pos, random);"
+call = "MutagenBloom.tryTrigger(level, pos, random);"
 if call not in node:
     anchor = "            MutationField.spreadFromNode(level, pos, random);"
     if anchor not in node:
