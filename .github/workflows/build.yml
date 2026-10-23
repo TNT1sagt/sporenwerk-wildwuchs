@@ -40,6 +40,47 @@ jobs:
         with:
           gradle-version: '8.8'
 
+      - name: Apply fixes for the verified Forge 1.20.1 compiler errors
+        working-directory: source/sporenwerk-wildwuchs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          # SavedData.Factory is nested under SavedData in Minecraft 1.20.1.
+          p = Path("src/main/java/de/sporenwerk/skill/SkillData.java")
+          s = p.read_text(encoding="utf-8")
+          old = "private static final Factory<SkillData> FACTORY = new Factory<>("
+          new = "private static final SavedData.Factory<SkillData> FACTORY = new SavedData.Factory<>("
+          if old in s:
+              s = s.replace(old, new, 1)
+          if new not in s:
+              raise SystemExit("Could not apply SavedData.Factory fix")
+          p.write_text(s, encoding="utf-8")
+
+          # BlockEntity coordinates are obtained from getBlockPos(), not a local 'pos' variable.
+          p = Path("src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java")
+          s = p.read_text(encoding="utf-8")
+          for old, new in [
+              ("BlockPos.betweenClosed(pos.offset(-2, -1, -2), pos.offset(2, 1, 2))",
+               "BlockPos.betweenClosed(getBlockPos().offset(-2, -1, -2), getBlockPos().offset(2, 1, 2))"),
+              ("target.equals(pos)", "target.equals(getBlockPos())"),
+          ]:
+              if old in s:
+                  s = s.replace(old, new)
+          if "BlockPos.betweenClosed(pos.offset(" in s or "target.equals(pos)" in s:
+              raise SystemExit("Could not apply MachineBlockEntity position fix")
+          p.write_text(s, encoding="utf-8")
+
+          # Forge/Minecraft 1.20.1 exposes AMBIENT_CAVE as a Holder reference.
+          p = Path("src/main/java/de/sporenwerk/client/ClientHorrorEvents.java")
+          s = p.read_text(encoding="utf-8")
+          s = s.replace("SoundEvents.AMBIENT_CAVE,", "SoundEvents.AMBIENT_CAVE.value(),")
+          if "SoundEvents.AMBIENT_CAVE," in s:
+              raise SystemExit("Could not apply cave sound holder fix")
+          p.write_text(s, encoding="utf-8")
+          print("Applied 3 compiler fixes from GitHub Actions build 39931193028.")
+          PY
+
       - name: Validate resources
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/validate_resources.py
