@@ -427,10 +427,10 @@ def _mutated_crop_sprite(source_path, crop_name, strength):
     draw = ImageDraw.Draw(image)
     # Tiny, hard-edged field traces differ by plant so the variant is visible at 16x16.
     traces = {
-        "faserrohr": [(13, 6), (11, 9), (15, 12)],
-        "bernsteinkappe": [(8, 14), (15, 10), (22, 15)],
-        "rotwurzel": [(14, 19), (16, 22), (14, 25)],
-        "filtermoos": [(7, 18), (13, 14), (20, 18), (23, 21)],
+        "faserrohr": [(6, 3), (5, 6), (9, 8)],
+        "bernsteinkappe": [(5, 7), (8, 5), (10, 7)],
+        "rotwurzel": [(7, 9), (7, 11), (8, 13)],
+        "filtermoos": [(4, 9), (7, 7), (10, 9), (11, 11)],
     }.get(crop_name, [])
     trace_colors = {
         1: (81, 218, 181, 255),
