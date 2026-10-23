@@ -424,7 +424,7 @@ Die Datei enthält ein einzelnes Kapitel und 26 eindeutige IDs. Sie legt keine G
 quest_path = ROOT / "extras/ftbquests/config/ftbquests/quests/chapters/sporenwerk_wildwuchs.snbt"
 snbt = quest_path.read_text(encoding="utf-8")
 import re
-ids = re.findall(r'\\bid: "([0-9A-F]{16})"', snbt)
+ids = re.findall(r'\bid: "([0-9A-F]{16})"', snbt)
 if len(ids) != 26 or len(ids) != len(set(ids)):
     raise SystemExit(f"FTB Quests ID check failed: {len(ids)} IDs, {len(set(ids))} unique")
 print(f"Optional FTB Quests chapter written; {len(ids)} unique IDs validated.")
