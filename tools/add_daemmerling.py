@@ -62,17 +62,133 @@ public final class ModEntities {
 write("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java", '''
 package de.sporenwerk.entity;
 
+import de.sporenwerk.registry.ModBlocks;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import java.util.EnumSet;
 
 /**
- * Rare, weak, familiar Minecraft-style creature.
- * Uses vanilla zombie navigation but has four hearts, low damage, and no reinforcement logic.
+ * Rare, weak vanilla-style zombie. It threatens mature crops only when a bed is dark
+ * and reachable. Fences, lit crops, and a nearby Field Collector deter its crop goal.
  */
 public final class DaemmerlingEntity extends Zombie {
     public DaemmerlingEntity(EntityType<? extends Zombie> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected void registerGoals() {
+        super.registerGoals();
+        this.goalSelector.addGoal(5, new CropThreatGoal(this));
+    }
+
+    private static final class CropThreatGoal extends Goal {
+        private final DaemmerlingEntity mob;
+        private BlockPos target;
+        private int chewTicks;
+        private int nextSearchTick;
+        private int nextAllowedTick;
+
+        private CropThreatGoal(DaemmerlingEntity mob) {
+            this.mob = mob;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!mob.isAlive() || mob.getTarget() != null
+                    || mob.tickCount < nextAllowedTick || mob.tickCount < nextSearchTick) return false;
+            nextSearchTick = mob.tickCount + 20;
+            target = findTarget();
+            return target != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return target != null && mob.isAlive() && mob.getTarget() == null
+                    && !isProtected(target) && isMatureCrop(target);
+        }
+
+        @Override
+        public void start() {
+            chewTicks = 0;
+            moveToTarget();
+        }
+
+        @Override
+        public void tick() {
+            if (target == null) return;
+            double tx = target.getX() + 0.5D;
+            double ty = target.getY();
+            double tz = target.getZ() + 0.5D;
+            mob.getLookControl().setLookAt(tx, ty + 0.4D, tz);
+            if (mob.distanceToSqr(tx, ty, tz) <= 2.4D) {
+                mob.getNavigation().stop();
+                if (++chewTicks >= 30) {
+                    // No crop drops: this is an atmospheric threat, not a loot farm.
+                    mob.level().destroyBlock(target, false, mob);
+                    target = null;
+                    nextAllowedTick = mob.tickCount + 100;
+                }
+            } else {
+                chewTicks = 0;
+                if (mob.getNavigation().isDone()) moveToTarget();
+            }
+        }
+
+        @Override
+        public void stop() {
+            mob.getNavigation().stop();
+            target = null;
+            chewTicks = 0;
+        }
+
+        private void moveToTarget() {
+            if (target != null) mob.getNavigation().moveTo(
+                    target.getX() + 0.5D, target.getY(), target.getZ() + 0.5D, 0.72D);
+        }
+
+        private BlockPos findTarget() {
+            if (mob.level().isClientSide) return null;
+            BlockPos origin = mob.blockPosition();
+            BlockPos best = null;
+            double bestDistance = Double.MAX_VALUE;
+            for (BlockPos pos : BlockPos.betweenClosed(
+                    origin.offset(-6, -2, -6), origin.offset(6, 2, 6))) {
+                if (!isMatureCrop(pos) || isProtected(pos)) continue;
+                BlockPos candidate = pos.immutable();
+                if (mob.getNavigation().createPath(candidate, 0) == null) continue;
+                double distance = mob.distanceToSqr(candidate.getX() + 0.5D,
+                        candidate.getY(), candidate.getZ() + 0.5D);
+                if (distance < bestDistance) {
+                    best = candidate;
+                    bestDistance = distance;
+                }
+            }
+            return best;
+        }
+
+        private boolean isMatureCrop(BlockPos pos) {
+            BlockState state = mob.level().getBlockState(pos);
+            if (!(state.getBlock() instanceof CropBlock crop)) return false;
+            if (!(state.is(ModBlocks.FASERROHR.get()) || state.is(ModBlocks.BERNSTEINKAPPE.get())
+                    || state.is(ModBlocks.ROTWURZEL.get()) || state.is(ModBlocks.FILTERMOOS.get()))) return false;
+            return crop.isMaxAge(state);
+        }
+
+        private boolean isProtected(BlockPos cropPos) {
+            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;
+            for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),
+                    cropPos.offset(3, 1, 3))) {
+                if (mob.level().getBlockState(pos).is(ModBlocks.FELDSAMMLER.get())) return true;
+            }
+            return false;
+        }
     }
 }
 ''')
