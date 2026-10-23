@@ -307,7 +307,7 @@ method = """
             data.putInt("SporenwerkMutagenDiscoveryStage", 2);
             data.putLong("SporenwerkMutagenDiscoveryAt", now + 20);
         } else if (stage == 2) {
-            player.playNotifySound(SoundEvents.AMETHYST_BLOCK_CHIME.value(), SoundSource.PLAYERS, 0.65F, 0.72F);
+            player.playNotifySound(SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.65F, 0.72F);
             player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.discovery.hint"), false);
             data.putInt("SporenwerkMutagenDiscoveryStage", 3);
         }
