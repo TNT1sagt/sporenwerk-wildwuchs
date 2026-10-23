@@ -146,6 +146,7 @@ if "int mutagenStrength = MutationField.mutagenStrengthAt(level, pos);" not in c
     if drop_line not in crop:
         raise SystemExit("Cannot locate manual crop harvest output")
     crop = crop.replace(drop_line, mutated_drop, 1)
+crop_path_full.write_text(crop, encoding="utf-8")
 spore_old = """if (MutationField.isInActiveMutagenField(level, pos) && level.random.nextFloat() < 0.22F) {"""
 spore_new = """if (mutagenStrength > 0 && level.random.nextFloat() <
                 (mutagenStrength >= 3 ? 0.35F : mutagenStrength == 2 ? 0.22F : 0.12F)) {"""
