@@ -124,16 +124,18 @@ package de.sporenwerk.client;
 
 import de.sporenwerk.Sporenwerk;
 import de.sporenwerk.entity.DaemmerlingEntity;
+import net.minecraft.client.model.ZombieModel;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public final class DaemmerlingRenderer extends ZombieRenderer<DaemmerlingEntity> {
+public final class DaemmerlingRenderer extends HumanoidMobRenderer<DaemmerlingEntity, ZombieModel<DaemmerlingEntity>> {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(Sporenwerk.MODID, "textures/entity/daemmerling.png");
 
     public DaemmerlingRenderer(EntityRendererProvider.Context context) {
-        super(context);
+        super(context, new ZombieModel<>(context.bakeLayer(ModelLayers.ZOMBIE)), 0.5F);
     }
 
     @Override
