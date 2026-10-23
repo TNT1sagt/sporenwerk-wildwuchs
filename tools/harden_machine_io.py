@@ -41,37 +41,28 @@ elif "Automation may feed the four recipe inputs" not in s:
     raise SystemExit("Could not find the current item-handler capability declaration")
 
 # Explicitly separate internal extraction from the receive-only external Forge Energy capability.
-energy_match = re.search(
-    r"    private final EnergyStorage energyStorage\s*=.*?(?=    private int progress(?:\s*=\s*[^;]+)?;)",
-    s,
-    flags=re.DOTALL,
-)
-if energy_match is None:
-    raise SystemExit("Energy storage declaration not found before machine progress fields")
-energy_fields = """    // The internal storage is extractable so processors can consume FE.
-    // The external capability below remains receive-only to cables and other mods.
-    private final EnergyStorage energyStorage = new EnergyStorage(100_000, 2_000, 2_000) {
-        @Override public boolean canExtract() { return true; }
+energy_start = s.find("private final EnergyStorage energyStorage")
+cap_start = s.find("private final LazyOptional<IEnergyStorage> energyCapability", energy_start)
+if energy_start < 0 or cap_start < 0 or cap_start <= energy_start:
+    raise SystemExit("Energy storage and external capability declarations were not found")
 
-        @Override public int receiveEnergy(int maxReceive, boolean simulate) {
-            int received = super.receiveEnergy(maxReceive, simulate);
-            if (received > 0 && !simulate) setChanged();
-            return received;
-        }
-    };
+internal_energy = s[energy_start:cap_start]
+# Make the internal storage extractable so machine processing can spend buffered FE.
+# The external capability is separately wrapped as receive-only.
+if re.search(r"canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}", internal_energy):
+    internal_energy = re.sub(
+        r"@Override\s+public boolean canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}",
+        "@Override public boolean canExtract() { return true; }",
+        internal_energy,
+        count=1,
+    )
+elif "canExtract() { return true; }" not in internal_energy:
+    brace = internal_energy.find("{", internal_energy.find("new EnergyStorage"))
+    if brace < 0:
+        raise SystemExit("Could not locate internal EnergyStorage body")
+    internal_energy = internal_energy[:brace + 1] + "\n        @Override public boolean canExtract() { return true; }\n" + internal_energy[brace + 1:]
+s = s[:energy_start] + internal_energy + s[cap_start:]
 
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new IEnergyStorage() {
-        @Override public int receiveEnergy(int maxReceive, boolean simulate) {
-            return energyStorage.receiveEnergy(maxReceive, simulate);
-        }
-        @Override public int extractEnergy(int maxExtract, boolean simulate) { return 0; }
-        @Override public int getEnergyStored() { return energyStorage.getEnergyStored(); }
-        @Override public int getMaxEnergyStored() { return energyStorage.getMaxEnergyStored(); }
-        @Override public boolean canExtract() { return false; }
-        @Override public boolean canReceive() { return true; }
-    });
-"""
-s = s[:energy_match.start()] + energy_fields + s[energy_match.end():]
 be_path.write_text(s, encoding="utf-8")
 
 # Update delivered version after the art patch has set 1.1.6.
