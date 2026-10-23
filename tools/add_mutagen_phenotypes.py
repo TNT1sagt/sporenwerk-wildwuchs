@@ -561,17 +561,18 @@ print("Active field strength tiers, crop-specific phenotypes, anchor suppression
 # Bump the actual mod version after all earlier patch scripts have run.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build = re.sub(r"version = '[^']+'", "version = '1.9.0'", build, count=1)
+build = re.sub(r"version = '[^']+'", "version = '1.10.0'", build, count=1)
 build_path.write_text(build, encoding="utf-8")
 readme = ROOT / "README.md"
 doc = readme.read_text(encoding="utf-8")
 doc += """
 
-## 1.9.0 — Mutagen field strength and crop phenotypes
+## 1.10.0 — Minecraft texture and crop rendering repair
 - Mutagen fields now have three spatial strength tiers, based on distance and vertical separation from an active saved source. Sterile anchors and deactivated fields grant no mutation tier.
 - Stronger fields accelerate Sporenwerk crop growth more often. Harvest traits are crop-specific: Faserrohr gains guaranteed fiber yield, Rotwurzel can form extra roots, Bernsteinkappe can overproduce at peak strength, and Filtermoos yields extra plant residue.
 - Mutagenic spore odds scale with local strength (12%, 22%, 35%). Manual harvesting and the automated Field Collector share the crop-yield rules; the collector still reserves every possible output before it spends energy or consumes a crop.
-- Regression checks cover spatial tier boundaries, anchor suppression, manual and automated phenotypes, and atomic machine output.
+- Cube faces now use opaque, 16x16 Minecraft block textures rather than transparent item sprites. The four custom crops explicitly use the cutout render layer so their transparent backgrounds render properly in-world. The texture QA sheet shows the actual block faces and no longer flags a spawn egg as a missing PNG.
+- Regression checks cover model-to-texture references, opaque world-face textures, cutout crops, spatial tier boundaries, anchor suppression, manual and automated phenotypes, and atomic machine output.
 """
 readme.write_text(doc, encoding="utf-8")
 print("Installed Sporenwerk 1.9.0 mutagen field strength tiers and crop phenotypes.")
