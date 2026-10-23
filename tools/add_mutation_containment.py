@@ -173,10 +173,6 @@ replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
     private static RegistryObject<Block> machine(String name, MapColor color) {""",
 "block item registrations")
 replace_once("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java",
-"""import de.sporenwerk.registry.ModItems;""",
-"""import de.sporenwerk.registry.ModItems;
-import de.sporenwerk.registry.ModBlocks;""", "creative block imports")
-replace_once("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java",
 """output.accept(ModItems.STERILE_CORE.get());""",
 """output.accept(ModItems.STERILE_CORE.get());
                         output.accept(ModBlocks.INFEKTIONSHERD.get());
