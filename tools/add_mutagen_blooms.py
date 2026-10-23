@@ -328,7 +328,7 @@ Der automatische Server-Smoke-Test ersetzt keinen manuellen Test im laufenden Mi
 
 """
 if heading not in readme:
-    readme_path.write_text(section + readme, encoding="utf-8")
+    readme = section + readme
 
 bloom_scent_heading = "## Version 1.16.0 — Dämmerling und Mutagenblüten"
 bloom_scent_section = """## Version 1.16.0 — Dämmerling und Mutagenblüten
@@ -343,6 +343,7 @@ Der Server-Smoke-Test ersetzt keinen manuellen Test im laufenden Minecraft-Clien
 
 """
 if bloom_scent_heading not in readme:
-    readme_path.write_text(bloom_scent_section + readme, encoding="utf-8")
+    readme = bloom_scent_section + readme
+readme_path.write_text(readme, encoding="utf-8")
 
 print("Installed Sporenwerk 1.16.0 bloom scent and Dämmerling research-facility pressure.")

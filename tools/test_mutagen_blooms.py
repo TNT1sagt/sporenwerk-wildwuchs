@@ -29,7 +29,7 @@ for locale in ("de_de.json", "en_us.json"):
             locale + " missing the Mutagen Bloom warning")
 require("Version 1.15.0" in read("README.md"), "release notes missing 1.15.0")
 build = read("build.gradle")
-require(re.search(r"version\s*=\s*['\"]1\.15\.0['\"]", build) is not None,
+require(re.search(r"version\s*=\s*['\"]1\.16\.0['\"]", build) is not None,
         "produced artifact must be version 1.16.0")
 
 entity = read("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java")
