@@ -119,15 +119,36 @@ jobs:
           set -euo pipefail
           mkdir -p run
           printf 'eula=true\n' > run/eula.txt
-          set +e
-          timeout --signal=TERM --kill-after=15s 210s gradle --no-daemon runServer > /tmp/sporenwerk-server.log 2>&1
-          server_status=$?
-          set -e
+          rm -f /tmp/sporenwerk-server.log
+          # Start the server in its own process group and stop immediately after readiness.
+          setsid timeout --signal=TERM --kill-after=10s 180s gradle --no-daemon runServer > /tmp/sporenwerk-server.log 2>&1 &
+          server_pid=$!
+          deadline=$((SECONDS + 150))
+          ready=0
+          while (( SECONDS < deadline )); do
+            if grep -Eq 'Done \\(' /tmp/sporenwerk-server.log 2>/dev/null; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              break
+            fi
+            sleep 2
+          done
           cat /tmp/sporenwerk-server.log
-          grep -E 'Done \(' /tmp/sporenwerk-server.log
-          if [ "$server_status" -ne 0 ] && [ "$server_status" -ne 124 ] && [ "$server_status" -ne 143 ]; then
-            exit "$server_status"
+          if [ "$ready" -ne 1 ]; then
+            kill -TERM -- "-$server_pid" 2>/dev/null || true
+            sleep 2
+            kill -KILL -- "-$server_pid" 2>/dev/null || true
+            wait "$server_pid" 2>/dev/null || true
+            echo "Dedicated server did not reach the Done line within 150 seconds."
+            exit 1
           fi
+          # Startup is the test; don't leave the server process alive for 210 extra seconds.
+          kill -TERM -- "-$server_pid" 2>/dev/null || true
+          sleep 2
+          kill -KILL -- "-$server_pid" 2>/dev/null || true
+          wait "$server_pid" 2>/dev/null || true
 
       - name: Package optional FTB Quests import
         run: |
