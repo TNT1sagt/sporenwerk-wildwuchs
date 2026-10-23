@@ -59,6 +59,29 @@ if "extractEnergy(int maxExtract, boolean simulate) { return 0; }" not in extern
 if "canExtract() { return false; }" not in external_window:
     raise SystemExit("External FE adapter must refuse extraction")
 
+# Close the biomass processing loop with a tangible item rather than only an invisible counter.
+reactor_pattern = re.compile(
+    r"\} else if \(input\.is\(ModItems\.BIOMASSE\.get\(\)\)\) \{.*?\n        \} else progress = 0;",
+    flags=re.DOTALL,
+)
+reactor_match = reactor_pattern.search(s)
+if reactor_match is None:
+    raise SystemExit("Biomass reactor branch not found; refusing to silently ship an inert final step")
+new_reactor_branch = """} else if (input.is(ModItems.BIOMASSE.get())) {
+            ItemStack medicine = new ItemStack(ModItems.WURZELKONZENTRAT.get());
+            if (!canFitOutput(medicine) || !consumePower(80)) { progress = 0; return; }
+            progress = 0;
+            if (!insertOutput(medicine)) return;
+            inventory.extractItem(0, 1, false);
+            storedPoints = Math.min(1_000_000, storedPoints + 10);
+            skills.addCraft();
+            setChanged();
+        } else progress = 0;"""
+s = s[:reactor_match.start()] + new_reactor_branch + s[reactor_match.end():]
+items_path = root / "src/main/java/de/sporenwerk/registry/ModItems.java"
+if "WURZELKONZENTRAT" not in items_path.read_text(encoding="utf-8"):
+    raise SystemExit("Rotwurzel-Konzentrat registration missing before reactor recipe patch")
+
 be_path.write_text(s, encoding="utf-8")
 
 # Large production worlds can exceed a vanilla container-data short. Split Feldwissen
@@ -150,7 +173,7 @@ require(not re.search(r"canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}", interna
 require("extractEnergy(int maxExtract, boolean simulate) { return 0; }" in external,
         "external cables must not extract energy")
 require("canExtract() { return false; }" in external, "external Forge Energy endpoint must remain receive-only")
-require("private boolean consumePower(int cost)" in s and "energyStorage.extractEnergy(cost, false)" in s,
+require("private boolean consumePower(" in s and re.search(r"energyStorage\\.extractEnergy\\([^,]+,\\s*false\\)", s),
         "machine production must consume internal FE when the optional power integration is active")
 require("invalidateCaps()" in s and "itemHandler.invalidate()" in s and "energyCapability.invalidate()" in s,
         "optional capabilities must be invalidated")
@@ -169,4 +192,4 @@ print("Machine/progression contract tests passed.")
 '''
 
 (root / "tools/test_machine_io_contract.py").write_text(test_script, encoding="utf-8")
-print("Hardened machine IO and energy contracts; updated project to 1.1.7.")
+print("Hardened machine IO and energy contracts; updated project to 1.1.8.")
