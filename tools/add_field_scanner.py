@@ -289,6 +289,7 @@ write("tools/test_field_scanner.py", r'''
 from pathlib import Path
 from PIL import Image
 import json
+import re
 import sys
 
 root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
