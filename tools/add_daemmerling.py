@@ -193,6 +193,32 @@ public final class DaemmerlingEntity extends Zombie {
 }
 ''')
 
+write("tools/test_daemmerling_behavior.py", '''
+#!/usr/bin/env python3
+from pathlib import Path
+import sys
+
+root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
+entity = (root / "src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java").read_text(encoding="utf-8")
+events = (root / "src/main/java/de/sporenwerk/registry/ModEntityEvents.java").read_text(encoding="utf-8")
+entities = (root / "src/main/java/de/sporenwerk/registry/ModEntities.java").read_text(encoding="utf-8")
+
+def require(ok, message):
+    if not ok:
+        raise SystemExit("Dämmerling balance test: " + message)
+
+require(".add(Attributes.MAX_HEALTH, 8.0D)" in events, "the creature must stay weak (8 HP)")
+require(".add(Attributes.ATTACK_DAMAGE, 1.0D)" in events, "the creature must not hit harder than a weak vanilla mob")
+require("MobCategory.MONSTER" in entities, "entity registration missing")
+require("crop.isMaxAge(state)" in entity, "the creature may only threaten mature crops")
+require("getMaxLocalRawBrightness(cropPos) >= 7" in entity, "lighting must protect the bed")
+require("ModBlocks.FELDSAMMLER.get()" in entity, "a nearby collector must deter crop attacks")
+require("createPath(candidate, 0) == null" in entity, "the creature must honor blocked paths such as a fenced garden")
+require("mob.tickCount + 100" in entity and "++chewTicks >= 30" in entity, "crop damage must be slow and rate-limited")
+require("destroyBlock(target, false, mob)" in entity, "crop threat must not turn into loot/entity spam")
+print("Dämmerling behavior/balance checks passed.")
+''')
+
 write("src/main/java/de/sporenwerk/registry/ModEntityEvents.java", '''
 package de.sporenwerk.registry;
 
