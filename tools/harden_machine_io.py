@@ -173,10 +173,11 @@ require(not re.search(r"canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}", interna
 require("extractEnergy(int maxExtract, boolean simulate) { return 0; }" in external,
         "external cables must not extract energy")
 require("canExtract() { return false; }" in external, "external Forge Energy endpoint must remain receive-only")
-require("private boolean consumePower(" in s and re.search(r"energyStorage\\.extractEnergy\\([^,]+,\\s*false\\)", s),
+require("private boolean consumePower(" in s and re.search(r"energyStorage\.extractEnergy\([^,]+,\s*false\)", s),
         "machine production must consume internal FE when the optional power integration is active")
 require("invalidateCaps()" in s and "itemHandler.invalidate()" in s and "energyCapability.invalidate()" in s,
         "optional capabilities must be invalidated")
+require("ModItems.WURZELKONZENTRAT.get()" in s, "biomass processing must return a usable Rotwurzel-Konzentrat item")
 
 skill_path = root / "src/main/java/de/sporenwerk/client/menu/SkillTreeMenu.java"
 skill = skill_path.read_text(encoding="utf-8")
