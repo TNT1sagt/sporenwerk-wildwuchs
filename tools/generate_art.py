@@ -14,6 +14,10 @@ RED=(181,48,60,255); RH=(239,100,83,255); RD=(105,36,48,255)
 TEAL=(76,166,155,255); TH=(164,231,199,255)
 def new(): return Image.new("RGBA",(32,32),(0,0,0,0))
 def save(im, folder, name):
+ # Vanilla block/crop models use a 0..16 UV square. Keep world-face textures at exactly 16x16;
+ # higher-resolution block PNGs would sample only their upper-left quadrant at runtime.
+ if folder == "block" and im.size != (16,16):
+  im = im.resize((16,16), Image.Resampling.NEAREST)
  p=T/folder/(name+".png"); p.parent.mkdir(parents=True,exist_ok=True); im.save(p,optimize=True)
 def r(d,b,c,o=None): d.rectangle(b,fill=c,outline=o)
 def ln(d,p,c,w=1): d.line(p,fill=c,width=w,joint="curve")
