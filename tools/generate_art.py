@@ -110,6 +110,12 @@ def icon(name,kind):
   d.polygon(pts,fill=HI);d.ellipse((12,12,20,20),fill=OUT);d.ellipse((14,14,18,18),fill=AM)
  elif kind=="book":
   d.polygon([(5,5),(16,7),(16,28),(5,26)],fill=OUT);d.polygon([(17,7),(27,4),(27,25),(17,28)],fill=OUT);d.polygon([(7,7),(15,9),(15,25),(7,23)],fill=(64,93,64,255));d.polygon([(18,9),(25,6),(25,23),(18,25)],fill=(72,111,76,255));ln(d,[(16,8),(16,28)],CREAM);ln(d,[(8,11),(13,12)],AH);ln(d,[(19,11),(23,9)],AH);ln(d,[(20,20),(20,14)],TH,2);d.polygon([(20,17),(17,13),(17,11),(21,14)],fill=MH);d.polygon([(20,15),(23,11),(25,11),(23,15)],fill=MOSS);r(d,(9,17,13,18),PAPER);r(d,(9,20,13,21),PAPER)
+ elif kind=="note":
+  d.polygon([(6,4),(22,4),(27,9),(27,27),(6,27)],fill=OUT)
+  d.polygon([(8,6),(21,6),(25,10),(25,25),(8,25)],fill=PAPER)
+  d.polygon([(21,6),(21,10),(25,10)],fill=(154,137,92,255))
+  ln(d,[(11,12),(21,12)],MET,1);ln(d,[(11,15),(20,15)],MET,1);ln(d,[(11,18),(17,18)],MET,1)
+  ln(d,[(11,21),(18,19)],RD,1);r(d,(19,18,20,19),RED);r(d,(21,17,22,18),RD)
  else: raise ValueError(kind)
  save(im,"item",name)
 def entity_skin():
@@ -137,5 +143,5 @@ entity_skin()
 
 for i in range(3): crop_mush(i);crop_reed(i);crop_root(i);crop_moss(i)
 machine("feldsammler","field");machine("saatgutpresse","press");machine("biomasse_bioreaktor","reactor")
-for n,k in {"faser":"fiber","bernsteinkappe":"cap","rotwurzel":"root","filtermoos":"moss","faserrohr_samen":"seed","bernsteinkappe_sporen":"spores","rotwurzel_samen":"seed","filtermoos_sporen":"spores","pflanzenreste":"waste","biomasse":"biomass","feldwissen":"knowledge","maschinenteil":"gear","filter":"filter","feldhandbuch":"book"}.items(): icon(n,k)
+for n,k in {"faser":"fiber","bernsteinkappe":"cap","rotwurzel":"root","filtermoos":"moss","faserrohr_samen":"seed","bernsteinkappe_sporen":"spores","rotwurzel_samen":"seed","filtermoos_sporen":"spores","pflanzenreste":"waste","biomasse":"biomass","feldwissen":"knowledge","maschinenteil":"gear","filter":"filter","feldhandbuch":"book","verwitterte_notiz":"note"}.items(): icon(n,k)
 print("Sporenwerk 32x32 pixel-art resources regenerated.")
