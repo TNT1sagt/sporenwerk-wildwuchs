@@ -72,6 +72,10 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/validate_resources.py
 
+      - name: Create visual QA sheet
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/make_art_preview.py .
+
       - name: Build mod with ForgeGradle
         working-directory: source/sporenwerk-wildwuchs
         run: gradle --no-daemon clean build
