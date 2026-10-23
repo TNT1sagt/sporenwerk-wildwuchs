@@ -11,12 +11,12 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
-      - name: Checkout workflow repository
+      - name: Checkout workflow and polish scripts
         uses: actions/checkout@v4
 
-      - name: Download uploaded Sporenwerk source package
+      - name: Download initial Sporenwerk source snapshot
         env:
           SOURCE_ZIP_URL: https://d2ol7oe51mr4n9.cloudfront.net/user_3J3eAXO0JHxk99nxUaTru8I5NJp/0b4b8767-5e8f-4950-9492-a656af59a87e.zip
         run: |
@@ -40,54 +40,18 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Apply fixes for the verified Forge 1.20.1 compiler errors
-        working-directory: source/sporenwerk-wildwuchs
+      - name: Apply V1.0.1 gameplay, GUI, and art update
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
+          set -euo pipefail
+          cp tools/polish_sources.py tools/generate_art.py source/sporenwerk-wildwuchs/tools/
+          python3 -m pip install --disable-pip-version-check --quiet pillow
+          python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
 
-          # Forge 47.x for Minecraft 1.20.1 uses the three-argument storage overload.
-          p = Path("src/main/java/de/sporenwerk/skill/SkillData.java")
-          s = p.read_text(encoding="utf-8")
-          s = s.replace("import net.minecraft.util.datafix.DataFixTypes;", "")
-          s = s.replace("    private static final Factory<SkillData> FACTORY = new Factory<>(SkillData::new, SkillData::load, DataFixTypes.LEVEL);", "")
-          old = 'return level.getServer().overworld().getDataStorage().computeIfAbsent(FACTORY, "sporenwerk_progression");'
-          new = 'return level.getServer().overworld().getDataStorage().computeIfAbsent(SkillData::load, SkillData::new, "sporenwerk_progression");'
-          if old in s:
-              s = s.replace(old, new, 1)
-          if new not in s or "Factory<SkillData>" in s:
-              raise SystemExit("Could not apply legacy computeIfAbsent fix")
-          p.write_text(s, encoding="utf-8")
-
-          # BlockEntity coordinates are obtained from getBlockPos(), not a local 'pos' variable.
-          p = Path("src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java")
-          s = p.read_text(encoding="utf-8")
-          for old, new in [
-              ("BlockPos.betweenClosed(pos.offset(-2, -1, -2), pos.offset(2, 1, 2))",
-               "BlockPos.betweenClosed(getBlockPos().offset(-2, -1, -2), getBlockPos().offset(2, 1, 2))"),
-              ("target.equals(pos)", "target.equals(getBlockPos())"),
-          ]:
-              if old in s:
-                  s = s.replace(old, new)
-          if "BlockPos.betweenClosed(pos.offset(" in s or "target.equals(pos)" in s:
-              raise SystemExit("Could not apply MachineBlockEntity position fix")
-          p.write_text(s, encoding="utf-8")
-
-          # Forge/Minecraft 1.20.1 exposes AMBIENT_CAVE as a Holder reference.
-          p = Path("src/main/java/de/sporenwerk/client/ClientHorrorEvents.java")
-          s = p.read_text(encoding="utf-8")
-          s = s.replace("SoundEvents.AMBIENT_CAVE,", "SoundEvents.AMBIENT_CAVE.value(),")
-          if "SoundEvents.AMBIENT_CAVE," in s:
-              raise SystemExit("Could not apply cave sound holder fix")
-          p.write_text(s, encoding="utf-8")
-          print("Applied 3 compiler fixes from GitHub Actions build 39931193028.")
-          PY
-
-      - name: Validate resources
+      - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/validate_resources.py
 
-      - name: Build mod
+      - name: Build mod with ForgeGradle
         working-directory: source/sporenwerk-wildwuchs
         run: gradle --no-daemon clean build
 
@@ -95,13 +59,15 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: |
           set -euo pipefail
-          test -s build/libs/sporenwerk-1.0.0.jar
-          jar tf build/libs/sporenwerk-1.0.0.jar | grep -q 'META-INF/mods.toml'
+          test -s build/libs/sporenwerk-1.0.1.jar
+          jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'META-INF/mods.toml'
+          jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
+          jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
 
-      - name: Upload JAR artifact
+      - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.0.0-forge-1.20.1
-          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.0.0.jar
+          name: sporenwerk-1.0.1-forge-1.20.1
+          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.0.1.jar
           if-no-files-found: error
           retention-days: 14
