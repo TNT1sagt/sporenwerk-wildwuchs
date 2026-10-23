@@ -64,5 +64,5 @@ for idx, name in enumerate(items):
     col, row = idx % 9, idx // 9
     x, y = 45 + col*145, 655 + row*108
     paste_scaled(assets/"textures/item"/f"{name}.png", x, y, 86, 76, name)
-out.save(out, optimize=True)
+canvas.save(out, optimize=True)
 print(f"Wrote art preview: {out}")
