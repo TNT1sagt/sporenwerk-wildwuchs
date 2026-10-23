@@ -75,7 +75,7 @@ public final class MutagenFieldVisuals {
                                     0.008D + level.random.nextDouble() * 0.012D,
                                     (level.random.nextDouble() - 0.5D) * 0.012D);
                         }
-                        // High-contrast magenta-violet sparks provide a second, unmistakable
+                        // High-contrast cyan-blue sparks provide a second, unmistakable
                         // particle signature for Mutagen rather than ordinary ambient spores.
                         if (level.random.nextFloat() < 0.16F) {
                             level.addParticle(ParticleTypes.SOUL_FIRE_FLAME,
