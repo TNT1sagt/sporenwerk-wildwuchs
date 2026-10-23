@@ -595,3 +595,48 @@ Right-click the Feldhandbuch. Click a green upgrade row to purchase it with Feld
 This is an improved V1.0.1, not a fully content-complete release: custom enemy AI, true alternate-angle photo rendering and native FTB Quests export are not implemented. No operating-system process is read, started or modified; no telemetry or desktop capture is used.
 """, encoding="utf-8")
 print(f"Polished project prepared at {ROOT}")
+
+
+
+# Make machine discovery self-explanatory in the player's inventory, in German and English.
+write("src/main/java/de/sporenwerk/item/MachineBlockItem.java", '''
+package de.sporenwerk.item;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+
+public final class MachineBlockItem extends BlockItem {
+    private final String machineId;
+
+    public MachineBlockItem(Block block, String machineId, Properties properties) {
+        super(block, properties);
+        this.machineId = machineId;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        for (int line = 1; line <= 3; line++) {
+            Component text = Component.translatable("tooltip.sporenwerk.machine." + machineId + ".line" + line);
+            if (text.getString().startsWith("tooltip.sporenwerk.")) continue;
+            tooltip.add(text.copy().withStyle(line == 1 ? ChatFormatting.AQUA : ChatFormatting.GRAY));
+        }
+        tooltip.add(Component.translatable("tooltip.sporenwerk.machine.buffer")
+                .withStyle(ChatFormatting.DARK_GRAY));
+    }
+}
+''')
+
+p = ROOT / "src/main/java/de/sporenwerk/registry/ModBlocks.java"
+s = p.read_text(encoding="utf-8")
+s = s.replace("import de.sporenwerk.block.MachineBlock;", "import de.sporenwerk.block.MachineBlock;\\nimport de.sporenwerk.item.MachineBlockItem;")
+s = s.replace("new BlockItem(block.get(), new Item.Properties())", "new MachineBlockItem(block.get(), name, new Item.Properties())")
+if "new MachineBlockItem(block.get(), name, new Item.Properties())" not in s:
+    raise SystemExit("Could not install machine item tooltips")
+p.write_text(s, encoding="utf-8")
