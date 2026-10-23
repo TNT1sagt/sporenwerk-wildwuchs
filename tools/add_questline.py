@@ -428,3 +428,38 @@ ids = re.findall(r'\bid: "([0-9A-F]{16})"', snbt)
 if len(ids) != 26 or len(ids) != len(set(ids)):
     raise SystemExit(f"FTB Quests ID check failed: {len(ids)} IDs, {len(set(ids))} unique")
 print(f"Optional FTB Quests chapter written; {len(ids)} unique IDs validated.")
+
+
+# FTB Quests 1.20.1 stores quest titles/subtitles in lang/de_de.snbt and item stacks as item compounds.
+quest_path = ROOT / "extras/ftbquests/config/ftbquests/quests/chapters/sporenwerk_wildwuchs.snbt"
+snbt = quest_path.read_text(encoding="utf-8")
+snbt = snbt.replace('icon: "sporenwerk:feldhandbuch"', 'icon: { id: "sporenwerk:feldhandbuch" }')
+snbt = re.sub(r'item: "([^"]+)", count: (\d+L)', r'item: { id: "\1", count: \2 }', snbt)
+snbt = re.sub(r'item: \{ Count: (\d+), id: "([^"]+)", tag: \{ Damage: 0 \} \}', r'item: { count: \1, id: "\2" }', snbt)
+snbt = re.sub(r'^\s*(?:title|subtitle): "[^"]*"\s*\n', '', snbt, flags=re.M)
+quest_path.write_text(snbt, encoding="utf-8")
+
+write("extras/ftbquests/config/ftbquests/quests/lang/de_de.snbt", '''
+{
+  chapter.53504F52454E0001.title: "&2Sporenwerk: Wildwuchs"
+  quest.53504F52454E0101.title: "&2Ein Stück Erde"
+  quest.53504F52454E0101.quest_subtitle: "Saatgut finden, die erste Pflanze setzen und die erste Faser ernten."
+  quest.53504F52454E0102.title: "&eNichts verkommt"
+  quest.53504F52454E0102.quest_subtitle: "Verarbeite Pflanzenreste zu Biomasse und starte die Saatgutkette."
+  quest.53504F52454E0103.title: "&6Die erste Maschine"
+  quest.53504F52454E0103.quest_subtitle: "Baue die Saatgutpresse und füttere deine erste Produktionskette."
+  quest.53504F52454E0104.title: "&aEine größere Ernte"
+  quest.53504F52454E0104.quest_subtitle: "Richte den Feldsammler ein und versorge ihn mit passenden Samen."
+  quest.53504F52454E0105.title: "&5Das Feld hinter dem Glas"
+  quest.53504F52454E0105.quest_subtitle: "Finde das seltene Feldprotokoll. Es stammt von der falschen Seite der Scheibe."
+}
+''')
+
+readme_path = ROOT / "extras/ftbquests/README.md"
+readme_text = readme_path.read_text(encoding="utf-8")
+if "lang/de_de.snbt" not in readme_text:
+    readme_text += """
+\n## Übersetzungen
+Kopiere zusätzlich lang/de_de.snbt in config/ftbquests/quests/lang/de_de.snbt. FTB Quests 1.20.1 speichert Kapitel-/Questtitel und Untertitel in diesem Lokalisierungsfile; die SNBT-Kapiteldatei enthält IDs, Aufgaben, Abhängigkeiten und Belohnungen.
+"""
+    readme_path.write_text(readme_text, encoding="utf-8")
