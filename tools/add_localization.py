@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add localized English fallback and machine tooltips for Sporenwerk 1.1.3."""
+"""Add localized English fallback and machine tooltips for Sporenwerk 1.1.4."""
 from pathlib import Path
 import json, re, sys
 
@@ -133,12 +133,12 @@ en = {
 
 build = root / "build.gradle"
 s = build.read_text(encoding="utf-8")
-s = re.sub(r"version = '[^']+'", "version = '1.1.3'", s, count=1)
+s = re.sub(r"version = '[^']+'", "version = '1.1.4'", s, count=1)
 build.write_text(s, encoding="utf-8")
 
 readme = root / "README.md"
 s = readme.read_text(encoding="utf-8")
-s = s.replace("1.1.2", "1.1.3").replace("V1.1.2", "V1.1.3")
-s += "\n\n## English localization and tooltips\nVersion 1.1.3 includes en_us fallback strings and first-use tooltips for all three machines.\n"
+s = s.replace("1.1.2", "1.1.4").replace("V1.1.2", "V1.1.4")
+s += "\n\n## English localization and tooltips\nVersion 1.1.4 includes en_us fallback strings and first-use tooltips for all three machines.\n"
 readme.write_text(s, encoding="utf-8")
 print("Added en_us localization and machine tooltips.")
