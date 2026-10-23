@@ -84,6 +84,10 @@ public final class SkillTreeMenu extends AbstractContainerMenu {
     public int discoveries() { return data.get(8); }
     public int crafts() { return data.get(9); }
 
+    @Override public net.minecraft.world.item.ItemStack quickMoveStack(Player player, int index) {
+        return net.minecraft.world.item.ItemStack.EMPTY;
+    }
+
     @Override public boolean stillValid(Player player) { return true; }
 }
 ''')
