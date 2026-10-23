@@ -84,7 +84,7 @@ if "ModItems.WURZELKONZENTRAT.get()" not in creative_text:
     marker = "output.accept(ModItems.FELDHANDBUCH.get());"
     if marker not in creative_text:
         raise SystemExit("Could not add Rotwurzel medicine to the Sporenwerk creative tab")
-    creative_text = creative_text.replace(marker, marker + "\\n                        output.accept(ModItems.WURZELKONZENTRAT.get());", 1)
+    creative_text = creative_text.replace(marker, marker + "\n                        output.accept(ModItems.WURZELKONZENTRAT.get());", 1)
     creative.write_text(creative_text, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/item/WurzelkonzentratItem.java", '''
