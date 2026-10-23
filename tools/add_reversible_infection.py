@@ -42,40 +42,56 @@ block_addition = block_marker + '''
 replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java", block_marker, block_addition, "terrain block registration")
 
 # Register the block-entity type on the mod bus alongside the other deferred registers.
-write("src/main/java/de/sporenwerk/registry/ModBlockEntities.java", """
-package de.sporenwerk.registry;
-
-import de.sporenwerk.Sporenwerk;
-import de.sporenwerk.block.entity.InfestedTerrainBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
-
-public final class ModBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Sporenwerk.MODID);
-
+# Extend the existing entity registry rather than replacing the machine entity entry.
+registry_path = SRC / "registry/ModBlockEntities.java"
+registry_source = registry_path.read_text(encoding="utf-8")
+if "import de.sporenwerk.block.entity.InfestedTerrainBlockEntity;" not in registry_source:
+    machine_import = "import de.sporenwerk.block.entity.MachineBlockEntity;"
+    if machine_import in registry_source:
+        registry_source = registry_source.replace(
+            machine_import,
+            machine_import + "\nimport de.sporenwerk.block.entity.InfestedTerrainBlockEntity;", 1)
+    else:
+        marker = "import de.sporenwerk.Sporenwerk;"
+        if marker not in registry_source:
+            raise SystemExit("Cannot locate ModBlockEntities import section")
+        registry_source = registry_source.replace(
+            marker, marker + "\nimport de.sporenwerk.block.entity.InfestedTerrainBlockEntity;", 1)
+if "MUTAGEN_BODEN" not in registry_source:
+    field = """
     public static final RegistryObject<BlockEntityType<InfestedTerrainBlockEntity>> MUTAGEN_BODEN =
             BLOCK_ENTITIES.register("mutagen_boden",
                     () -> BlockEntityType.Builder.of(InfestedTerrainBlockEntity::new,
                             ModBlocks.MUTAGEN_BODEN.get()).build(null));
 
-    private ModBlockEntities() {}
-}
-""")
-replace_once(
-    "src/main/java/de/sporenwerk/Sporenwerk.java",
-    "import de.sporenwerk.registry.ModEntities;",
-    "import de.sporenwerk.registry.ModEntities;\nimport de.sporenwerk.registry.ModBlockEntities;",
-    "block-entity registry import"
-)
-replace_once(
-    "src/main/java/de/sporenwerk/Sporenwerk.java",
-    "ModEntities.ENTITIES.register(modBus);",
-    "ModEntities.ENTITIES.register(modBus);\n        ModBlockEntities.BLOCK_ENTITIES.register(modBus);",
-    "block-entity deferred register"
-)
+"""
+    marker = "    private ModBlockEntities()"
+    index = registry_source.rfind(marker)
+    if index < 0:
+        index = registry_source.rfind("}")
+    if index < 0:
+        raise SystemExit("Cannot locate ModBlockEntities class body")
+    registry_source = registry_source[:index] + field + registry_source[index:]
+registry_path.write_text(registry_source, encoding="utf-8")
+
+# Keep the existing machine registry hookup and add ours only if it is not already present.
+sporenwerk_path = SRC / "Sporenwerk.java"
+sporenwerk_source = sporenwerk_path.read_text(encoding="utf-8")
+if "import de.sporenwerk.registry.ModBlockEntities;" not in sporenwerk_source:
+    import_anchor = "import de.sporenwerk.registry.ModEntities;"
+    if import_anchor not in sporenwerk_source:
+        raise SystemExit("Cannot locate mod entity registry import")
+    sporenwerk_source = sporenwerk_source.replace(
+        import_anchor, import_anchor + "\nimport de.sporenwerk.registry.ModBlockEntities;", 1)
+if "ModBlockEntities.BLOCK_ENTITIES.register(modBus);" not in sporenwerk_source:
+    register_anchor = "ModEntities.ENTITIES.register(modBus);"
+    if register_anchor not in sporenwerk_source:
+        raise SystemExit("Cannot locate ModEntities registry hookup")
+    sporenwerk_source = sporenwerk_source.replace(
+        register_anchor,
+        register_anchor + "\n        ModBlockEntities.BLOCK_ENTITIES.register(modBus);", 1)
+sporenwerk_path.write_text(sporenwerk_source, encoding="utf-8")
+
 
 write("src/main/java/de/sporenwerk/block/entity/InfestedTerrainBlockEntity.java", """
 package de.sporenwerk.block.entity;
@@ -120,7 +136,7 @@ public final class InfestedTerrainBlockEntity extends BlockEntity {
 
     public BlockState originalState() {
         if (!hasOriginalState() || level == null) return Blocks.DIRT.defaultBlockState();
-        return NbtUtils.readBlockState(level.registryAccess().registryOrThrow(Registries.BLOCK), originalStateTag);
+        return NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), originalStateTag);
     }
 
     @Override
