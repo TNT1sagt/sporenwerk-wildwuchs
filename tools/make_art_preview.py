@@ -2,6 +2,7 @@
 """Build a visual QA sheet from the exact PNGs generated for this Sporenwerk build."""
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+import re
 import sys
 
 root = Path(sys.argv[1]).resolve()
@@ -13,7 +14,10 @@ W, H = 1400, 1320
 canvas = Image.new("RGB", (W, H), (17, 25, 21))
 draw = ImageDraw.Draw(canvas)
 font = ImageFont.load_default()
-draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.14.0  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
+build_text = (root / "build.gradle").read_text(encoding="utf-8")
+version_match = re.search(r"version\s*=\s*['\"](\d+\.\d+\.\d+)['\"]", build_text)
+release_version = version_match.group(1) if version_match else "UNKNOWN"
+draw.text((24, 15), f"SPORENWERK: WILDWUCHS {release_version}  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
 draw.line((24, 35, W-24, 35), fill=(103, 132, 100), width=1)
 
 def panel(x, y, w, h, title):
@@ -43,20 +47,24 @@ for i, name in enumerate(machine_names):
     paste_scaled(assets/"textures/block"/f"{name}_panel.png", 735+i*210, 105, 160, 130, name.upper())
     paste_scaled(assets/"models/block"/f"{name}.json", 735+i*210, 250, 1, 1, None) if False else None
 
-panel(24, 365, 1352, 200, "OPAQUE MINECRAFT BLOCK FACES (16x16)")
+panel(24, 365, 1352, 210, "OPAQUE MINECRAFT BLOCK FACES (16x16)")
 block_faces = [
     ("infektionsherd_top", "Mutagenherd"),
     ("mutagen_boden_top", "Infizierter Boden"),
     ("mutagen_boden_side", "Boden-Seite"),
     ("mutationsanker_top", "Heilanker"),
     ("sporenresistenter_block_top", "Resistenter Block"),
+    ("sporenabwehr", "Sporenabwehr AUS"),
+    ("sporenabwehr_active", "Sporenabwehr AN"),
     ("feldsammler", "Feldsammler vorne"),
     ("feldsammler_side", "Feldsammler Seite"),
     ("feldsammler_top", "Feldsammler oben"),
 ]
 for idx, (name, label) in enumerate(block_faces):
-    x = 37 + idx*165
-    paste_scaled(assets/"textures/block"/f"{name}.png", x, 395, 88, 104, label)
+    row, col = divmod(idx, 5)
+    x = 37 + col*260
+    y = 392 + row*82
+    paste_scaled(assets/"textures/block"/f"{name}.png", x, y, 88, 55, label)
 
 panel(24, 580, 1352, 200, "CROP GROWTH STAGES / CUTOUT")
 crop_names = ["faserrohr", "bernsteinkappe", "rotwurzel", "filtermoos"]
