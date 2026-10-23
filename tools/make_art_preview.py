@@ -6,7 +6,7 @@ import sys
 
 root = Path(sys.argv[1]).resolve()
 assets = root / "src/main/resources/assets/sporenwerk"
-out = root / "build/reports/sporenwerk-art-preview.png"
+out = root / "qa-output/sporenwerk-art-preview.png"
 out.parent.mkdir(parents=True, exist_ok=True)
 
 W, H = 1400, 920
