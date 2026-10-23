@@ -54,19 +54,20 @@ public final class MutagenFieldVisuals {
         if (event.phase != TickEvent.Phase.END || !(event.level instanceof ClientLevel level)) return;
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level != level || minecraft.player == null) return;
-        if (level.getGameTime() % 5L != 0L) return;
+        if (level.getGameTime() % 10L != 0L) return;
 
+        int particleBudget = 24;
         BlockPos center = minecraft.player.blockPosition();
-        for (int dx = -8; dx <= 8; dx++) {
-            for (int dz = -8; dz <= 8; dz++) {
+        for (int dx = -8; dx <= 8 && particleBudget > 0; dx++) {
+            for (int dz = -8; dz <= 8 && particleBudget > 0; dz++) {
                 if (dx * dx + dz * dz > 64) continue;
-                for (int dy = -3; dy <= 3; dy++) {
+                for (int dy = -2; dy <= 2 && particleBudget > 0; dy++) {
                     BlockPos pos = center.offset(dx, dy, dz);
                     BlockState state = level.getBlockState(pos);
                     if (state.is(ModBlocks.MUTAGEN_BODEN.get())) {
                         // A dense turquoise spore plume makes the contaminated footprint
                         // readable at a glance instead of relying on the scanner.
-                        if (level.random.nextFloat() < 0.42F) {
+                        if (particleBudget > 0 && level.random.nextFloat() < 0.42F) {
                             level.addParticle(ParticleTypes.WARPED_SPORE,
                                     pos.getX() + 0.15D + level.random.nextDouble() * 0.7D,
                                     pos.getY() + 1.01D,
@@ -77,7 +78,7 @@ public final class MutagenFieldVisuals {
                         }
                         // High-contrast cyan-blue sparks provide a second, unmistakable
                         // particle signature for Mutagen rather than ordinary ambient spores.
-                        if (level.random.nextFloat() < 0.16F) {
+                        if (particleBudget > 0 && level.random.nextFloat() < 0.16F) {
                             level.addParticle(ParticleTypes.SOUL_FIRE_FLAME,
                                     pos.getX() + 0.18D + level.random.nextDouble() * 0.64D,
                                     pos.getY() + 0.88D + level.random.nextDouble() * 0.22D,
@@ -86,7 +87,7 @@ public final class MutagenFieldVisuals {
                                     0.012D + level.random.nextDouble() * 0.018D,
                                     (level.random.nextDouble() - 0.5D) * 0.006D);
                         }
-                        if (level.random.nextFloat() < 0.05F) {
+                        if (particleBudget > 0 && level.random.nextFloat() < 0.05F) {
                             level.addParticle(ParticleTypes.PORTAL,
                                     pos.getX() + 0.2D + level.random.nextDouble() * 0.6D,
                                     pos.getY() + 0.8D + level.random.nextDouble() * 0.35D,
@@ -95,7 +96,7 @@ public final class MutagenFieldVisuals {
                         }
                     } else if (state.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)
                             && state.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL) > 0
-                            && level.random.nextFloat() < 0.12F) {
+                            && particleBudget > 0 && level.random.nextFloat() < 0.12F) {
                         level.addParticle(ParticleTypes.WARPED_SPORE,
                                 pos.getX() + 0.2D + level.random.nextDouble() * 0.6D,
                                 pos.getY() + 0.5D + level.random.nextDouble() * 0.6D,
