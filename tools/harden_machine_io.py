@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+"""Harden machine automation/energy contracts for Forge 47.x / MC 1.20.1."""
+from pathlib import Path
+import re, sys
+
+root = Path(sys.argv[1]).resolve()
+be_path = root / "src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java"
+s = be_path.read_text(encoding="utf-8")
+
+old = "private final LazyOptional<IItemHandler> itemHandler = LazyOptional.of(() -> inventory);"
+new = """private final LazyOptional<IItemHandler> itemHandler = LazyOptional.of(() -> new IItemHandler() {
+        @Override public int getSlots() { return inventory.getSlots(); }
+
+        @Override public ItemStack getStackInSlot(int slot) {
+            return inventory.getStackInSlot(slot);
+        }
+
+        /** Automation may feed the four recipe inputs, but must never insert into output slots. */
+        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (slot < 0 || slot >= 4) return stack;
+            return inventory.insertItem(slot, stack, simulate);
+        }
+
+        /** Hoppers and pipes may extract finished output only, preserving input buffers. */
+        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (slot < 4 || slot >= inventory.getSlots()) return ItemStack.EMPTY;
+            return inventory.extractItem(slot, amount, simulate);
+        }
+
+        @Override public int getSlotLimit(int slot) {
+            return slot < 0 || slot >= inventory.getSlots() ? 0 : inventory.getSlotLimit(slot);
+        }
+
+        @Override public boolean isItemValid(int slot, ItemStack stack) {
+            return slot >= 0 && slot < 4 && inventory.isItemValid(slot, stack);
+        }
+    });"""
+if old in s:
+    s = s.replace(old, new, 1)
+elif "Automation may feed the four recipe inputs" not in s:
+    raise SystemExit("Could not find the current item-handler capability declaration")
+
+# Explicitly separate internal extraction from the receive-only external Forge Energy capability.
+energy_start = s.find("    private final EnergyStorage energyStorage = ")
+progress_start = s.find("    private int progress;", energy_start)
+if energy_start < 0 or progress_start < 0:
+    raise SystemExit("Energy storage field anchors not found in MachineBlockEntity")
+energy_fields = """    // The internal storage is extractable so processors can consume FE.
+    // The external capability below remains receive-only to cables and other mods.
+    private final EnergyStorage energyStorage = new EnergyStorage(100_000, 2_000, 2_000) {
+        @Override public boolean canExtract() { return true; }
+
+        @Override public int receiveEnergy(int maxReceive, boolean simulate) {
+            int received = super.receiveEnergy(maxReceive, simulate);
+            if (received > 0 && !simulate) setChanged();
+            return received;
+        }
+    };
+
+    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new IEnergyStorage() {
+        @Override public int receiveEnergy(int maxReceive, boolean simulate) {
+            return energyStorage.receiveEnergy(maxReceive, simulate);
+        }
+        @Override public int extractEnergy(int maxExtract, boolean simulate) { return 0; }
+        @Override public int getEnergyStored() { return energyStorage.getEnergyStored(); }
+        @Override public int getMaxEnergyStored() { return energyStorage.getMaxEnergyStored(); }
+        @Override public boolean canExtract() { return false; }
+        @Override public boolean canReceive() { return true; }
+    });
+"""
+s = s[:energy_start] + energy_fields + s[progress_start:]
+be_path.write_text(s, encoding="utf-8")
+
+# Update delivered version after the art patch has set 1.1.6.
+build = root / "build.gradle"
+bs = build.read_text(encoding="utf-8")
+bs = re.sub(r"version = '[^']+'", "version = '1.1.7'", bs, count=1)
+build.write_text(bs, encoding="utf-8")
+
+readme = root / "README.md"
+rs = readme.read_text(encoding="utf-8")
+rs = rs.replace("1.1.6", "1.1.7").replace("V1.1.6", "V1.1.7")
+rs += """
+
+## 1.1.7 — machine automation safety
+The public Forge item capability now accepts items only in input slots 0–3 and allows automated extraction only from output slots 4–11. The player GUI still allows intentional manual input/output access. Internal FE storage can drain power for processing; the external Forge Energy capability remains receive-only. The CI contract test checks these boundaries.
+"""
+readme.write_text(rs, encoding="utf-8")
+
+# A lightweight source-level regression test runs on every build before ForgeGradle.
+test_script = r'''#!/usr/bin/env python3
+from pathlib import Path
+import sys
+
+root = Path(sys.argv[1]).resolve()
+p = root / "src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java"
+s = p.read_text(encoding="utf-8")
+
+def require(condition, message):
+    if not condition:
+        raise SystemExit("Machine contract regression: " + message)
+
+require("new ItemStackHandler(12)" in s, "machine inventory must have 12 slots (4 input + 8 output)")
+start = s.find("private final LazyOptional<IItemHandler> itemHandler")
+end = s.find("private final EnergyStorage energyStorage", start)
+require(start >= 0 and end > start, "automation handler declaration must be present before energy storage")
+handler = s[start:end]
+require("slot < 4" in handler, "automation insertion must be restricted to slots 0–3")
+require("slot >= 4" in handler, "automation extraction must be restricted to output slots 4–11")
+require("inventory.insertItem(slot, stack, simulate)" in handler, "valid input must be delegated to the recipe handler")
+require("inventory.extractItem(slot, amount, simulate)" in handler, "output extraction must delegate to the persistent inventory")
+
+energy_start = s.find("private final EnergyStorage energyStorage")
+cap_start = s.find("private final LazyOptional<IEnergyStorage> energyCapability", energy_start)
+progress_start = s.find("private int progress", cap_start)
+require(energy_start >= 0 and cap_start > energy_start and progress_start > cap_start, "internal and external energy declarations must be separate")
+internal = s[energy_start:cap_start]
+external = s[cap_start:progress_start]
+require("canExtract() { return true; }" in internal, "internal FE storage must be drainable by machine processors")
+require("extractEnergy(int maxExtract, boolean simulate) { return 0; }" in external, "external cables must not extract energy")
+require("canExtract() { return false; }" in external, "external Forge Energy endpoint must stay receive-only")
+require("private boolean consumePower(int cost)" in s, "machine production must retain the energy consumption gate")
+require("invalidateCaps()" in s and "itemHandler.invalidate()" in s and "energyCapability.invalidate()" in s, "optional capabilities must be invalidated")
+
+print("Machine contract tests passed: 12-slot inventory, safe automation I/O, receive-only FE endpoint.")
+'''
+(root / "tools/test_machine_io_contract.py").write_text(test_script, encoding="utf-8")
+print("Hardened machine IO and energy contracts; updated project to 1.1.7.")
