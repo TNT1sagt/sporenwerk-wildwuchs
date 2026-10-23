@@ -176,7 +176,7 @@ for name in ("feldsammler", "saatgutpresse", "biomasse_bioreaktor"):
             raise SystemExit(f"Missing machine texture: {tex_path}")
     for el in model["elements"]:
         for side_data in el["faces"].values():
-            if side_data["texture"] not in model["textures"]:
+            if side_data["texture"].lstrip("#") not in model["textures"]:
                 raise SystemExit(f"Unknown texture binding in {name}: {side_data['texture']}")
 
 # Validate JSON and version metadata after all models have been written.
