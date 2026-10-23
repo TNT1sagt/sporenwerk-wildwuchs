@@ -9,11 +9,11 @@ assets = root / "src/main/resources/assets/sporenwerk"
 out = root / "qa-output/sporenwerk-art-preview.png"
 out.parent.mkdir(parents=True, exist_ok=True)
 
-W, H = 1400, 1120
+W, H = 1400, 1320
 canvas = Image.new("RGB", (W, H), (17, 25, 21))
 draw = ImageDraw.Draw(canvas)
 font = ImageFont.load_default()
-draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.10.0  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
+draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.11.0  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
 draw.line((24, 35, W-24, 35), fill=(103, 132, 100), width=1)
 
 def panel(x, y, w, h, title):
@@ -67,7 +67,18 @@ for row, name in enumerate(crop_names):
         path = assets/"textures/block"/f"{name}_stage{stage}.png"
         paste_scaled(path, x+stage*96, 625, 86, 92, f"stage {stage+1}")
 
-panel(24, 795, 1352, 295, "ITEM ICONS AND MUTAGEN RESEARCH")
+panel(24, 795, 1352, 185, "LIVE MUTAGEN PHENOTYPES — MATURE PLANTS")
+crop_names = ["faserrohr", "bernsteinkappe", "rotwurzel", "filtermoos"]
+for crop_idx, name in enumerate(crop_names):
+    x = 45 + crop_idx*332
+    draw.text((x, 817), name.upper(), fill=(221, 197, 127), font=font)
+    for strength in range(4):
+        suffix = "" if strength == 0 else f"_mutagen{strength}"
+        path = assets/"textures/block"/f"{name}_stage2{suffix}.png"
+        label = "normal" if strength == 0 else f"Feld {strength}"
+        paste_scaled(path, x + strength*67, 838, 57, 70, label)
+
+panel(24, 995, 1352, 295, "ITEM ICONS AND MUTAGEN RESEARCH")
 items = [
     "faser", "bernsteinkappe", "rotwurzel", "filtermoos", "faserrohr_samen",
     "bernsteinkappe_sporen", "rotwurzel_samen", "filtermoos_sporen",
@@ -77,7 +88,7 @@ items = [
 ]
 for idx, name in enumerate(items):
     col, row = idx % 9, idx // 9
-    x, y = 35 + col*150, 822 + row*84
+    x, y = 35 + col*150, 1022 + row*84
     paste_scaled(assets/"textures/item"/f"{name}.png", x, y, 78, 57, name)
 canvas.save(out, optimize=True)
 print(f"Wrote art preview: {out}")
