@@ -410,6 +410,8 @@ screen = (src / "client/menu/MachineScreen.java").read_text(encoding="utf-8")
 for token in ["inputItemCount()", "outputItemCount()", "statusKey()", "outputBufferFull()"]:
     require(token in menu, f"machine screen state is missing {token}")
 require("gui.sporenwerk.machine.status." in screen, "machine UI must show a translated actionable state")
+require((res / "assets/sporenwerk/textures/gui/machine_interface.png").is_file(), "machine UI texture must be packaged")
+require((res / "assets/sporenwerk/textures/gui/skilltree_interface.png").is_file(), "skill-tree UI texture must be packaged")
 
 de = json.loads((res / "assets/sporenwerk/lang/de_de.json").read_text(encoding="utf-8"))
 en = json.loads((res / "assets/sporenwerk/lang/en_us.json").read_text(encoding="utf-8"))
@@ -524,4 +526,118 @@ The automated pipeline validates JSON/model texture references, machine item/ene
 ''')
 print("Generated German V1.2.0 README and crop-loop regression tests.")
 
-print("Sporenwerk 1.2.0 compost loop and machine status UI generated.")
+
+# Custom packed interface art: recessed industrial machine panels and a matching research archive.
+def draw_machine_gui(d):
+    dark=(8,14,11,255); body=(20,31,24,255); panel=(13,23,17,255)
+    edge=(72,92,69,255); gold=(153,109,52,255); pale=(202,190,140,255)
+    d.rectangle((0,0,207,221),fill=dark)
+    d.rectangle((1,1,206,220),fill=body,outline=(3,7,5,255))
+    d.rectangle((2,2,205,219),outline=edge)
+    d.rectangle((4,4,203,20),fill=panel,outline=dark)
+    d.line((5,5,202,5),fill=(48,67,50,255))
+    d.line((4,21,203,21),fill=gold)
+    for box, accent in [((4,23,88,60),(84,137,100,255)),((98,23,202,60),(176,127,58,255))]:
+        x1,y1,x2,y2=box
+        d.rectangle(box,fill=panel,outline=dark)
+        d.line((x1+1,y1+1,x2-1,y1+1),fill=edge)
+        d.line((x1+1,y1+1,x1+1,y2-1),fill=edge)
+        d.line((x1+2,y2-1,x2-1,y2-1),fill=dark)
+        d.line((x2-1,y1+2,x2-1,y2-1),fill=dark)
+        d.rectangle((x1+3,y1+3,x1+4,y1+4),fill=accent)
+        d.rectangle((x2-4,y2-4,x2-3,y2-3),fill=accent)
+        for y in range(y1+7,y2-3,5):
+            d.line((x1+5,y,x1+8,y),fill=(32,46,35,255))
+    d.rectangle((4,65,203,108),fill=panel,outline=dark)
+    d.line((5,66,202,66),fill=edge)
+    d.line((5,107,202,107),fill=dark)
+    d.rectangle((11,79,196,89),fill=dark,outline=(39,57,42,255))
+    d.line((12,80,195,80),fill=(47,68,50,255))
+    d.rectangle((11,92,196,93),fill=(38,54,41,255))
+    d.line((12,92,195,92),fill=gold)
+    d.rectangle((4,118,203,217),fill=panel,outline=dark)
+    d.line((5,119,202,119),fill=edge)
+    d.line((5,216,202,216),fill=dark)
+    for y in range(126,211,12):
+        d.line((5,y,8,y),fill=(35,51,39,255))
+        d.line((199,y,202,y),fill=(35,51,39,255))
+    for x,y in ((5,5),(200,5),(5,213),(200,213)):
+        d.rectangle((x,y,x+2,y+2),fill=dark,outline=pale)
+        d.point((x+1,y+1),fill=gold)
+
+def draw_skill_gui(d):
+    dark=(8,14,11,255); body=(20,31,24,255); header=(12,20,15,255)
+    edge=(74,94,69,255); gold=(153,109,52,255)
+    d.rectangle((0,0,343,221),fill=dark)
+    d.rectangle((1,1,342,220),fill=body,outline=(3,7,5,255))
+    d.rectangle((2,2,341,219),outline=edge)
+    d.rectangle((4,4,339,29),fill=header,outline=dark)
+    d.line((5,5,338,5),fill=(48,67,50,255))
+    d.line((4,30,339,30),fill=gold)
+    colors=[(91,130,76,255),(163,113,54,255),(64,119,104,255)]
+    for x1,x2,accent in ((11,113,colors[0]),(121,223,colors[1]),(231,333,colors[2])):
+        d.rectangle((x1,33,x2,157),fill=(28,43,33,255),outline=(7,13,9,255))
+        d.line((x1+1,34,x2-1,34),fill=accent,width=2)
+        d.line((x1+1,35,x1+1,155),fill=edge)
+        d.line((x2-1,35,x2-1,155),fill=dark)
+        d.line((x1+2,156,x2-2,156),fill=dark)
+        d.rectangle((x1+11,117,x2-11,123),fill=dark,outline=(9,15,10,255))
+        d.line((x1+12,118,x2-12,118),fill=(43,60,44,255))
+        for x in range(x1+7,x2-4,8):
+            d.point((x,109),fill=(37,54,39,255))
+            d.point((x,126),fill=(37,54,39,255))
+        d.rectangle((x1+4,38,x1+6,40),fill=(202,190,140,255))
+        d.rectangle((x2-6,38,x2-4,40),fill=accent)
+    for x1,x2,accent in ((13,111,colors[0]),(123,221,colors[1]),(233,331,colors[2])):
+        d.rectangle((x1,165,x2,189),fill=(11,18,13,255),outline=accent)
+        d.line((x1+2,166,x2-2,166),fill=(84,105,79,255))
+        d.line((x1+2,188,x2-2,188),fill=dark)
+    d.line((13,193,330,193),fill=(51,69,53,255))
+    d.rectangle((13,197,330,203),fill=dark,outline=(8,14,10,255))
+    d.line((14,198,329,198),fill=gold)
+    d.line((13,209,330,209),fill=(42,58,44,255))
+    d.line((13,216,330,216),fill=dark)
+    for x,y in ((6,6),(336,6),(6,213),(336,213)):
+        d.rectangle((x,y,x+2,y+2),fill=dark,outline=(202,190,140,255))
+        d.point((x+1,y+1),fill=gold)
+
+gui_dir = ASSETS / "textures/gui"
+panel_texture(gui_dir / "machine_interface.png", (256,256), draw_machine_gui)
+panel_texture(gui_dir / "skilltree_interface.png", (512,256), draw_skill_gui)
+
+machine_screen_path = SRC / "client/menu/MachineScreen.java"
+machine_screen = machine_screen_path.read_text(encoding="utf-8")
+if "textures/gui/machine_interface.png" not in machine_screen:
+    machine_screen = machine_screen.replace(
+        "import net.minecraft.client.gui.GuiGraphics;",
+        "import de.sporenwerk.Sporenwerk;\nimport net.minecraft.resources.ResourceLocation;\nimport net.minecraft.client.gui.GuiGraphics;"
+    )
+    machine_screen = machine_screen.replace(
+        "public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {",
+        "public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {\n"
+        "    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Sporenwerk.MODID, \"textures/gui/machine_interface.png\");"
+    )
+start = machine_screen.index("        g.fill(x, y, x + imageWidth, y + imageHeight,")
+end = machine_screen.index("        int barX = x + 12, barY = y + 80", start)
+machine_screen = machine_screen[:start] + "        g.blit(GUI_TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 256);\n" + machine_screen[end:]
+machine_screen_path.write_text(machine_screen, encoding="utf-8")
+
+skill_screen_path = SRC / "client/menu/SkillTreeScreen.java"
+skill_screen = skill_screen_path.read_text(encoding="utf-8")
+if "textures/gui/skilltree_interface.png" not in skill_screen:
+    skill_screen = skill_screen.replace(
+        "import de.sporenwerk.registry.ModBlocks;",
+        "import de.sporenwerk.Sporenwerk;\nimport net.minecraft.resources.ResourceLocation;\nimport de.sporenwerk.registry.ModBlocks;"
+    )
+    skill_screen = skill_screen.replace(
+        "public final class SkillTreeScreen extends AbstractContainerScreen<SkillTreeMenu> {",
+        "public final class SkillTreeScreen extends AbstractContainerScreen<SkillTreeMenu> {\n"
+        "    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Sporenwerk.MODID, \"textures/gui/skilltree_interface.png\");"
+    )
+start = skill_screen.index("        g.fill(x - 2, y - 2, x + imageWidth + 2")
+end = skill_screen.index("        drawLevelBar(g, x + 22", start)
+skill_screen = skill_screen[:start] + "        g.blit(GUI_TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 512, 256);\n\n" + skill_screen[end:]
+skill_screen_path.write_text(skill_screen, encoding="utf-8")
+
+
+print("Sporenwerk 1.2.0 crop loop, textures, documentation, and tests generated.")
