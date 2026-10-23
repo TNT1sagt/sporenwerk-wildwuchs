@@ -469,12 +469,12 @@ Kopiere zusätzlich lang/de_de.snbt in config/ftbquests/quests/lang/de_de.snbt. 
 # DeferredSpawnEggItem delays resolving the entity RegistryObject until it is actually used.
 p = ROOT / "src/main/java/de/sporenwerk/registry/ModItems.java"
 s = p.read_text(encoding="utf-8")
-s = s.replace("import net.minecraft.world.item.SpawnEggItem;", "import net.minecraftforge.common.DeferredSpawnEggItem;")
+s = s.replace("import net.minecraftforge.common.ForgeSpawnEggItem;", "import net.minecraftforge.common.ForgeSpawnEggItem;")
 s = s.replace(
-    "new SpawnEggItem(ModEntities.DAEMMERLING.get(), 0x263D2D, 0xB23843, new Item.Properties())",
-    "new DeferredSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())"
+    "new ForgeSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())",
+    "new ForgeSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())"
 )
-if "new SpawnEggItem(ModEntities.DAEMMERLING.get()" in s or "new DeferredSpawnEggItem(ModEntities.DAEMMERLING," not in s:
+if "new SpawnEggItem(ModEntities.DAEMMERLING.get()" in s or "new ForgeSpawnEggItem(ModEntities.DAEMMERLING," not in s:
     raise SystemExit("Could not install deferred spawn-egg registration safely")
 p.write_text(s, encoding="utf-8")
 
