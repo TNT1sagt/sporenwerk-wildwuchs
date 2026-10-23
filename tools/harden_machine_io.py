@@ -41,10 +41,13 @@ elif "Automation may feed the four recipe inputs" not in s:
     raise SystemExit("Could not find the current item-handler capability declaration")
 
 # Explicitly separate internal extraction from the receive-only external Forge Energy capability.
-energy_start = s.find("    private final EnergyStorage energyStorage = ")
-progress_start = s.find("    private int progress;", energy_start)
-if energy_start < 0 or progress_start < 0:
-    raise SystemExit("Energy storage field anchors not found in MachineBlockEntity")
+energy_match = re.search(
+    r"    private final EnergyStorage energyStorage\s*=.*?(?=    private int progress(?:\s*=\s*[^;]+)?;)",
+    s,
+    flags=re.DOTALL,
+)
+if energy_match is None:
+    raise SystemExit("Energy storage declaration not found before machine progress fields")
 energy_fields = """    // The internal storage is extractable so processors can consume FE.
     // The external capability below remains receive-only to cables and other mods.
     private final EnergyStorage energyStorage = new EnergyStorage(100_000, 2_000, 2_000) {
@@ -68,7 +71,7 @@ energy_fields = """    // The internal storage is extractable so processors can 
         @Override public boolean canReceive() { return true; }
     });
 """
-s = s[:energy_start] + energy_fields + s[progress_start:]
+s = s[:energy_match.start()] + energy_fields + s[energy_match.end():]
 be_path.write_text(s, encoding="utf-8")
 
 # Update delivered version after the art patch has set 1.1.6.
