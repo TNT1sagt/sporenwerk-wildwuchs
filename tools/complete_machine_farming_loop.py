@@ -114,7 +114,7 @@ print("Automated crop/residue buffer transaction checks passed.")
 # Version and player-facing notes.
 build = ROOT / "build.gradle"
 text = build.read_text(encoding="utf-8")
-text = re.sub(r"version = '[^']+'", "version = '1.2.1'", text, count=1)
+text = re.sub(r"version = '[^']+'", "version = '1.2.2'", text, count=1)
 build.write_text(text, encoding="utf-8")
 
 readme = ROOT / "README.md"
