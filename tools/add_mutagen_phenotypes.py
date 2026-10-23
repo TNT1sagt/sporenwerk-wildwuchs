@@ -195,6 +195,23 @@ elif spore_new_machine not in be:
     raise SystemExit("Cannot locate collector mutagen-spore chance")
 (ROOT / be_path).write_text(be, encoding="utf-8")
 
+# The older collector test asserted a literal 35% value at the call site. Preserve its
+# baseline contract while allowing Filtermoos to scale residue odds with field strength.
+machine_test_path = ROOT / "tools/test_machine_farming_loop.py"
+if machine_test_path.is_file():
+    machine_test = machine_test_path.read_text(encoding="utf-8")
+    old_assertion = """require("boolean yieldsResidue = level.random.nextFloat() < 0.35F;" in be,
+        "the field collector must produce residue with the same 35% chance as crop loot")"""
+    new_assertion = """require("float residueChance = " in be
+        and "boolean yieldsResidue = level.random.nextFloat() < residueChance;" in be
+        and "0.35F" in be,
+        "the collector must preserve the 35% baseline and scale Filtermoos residue by phenotype")"""
+    if old_assertion in machine_test:
+        machine_test = machine_test.replace(old_assertion, new_assertion, 1)
+    elif new_assertion not in machine_test:
+        raise SystemExit("Cannot update farming-loop regression for the phenotype-aware residue chance")
+    machine_test_path.write_text(machine_test, encoding="utf-8")
+
 # Source-level regression suite verifies tier boundaries, sterile suppression, crop traits and
 # the collector's atomic output reservation, so the patch fails closed if upstream code drifts.
 write("tools/test_mutagen_phenotypes.py", r'''
