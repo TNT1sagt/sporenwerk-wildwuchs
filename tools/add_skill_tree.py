@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the V1.1.0 fieldbook skill-tree screen into a prepared Sporenwerk source tree."""
+"""Install the V1.1.1 fieldbook skill-tree screen into a prepared Sporenwerk source tree."""
 from pathlib import Path
 import json, re, sys
 
@@ -360,12 +360,12 @@ lang_path.write_text(json.dumps(lang, ensure_ascii=False, indent=2) + "\n", enco
 
 p = ROOT / "build.gradle"
 s = p.read_text(encoding="utf-8")
-s = re.sub(r"version = '[^']+'", "version = '1.1.0'", s, count=1)
+s = re.sub(r"version = '[^']+'", "version = '1.1.1'", s, count=1)
 p.write_text(s, encoding="utf-8")
 
 readme = ROOT / "README.md"
 s = readme.read_text(encoding="utf-8")
-s = s.replace("1.0.2", "1.1.0").replace("V1.0.2", "V1.1.0")
-s += "\n\n## V1.1.0 Skill tree\nRight-click the Feldhandbuch to open the custom three-branch skill tree. Costs and levels are synced from the server. Upgrade buttons execute server commands which validate and save the purchase; world progression is not client-authored.\n"
+s = s.replace("1.0.2", "1.1.1").replace("V1.0.2", "V1.1.1")
+s += "\n\n## V1.1.1 Skill tree\nRight-click the Feldhandbuch to open the custom three-branch skill tree. Costs and levels are synced from the server. Upgrade buttons execute server commands which validate and save the purchase; world progression is not client-authored.\n"
 readme.write_text(s, encoding="utf-8")
-print("Installed the V1.1.0 skill-tree screen.")
+print("Installed the V1.1.1 skill-tree screen.")
