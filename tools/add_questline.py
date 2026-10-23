@@ -512,17 +512,17 @@ legacy_quests = {
     "53504F52454E0105": ("&5Das Feld hinter dem Glas", "Finde das seltene Feldprotokoll. Es stammt von der falschen Seite der Scheibe.")
 }
 for quest_id, (title, subtitle) in legacy_quests.items():
-    needle = f'      id: "{quest_id}"\\n'
+    needle = f'      id: "{quest_id}"\n'
     if needle not in legacy:
         raise SystemExit(f"Cannot create legacy FTB chapter; quest id {quest_id} missing")
-    replacement = needle + f'      title: "{title}"\\n      subtitle: "{subtitle}"\\n'
+    replacement = needle + f'      title: "{title}"\n      subtitle: "{subtitle}"\n'
     legacy = legacy.replace(needle, replacement, 1)
 
 if '  title: "&2Sporenwerk: Wildwuchs"' not in legacy:
-    head, sep, tail = legacy.rpartition("\\n}")
+    head, sep, tail = legacy.rpartition("\n}")
     if not sep:
         raise SystemExit("Cannot add chapter title to classic FTB Quests file")
-    legacy = head + '\\n  title: "&2Sporenwerk: Wildwuchs"' + sep + tail
+    legacy = head + '\n  title: "&2Sporenwerk: Wildwuchs"' + sep + tail
 
 quest_path.write_text(legacy, encoding="utf-8")
 if lang_path.exists():
