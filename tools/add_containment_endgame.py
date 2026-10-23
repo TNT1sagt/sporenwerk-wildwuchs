@@ -249,6 +249,25 @@ if replacement not in core_source:
     core_source = core_source.replace(needle, replacement, 1)
 core_path.write_text(core_source, encoding="utf-8")
 
+# The world ending prevents ambient exposure, not deliberate controlled mutation fields.
+events_path = SRC / "infection/InfectionEvents.java"
+events_source = events_path.read_text(encoding="utf-8")
+old_sterile_branch = """        if (world.isSterilized()) {
+            if (infection > 0 && player.tickCount % 100 == 0) InfectionState.cure(player, 5);
+            return;
+        }"""
+new_sterile_branch = """        if (world.isSterilized()) {
+            // Wild exposure has ended. Do not auto-cure the player here: a deliberately
+            // placed post-ending Mutagen Node can still grant mutation progression.
+            return;
+        }"""
+if new_sterile_branch not in events_source:
+    if old_sterile_branch not in events_source:
+        raise SystemExit("Containment endgame patch cannot locate sterile world player tick branch")
+    events_source = events_source.replace(old_sterile_branch, new_sterile_branch, 1)
+events_path.write_text(events_source, encoding="utf-8")
+
+
 write("tools/test_containment_endgame.py", r'''
 from pathlib import Path
 import sys
@@ -272,6 +291,9 @@ require("serverLevel.getServer().getAllLevels()" in core and "MutationNodeData.g
         "Sterile Core must deactivate all known sources in every loaded dimension")
 require("InfectionWorldData.get(level).isSterilized()" in terrain,
         "unregistered pre-existing sources in a sterilized world must remain inert")
+events = read("src/main/java/de/sporenwerk/infection/InfectionEvents.java")
+require("Wild exposure has ended." in events and "InfectionState.cure(player, 5)" not in events,
+        "global sterilization must stop ambient exposure without cancelling controlled post-ending mutation progression")
 print("Endgame sterilization, delayed terrain restoration, and deliberate post-ending source activation passed.")
 ''')
 
