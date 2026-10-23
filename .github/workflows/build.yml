@@ -1,4 +1,4 @@
-name: Build Sporenwerk 1.1.0 for Forge 1.20.1
+name: Build Sporenwerk 1.1.1 for Forge 1.20.1
 
 on:
   push:
@@ -62,14 +62,14 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: |
           set -euo pipefail
-          test -s build/libs/sporenwerk-1.1.0.jar
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'META-INF/mods.toml'
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
-          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
+          test -s build/libs/sporenwerk-1.1.1.jar
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'META-INF/mods.toml'
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
+          jar tf build/libs/sporenwerk-1.1.1.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
 
       - name: Smoke-test dedicated server startup without optional mods
         working-directory: source/sporenwerk-wildwuchs
@@ -109,7 +109,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.1.0-forge-1.20.1
-          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.1.0.jar
+          name: sporenwerk-1.1.1-forge-1.20.1
+          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.1.1.jar
           if-no-files-found: error
           retention-days: 14
