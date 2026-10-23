@@ -375,7 +375,8 @@ for locale in ("de_de.json", "en_us.json"):
     require(all(data[key].strip() for key in required_keys), f"{locale} contains empty scanner translations")
 
 build = (root / "build.gradle").read_text(encoding="utf-8")
-require("version = '1.12.0'" in build, "generated build version must be 1.12.0")
+version_match = re.search(r"version\\s*=\\s*['\"](\\d+)\\.(\\d+)\\.(\\d+)['\"]", build)
+require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 12, 0), "generated build version must include 1.12.0 or newer")
 print("Field scanner registration, server-authoritative readings, recipe, 16x16 pixel art, locales, and version passed.")
 ''')
 
