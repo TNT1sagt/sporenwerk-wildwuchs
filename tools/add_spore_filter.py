@@ -59,7 +59,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.Ingredient;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.Items;
 
 /** Lightweight, repairable filter-weave armor material tuned for a single helmet. */
@@ -68,7 +68,12 @@ public enum SporeFilterMaterial implements ArmorMaterial {
 
     @Override
     public int getDurabilityForType(ArmorItem.Type type) {
-        return type.getDurability(13);
+        return switch (type) {
+            case HELMET -> 143;
+            case CHESTPLATE -> 208;
+            case LEGGINGS -> 195;
+            case BOOTS -> 169;
+        };
     }
 
     @Override
