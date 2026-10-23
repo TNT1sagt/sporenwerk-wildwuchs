@@ -44,7 +44,7 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Apply V1.0.1 gameplay, GUI, and art update
+      - name: Apply Sporenwerk 1.2.1 gameplay, UI, and resource patches
         run: |
           set -euo pipefail
           cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py tools/add_machine_geometry.py tools/add_compost_and_machine_status.py tools/make_art_preview.py tools/fix_advancement_schemas.py tools/complete_machine_farming_loop.py source/sporenwerk-wildwuchs/tools/
@@ -60,7 +60,6 @@ jobs:
           python3 source/sporenwerk-wildwuchs/tools/add_compost_and_machine_status.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/fix_advancement_schemas.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/complete_machine_farming_loop.py source/sporenwerk-wildwuchs
-          python3 source/sporenwerk-wildwuchs/tools/test_machine_farming_loop.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/test_machine_io_contract.py source/sporenwerk-wildwuchs
 
       - name: Validate machine automation and energy boundaries
@@ -70,6 +69,10 @@ jobs:
       - name: Validate farming loop and optional integrations
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_crop_loop.py
+
+      - name: Validate automated collector residue transaction
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_machine_farming_loop.py
 
       - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
@@ -113,7 +116,6 @@ jobs:
           jar tf build/libs/sporenwerk-1.2.1.jar | grep -q 'data/sporenwerk/advancements/compost_loop.json'
           jar tf build/libs/sporenwerk-1.2.1.jar | grep -q 'assets/sporenwerk/textures/gui/machine_interface.png'
           jar tf build/libs/sporenwerk-1.2.1.jar | grep -q 'assets/sporenwerk/textures/gui/skilltree_interface.png'
-          jar tf build/libs/sporenwerk-1.2.1.jar | grep -q 'tools/test_machine_farming_loop.py'
           jar tf build/libs/sporenwerk-1.2.1.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
 
       - name: Smoke-test dedicated server startup without optional mods
