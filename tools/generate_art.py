@@ -112,6 +112,29 @@ def icon(name,kind):
   d.polygon([(5,5),(16,7),(16,28),(5,26)],fill=OUT);d.polygon([(17,7),(27,4),(27,25),(17,28)],fill=OUT);d.polygon([(7,7),(15,9),(15,25),(7,23)],fill=(64,93,64,255));d.polygon([(18,9),(25,6),(25,23),(18,25)],fill=(72,111,76,255));ln(d,[(16,8),(16,28)],CREAM);ln(d,[(8,11),(13,12)],AH);ln(d,[(19,11),(23,9)],AH);ln(d,[(20,20),(20,14)],TH,2);d.polygon([(20,17),(17,13),(17,11),(21,14)],fill=MH);d.polygon([(20,15),(23,11),(25,11),(23,15)],fill=MOSS);r(d,(9,17,13,18),PAPER);r(d,(9,20,13,21),PAPER)
  else: raise ValueError(kind)
  save(im,"item",name)
+def entity_skin():
+ im=Image.new("RGBA",(64,64),(35,49,39,255));d=ImageDraw.Draw(im)
+ # head UV: damp bark, pale moss mottling and two tiny red eyes
+ r(d,(0,0,31,15),(26,40,34,255));r(d,(8,0,15,7),(52,79,57,255));r(d,(8,8,15,15),(74,94,70,255))
+ r(d,(9,10,10,11),(225,67,60,255));r(d,(13,10,14,11),(225,67,60,255));r(d,(10,13,13,13),(18,26,23,255));r(d,(11,14,12,14),(149,48,55,255))
+ r(d,(1,3,3,5),(106,139,81,255));r(d,(18,2,21,4),(72,115,73,255));r(d,(18,8,23,14),(40,62,47,255))
+ # torso / front panel and a cracked amber seed core
+ r(d,(16,16,39,31),(32,47,39,255));r(d,(20,20,27,31),(54,78,56,255));r(d,(21,21,26,25),(25,37,30,255))
+ r(d,(22,22,25,24),(174,83,29,255));r(d,(23,22,24,23),(255,193,74,255));r(d,(21,26,26,27),(120,149,86,255))
+ r(d,(32,20,39,31),(25,38,31,255));r(d,(34,23,37,27),(72,105,68,255))
+ # sleeves / legs: weathered dark cloth and root-like strips
+ for b in [(40,20,43,31),(44,20,47,31),(48,20,51,31),(52,20,55,31),(4,20,7,31),(8,20,11,31),(12,20,15,31),(0,20,3,31)]:
+  r(d,b,(38,58,44,255))
+ for pts in [[(41,22),(42,25),(41,29)],[(45,21),(46,25),(45,29)],[(49,22),(50,26),(49,30)],[(53,22),(54,25),(53,29)],[(5,22),(6,26),(5,30)],[(9,22),(10,25),(9,29)]]:
+  ln(d,pts,(114,151,77,255),1)
+ r(d,(4,24,7,25),(76,45,42,255));r(d,(44,27,47,28),(105,42,47,255))
+ # olive plates on the upper back and shoulders
+ r(d,(32,8,39,15),(42,64,45,255));r(d,(40,8,47,15),(30,47,36,255));r(d,(48,8,55,15),(56,81,52,255))
+ r(d,(20,16,27,19),(49,74,52,255));r(d,(28,16,35,19),(39,58,43,255))
+ path=T/"entity";path.mkdir(parents=True,exist_ok=True);im.save(path/"daemmerling.png",optimize=True)
+
+entity_skin()
+
 for i in range(3): crop_mush(i);crop_reed(i);crop_root(i);crop_moss(i)
 machine("feldsammler","field");machine("saatgutpresse","press");machine("biomasse_bioreaktor","reactor")
 for n,k in {"faser":"fiber","bernsteinkappe":"cap","rotwurzel":"root","filtermoos":"moss","faserrohr_samen":"seed","bernsteinkappe_sporen":"spores","rotwurzel_samen":"seed","filtermoos_sporen":"spores","pflanzenreste":"waste","biomasse":"biomass","feldwissen":"knowledge","maschinenteil":"gear","filter":"filter","feldhandbuch":"book"}.items(): icon(n,k)
