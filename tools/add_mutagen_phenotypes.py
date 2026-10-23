@@ -136,7 +136,7 @@ mutated_drop = """int mutagenStrength = MutationField.mutagenStrengthAt(level, p
                 mutationBonus++;
             }
         }
-        Block.popResource(level, pos, new ItemStack(produceItem(), produceCount() + mutationBonus));
+        Block.popResource(level, pos, new ItemStack(produceItem(), produceCount + mutationBonus));
         if (this == ModBlocks.FILTERMOOS.get() && mutagenStrength >= 2
                 && level.random.nextFloat() < (mutagenStrength >= 3 ? 0.55F : 0.30F)) {
             Block.popResource(level, pos, new ItemStack(ModItems.PFLANZENRESTE.get()));
@@ -285,7 +285,7 @@ require("strength >= 3 ? 0.40F : strength == 2 ? 0.30F : 0.20F" in field,
 for token in ("ModBlocks.FASERROHR.get()", "ModBlocks.ROTWURZEL.get()",
               "ModBlocks.BERNSTEINKAPPE.get()", "ModBlocks.FILTERMOOS.get()"):
     require(token in crop, "manual phenotype missing for " + token)
-require("produceCount() + mutationBonus" in crop
+require("produceCount + mutationBonus" in crop
         and "ModItems.PFLANZENRESTE.get()" in crop,
         "manual crop yields must differ by phenotype")
 require("mutagenStrength >= 3 ? 0.35F : mutagenStrength == 2 ? 0.22F : 0.12F" in crop,
