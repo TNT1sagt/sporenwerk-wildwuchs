@@ -305,7 +305,7 @@ require("MUTAGENE_SPOREN" in items and 'register("mutagene_sporen"' in items, "m
 require("hasActiveFieldAt" in nodes and "entry.getValue()" in nodes, "field membership must use persistent active sources")
 require("!hasAnchor(serverLevel, target)" in field, "healed zones must not produce mutagen spores")
 require("MutationField.isInActiveMutagenField(level, pos)" in crop
-        and "serverLevel.random.nextFloat() < 0.22F" in crop,
+        and "level.random.nextFloat() < 0.22F" in crop,
         "manual crop harvest must give the controlled 22% bonus chance")
 require("MutationField.isInActiveMutagenField(level, target)" in machine
         and "canFitOutputs(output, residue, mutagenSpores)" in machine
