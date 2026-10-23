@@ -703,7 +703,7 @@ if old_harvest_test_path.is_file():
 # the collector's atomic output reservation, so the patch fails closed if upstream code drifts.
 write("tools/test_mutagen_phenotypes.py", r'''
 from pathlib import Path
-import sys
+import json, sys
 root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
 def read(path): return (root / path).read_text(encoding="utf-8")
 def require(ok, message):
@@ -740,7 +740,32 @@ require("0.70F : 0.55F) : 0.35F" in machine,
         "filter-moss phenotype must improve automated residue production")
 require("mutagenStrength >= 3 ? 0.35F : mutagenStrength == 2 ? 0.22F : 0.12F" in machine,
         "automated mutagen spore output must use the same tier odds as manual harvest")
-print("Active field strength tiers, crop-specific phenotypes, anchor suppression, and collector transactions passed.")
+require('IntegerProperty.create("mutagen_level", 0, 3)' in crop
+        and "builder.add(MUTAGEN_LEVEL)" in crop
+        and "activeMutagenStrength = MutationField.mutagenStrengthAt(level, pos)" in crop,
+        "crop mutation appearance must be a server-synchronized field-strength state")
+age_stages = {
+    "faserrohr": [0,1,1,2,2,2,2,2],
+    "bernsteinkappe": [0,1,2,2,2,2,2,2],
+    "rotwurzel": [0,0,1,1,2,2,2,2],
+    "filtermoos": [0,1,2,2,2,2,2,2],
+}
+for name, stages in age_stages.items():
+    state = json.loads(read(f"src/main/resources/assets/sporenwerk/blockstates/{name}.json"))
+    require(len(state["variants"]) == 32, name + " must define every crop age and mutation tier")
+    for age, stage in enumerate(stages):
+        for strength in range(4):
+            variant = state["variants"].get(f"age={age},mutagen_level={strength}")
+            require(variant is not None, f"{name} missing age={age}, mutagen_level={strength}")
+            model_name = variant["model"].split(":", 1)[1]
+            model_path = f"src/main/resources/assets/{model_name}.json"
+            require((root / model_path).is_file(), name + " references missing variant model " + model_name)
+            model = json.loads(read(model_path))
+            expected_texture = (f"sporenwerk:block/{name}_stage{stage}" if strength == 0
+                                else f"sporenwerk:block/{name}_stage{stage}_mutagen{strength}")
+            require(model.get("textures", {}).get("crop") == expected_texture,
+                    name + " mutation state must select its own stage texture")
+print("Mutagen tiers, crop-specific yields, 128 visible age/mutation variants, and collector transactions passed.")
 ''')
 
 # Bump the actual mod version after all earlier patch scripts have run.
@@ -761,4 +786,4 @@ doc += """
 - Regression checks cover model-to-texture references, opaque world-face textures, cutout crops, all 32 age/mutation variants per plant, synced state refresh, spatial tier boundaries, anchor suppression, manual and automated phenotypes, and atomic machine output.
 """
 readme.write_text(doc, encoding="utf-8")
-print("Installed Sporenwerk 1.9.0 mutagen field strength tiers and crop phenotypes.")
+print("Installed Sporenwerk 1.11.0 Minecraft textures and visible mutagen crop phenotypes.")
