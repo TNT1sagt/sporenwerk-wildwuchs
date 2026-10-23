@@ -261,9 +261,7 @@ readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
 heading = "## Version 1.12.0 — Feldscanner und Feldanalyse"
 if heading not in readme:
-    marker = "## Version 1.7.0"
-    if marker not in readme:
-        raise SystemExit("Could not locate the existing release notes in README.md")
+    marker_match = re.search(r"^##\s+(?:Version\s+)?1\.7\.0\b.*$", readme, flags=re.MULTILINE)
     section = """## Version 1.12.0 — Feldscanner und Feldanalyse
 
 - **Feldscanner:** Neues craftbares Survival-Werkzeug mit eigener 16×16-Pixeltextur.
@@ -275,7 +273,13 @@ if heading not in readme:
 Wie bei den vorherigen Versionen ersetzt der automatisierte Server-Smoke-Test keinen vollständigen manuellen Sicht- und Funktionstest im Minecraft-Client.
 
 """
-    readme = readme.replace(marker, section + marker, 1)
+
+    if marker_match:
+        readme = readme[:marker_match.start()] + section + readme[marker_match.start():]
+    else:
+        # The phenotype generator may create a compact history without a 1.7.0 heading.
+        # Never abort the entire Forge build over release-note formatting.
+        readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
 
 # Create a reproducible source/resource contract test inside the generated project.

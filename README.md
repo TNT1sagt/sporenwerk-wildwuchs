@@ -1,3 +1,11 @@
+## Version 1.13.0 — Sichtbare Mutagenfelder und Feldanalyse
+
+- **Sichtbarer Befall:** Infizierter Boden gibt schwaches Licht ab und wirbelt türkis-violette Sporenpartikel auf; mutierte Pflanzen bekommen zusätzliche Sporenmotes. Die Effekte hängen an synchronisierten Blockzuständen.
+- **Scanner mit zwei Modi:** Rechtsklick auf einen Block liest Details; Rechtsklick in die Luft zählt im 12-Block-Radius aktive/inaktive Herde, befallenen Boden und mutierte Pflanzen. Die Spitzenstärke stammt aus Serverdaten.
+- **Release-Prüfung:** Partikel- und Scannervertragstests, Ressourcenvalidierung, Forge-Build, JAR-Prüfung und Serverstart.
+
+Automatische CI-Tests ersetzen keinen manuellen Sichttest im Minecraft-Client.
+
 # Sporenwerk: Wildwuchs
 
 Minecraft Forge 1.20.1 mod project (Java 17).

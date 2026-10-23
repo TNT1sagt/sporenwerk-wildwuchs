@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import json, sys
+root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
+def read(path): return (root / path).read_text(encoding="utf-8")
+def require(ok, message):
+    if not ok: raise SystemExit("Visible mutagen field regression: " + message)
+require("version = '1.13.0'" in read("build.gradle"), "build version must be 1.13.0")
+blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
+require("MUTAGEN_BODEN" in blocks and ".lightLevel(state -> 4)" in blocks, "infected terrain must have a low glow")
+visual = read("src/main/java/de/sporenwerk/client/MutagenFieldVisuals.java")
+for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.PORTAL", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 5L"):
+    require(token in visual, "client visuals missing " + token)
+scanner = read("src/main/java/de/sporenwerk/item/FeldscannerItem.java")
+for token in ("public InteractionResultHolder<ItemStack> use(Level level", "MutationNodeData.get(serverLevel)", "MutationField.mutagenStrengthAt(serverLevel, target)", "infectedTerrain++", "mutatedPlants++", "message.sporenwerk.scanner.survey"):
+    require(token in scanner, "area survey missing " + token)
+for locale in ("de_de.json", "en_us.json"):
+    data = json.loads((root / "src/main/resources/assets/sporenwerk/lang" / locale).read_text(encoding="utf-8"))
+    require(bool(data.get("message.sporenwerk.scanner.survey", "").strip()), locale + " missing area-survey text")
+require("Version 1.13.0" in read("README.md"), "release notes missing 1.13.0")
+print("Visible field glow/particles and bounded scanner area survey passed.")
