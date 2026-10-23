@@ -3,6 +3,7 @@
 from pathlib import Path
 import sys
 from PIL import Image, ImageDraw
+import json
 P = Path(sys.argv[1]).resolve()
 T = P / "src/main/resources/assets/sporenwerk/textures"
 OUT=(19,31,29,255); MET=(54,72,68,255); HI=(117,143,129,255); LOW=(35,48,44,255)
@@ -145,3 +146,116 @@ for i in range(3): crop_mush(i);crop_reed(i);crop_root(i);crop_moss(i)
 machine("feldsammler","field");machine("saatgutpresse","press");machine("biomasse_bioreaktor","reactor")
 for n,k in {"faser":"fiber","bernsteinkappe":"cap","rotwurzel":"root","filtermoos":"moss","faserrohr_samen":"seed","bernsteinkappe_sporen":"spores","rotwurzel_samen":"seed","filtermoos_sporen":"spores","pflanzenreste":"waste","biomasse":"biomass","feldwissen":"knowledge","maschinenteil":"gear","filter":"filter","feldhandbuch":"book","verwitterte_notiz":"note"}.items(): icon(n,k)
 print("Sporenwerk 32x32 pixel-art resources regenerated.")
+
+
+def machine_surfaces_and_models():
+    """Give the machines actual front/side/top faces and a rotatable world model."""
+    names = [
+        ("feldsammler", "field"),
+        ("saatgutpresse", "press"),
+        ("biomasse_bioreaktor", "reactor"),
+    ]
+    for name, kind in names:
+        side = Image.new("RGBA", (32, 32), MET)
+        d = ImageDraw.Draw(side)
+        r(d, (1, 1, 30, 30), OUT)
+        r(d, (3, 3, 28, 28), LOW)
+        r(d, (4, 4, 27, 27), MET)
+        # A few inset plates keep side faces readable from a distance.
+        r(d, (6, 6, 25, 25), (43, 57, 51, 255), OUT)
+        ln(d, [(7, 7), (24, 7)], HI)
+        ln(d, [(7, 8), (7, 23)], HI)
+        ln(d, [(8, 24), (24, 24)], LOW, 2)
+        for x, y in [(4,4), (25,4), (4,25), (25,25)]:
+            r(d, (x, y, x+2, y+2), OUT)
+            r(d, (x, y, x+1, y+1), CREAM)
+        if kind == "field":
+            r(d, (10, 9, 21, 21), OUT)
+            r(d, (12, 11, 19, 19), (23, 39, 34, 255))
+            for y in [12, 15, 18]:
+                ln(d, [(13, y), (18, y)], MH, 2)
+            r(d, (9, 9, 10, 20), HI)
+            r(d, (21, 9, 22, 20), LOW)
+            r(d, (14, 23, 17, 25), TH)
+        elif kind == "press":
+            d.ellipse((9, 8, 22, 21), fill=OUT)
+            d.ellipse((11, 10, 20, 19), fill=HI)
+            d.ellipse((14, 13, 17, 16), fill=OUT)
+            ln(d, [(15, 7), (20, 12)], AM, 2)
+            r(d, (12, 22, 19, 24), AD)
+            r(d, (14, 22, 17, 23), AH)
+        else:
+            r(d, (9, 7, 22, 24), OUT)
+            r(d, (11, 9, 20, 22), (24, 53, 45, 255))
+            for x, col in [(13, MOSS), (16, MH), (19, TEAL)]:
+                r(d, (x, 11, x+1, 20), col)
+            r(d, (12, 12, 13, 14), TH)
+            r(d, (17, 15, 18, 17), CREAM)
+        save(side, "block", name + "_side")
+
+        top = Image.new("RGBA", (32, 32), MET)
+        t = ImageDraw.Draw(top)
+        r(t, (1, 1, 30, 30), OUT)
+        r(t, (3, 3, 28, 28), LOW)
+        r(t, (4, 4, 27, 27), MET)
+        ln(t, [(5, 5), (26, 5)], HI, 2)
+        ln(t, [(5, 6), (5, 25)], HI)
+        for x, y in [(4,4), (25,4), (4,25), (25,25)]:
+            r(t, (x, y, x+2, y+2), OUT)
+            r(t, (x, y, x+1, y+1), CREAM)
+        r(t, (7, 7, 24, 24), (35, 48, 43, 255), OUT)
+        if kind == "field":
+            r(t, (9, 9, 22, 22), OUT)
+            r(t, (11, 11, 20, 20), (29, 54, 42, 255))
+            ln(t, [(13, 13), (18, 18)], MH, 2)
+            ln(t, [(18, 13), (13, 18)], MOSS, 2)
+            r(t, (14, 14, 17, 17), TH)
+        elif kind == "press":
+            t.ellipse((9, 9, 22, 22), fill=OUT)
+            t.ellipse((11, 11, 20, 20), fill=HI)
+            t.ellipse((14, 14, 17, 17), fill=AD)
+            r(t, (14, 6, 17, 9), CREAM)
+            r(t, (14, 22, 17, 25), CREAM)
+            r(t, (6, 14, 9, 17), CREAM)
+            r(t, (22, 14, 25, 17), CREAM)
+        else:
+            r(t, (9, 8, 22, 23), OUT)
+            r(t, (11, 10, 20, 21), (24, 54, 44, 255))
+            for x in [12, 16, 20]:
+                ln(t, [(x, 11), (x, 20)], MH if x != 16 else TH, 2)
+            r(t, (14, 13, 18, 17), AM)
+        save(top, "block", name + "_top")
+
+        model_dir = P / "src/main/resources/assets/sporenwerk/models"
+        block_models = model_dir / "block"
+        item_models = model_dir / "item"
+        block_states = P / "src/main/resources/assets/sporenwerk/blockstates"
+        block_models.mkdir(parents=True, exist_ok=True)
+        item_models.mkdir(parents=True, exist_ok=True)
+        block_states.mkdir(parents=True, exist_ok=True)
+
+        block_model = {
+            "parent": "minecraft:block/cube",
+            "textures": {
+                "particle": f"sporenwerk:block/{name}_side",
+                "down": f"sporenwerk:block/{name}_side",
+                "up": f"sporenwerk:block/{name}_top",
+                "north": f"sporenwerk:block/{name}",
+                "south": f"sporenwerk:block/{name}_side",
+                "east": f"sporenwerk:block/{name}_side",
+                "west": f"sporenwerk:block/{name}_side",
+            }
+        }
+        (block_models / f"{name}.json").write_text(json.dumps(block_model, indent=2) + "\n", encoding="utf-8")
+        (item_models / f"{name}.json").write_text(json.dumps({"parent": f"sporenwerk:block/{name}"}, indent=2) + "\n", encoding="utf-8")
+
+        states = {"variants": {
+            "facing=north": {"model": f"sporenwerk:block/{name}"},
+            "facing=east": {"model": f"sporenwerk:block/{name}", "y": 90},
+            "facing=south": {"model": f"sporenwerk:block/{name}", "y": 180},
+            "facing=west": {"model": f"sporenwerk:block/{name}", "y": 270}
+        }}
+        (block_states / f"{name}.json").write_text(json.dumps(states, indent=2) + "\n", encoding="utf-8")
+
+machine_surfaces_and_models()
+print("Sporenwerk 32x32 pixel art, layered machine faces and directional model states generated.")
