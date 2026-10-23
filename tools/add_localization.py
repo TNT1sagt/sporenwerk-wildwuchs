@@ -77,6 +77,16 @@ if "WURZELKONZENTRAT" not in s:
     s = s.replace(marker, marker + '\n    public static final RegistryObject<Item> WURZELKONZENTRAT = ITEMS.register("wurzelkonzentrat", () -> new WurzelkonzentratItem(new Item.Properties().stacksTo(16)));', 1)
     p.write_text(s, encoding="utf-8")
 
+# Add the medicine to the creative catalogue as a discoverable entry.
+creative = root / "src/main/java/de/sporenwerk/registry/ModCreativeTabs.java"
+creative_text = creative.read_text(encoding="utf-8")
+if "ModItems.WURZELKONZENTRAT.get()" not in creative_text:
+    marker = "output.accept(ModItems.FELDHANDBUCH.get());"
+    if marker not in creative_text:
+        raise SystemExit("Could not add Rotwurzel medicine to the Sporenwerk creative tab")
+    creative_text = creative_text.replace(marker, marker + "\\n                        output.accept(ModItems.WURZELKONZENTRAT.get());", 1)
+    creative.write_text(creative_text, encoding="utf-8")
+
 write("src/main/java/de/sporenwerk/item/WurzelkonzentratItem.java", '''
 package de.sporenwerk.item;
 
@@ -226,7 +236,7 @@ build.write_text(s, encoding="utf-8")
 
 readme = root / "README.md"
 s = readme.read_text(encoding="utf-8")
-s = s.replace("1.1.2", "1.1.5").replace("V1.1.2", "V1.1.5")
+s = s.replace("1.1.2", "1.1.5").replace("1.1.3", "1.1.5").replace("1.1.4", "1.1.5").replace("V1.1.2", "V1.1.5").replace("V1.1.3", "V1.1.5").replace("V1.1.4", "V1.1.5")
 s += "\n\n## English localization and tooltips\nVersion 1.1.5 includes en_us fallback strings and first-use tooltips for all three machines.\n"
 readme.write_text(s, encoding="utf-8")
 print("Added en_us localization and machine tooltips.")
