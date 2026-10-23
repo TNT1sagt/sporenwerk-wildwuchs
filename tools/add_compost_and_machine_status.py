@@ -243,6 +243,14 @@ if "public int inputItemCount()" not in ms:
         return count;
     }
 
+    public boolean outputBufferFull() {
+        for (int i = 4; i < 12; i++) {
+            net.minecraft.world.item.ItemStack stack = slots.get(i).getItem();
+            if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) return false;
+        }
+        return true;
+    }
+
     public boolean hasMachineInput() { return inputItemCount() > 0; }
 
     public int requiredEnergy() {
@@ -255,7 +263,7 @@ if "public int inputItemCount()" not in ms:
     }
 
     public String statusKey() {
-        if (outputOccupiedSlots() >= 8) return "output";
+        if (outputBufferFull()) return "output";
         if (!hasMachineInput()) return "idle";
         if (net.minecraftforge.fml.ModList.get().isLoaded("mekanism") && energyFe() < requiredEnergy()) return "power";
         return progress() >= 100 ? "ready" : "running";
@@ -270,25 +278,17 @@ if "public int inputItemCount()" not in ms:
 # Replace the previous fixed generic label with contextual machine text and real buffer counts.
 screen_path = SRC / "client/menu/MachineScreen.java"
 screen = screen_path.read_text(encoding="utf-8")
-old = '''        g.drawString(font, Component.literal(process), 12, 62, 0xFFE1C37A, false);
-        g.drawString(font, Component.literal(menu.progress() >= 100 ? "BEREIT" : "ARBEITET " + menu.progress() + "%"),
+old = '''        g.drawString(font, Component.literal(menu.progress() >= 100 ? "BEREIT" : "ARBEITET " + menu.progress() + "%"),
                 12, 70, 0xFFE7D9A5, false);'''
-new = '''        g.drawString(font, Component.literal(process), 12, 62, 0xFFE1C37A, false);
-        g.drawString(font, Component.literal("EINGABE " + menu.inputItemCount() + "  /  PUFFER " + menu.outputItemCount() + "/512"),
-                12, 70, 0xFFB8D0B2, false);
+new = '''        g.drawString(font, Component.literal("INPUT " + menu.inputItemCount() + "  /  OUTPUT " + menu.outputItemCount() + "/512"),
+                12, 62, 0xFFB8D0B2, false);
         String status = Component.translatable("gui.sporenwerk.machine.status." + menu.statusKey()).getString();
         g.drawString(font, Component.literal(status + " · " + menu.progress() + "%"),
-                12, 78, menu.statusKey().equals("power") || menu.statusKey().equals("output") ? 0xFFE78E7D : 0xFFE7D9A5, false);'''
+                12, 70, menu.statusKey().equals("power") || menu.statusKey().equals("output") ? 0xFFE78E7D : 0xFFE7D9A5, false);'''
 if old in screen:
     screen = screen.replace(old, new, 1)
 elif 'menu.statusKey()' not in screen:
     raise SystemExit("Could not update machine screen status labels")
-# The progress bar sits at y=80; move it down so status never overlaps.
-screen = screen.replace("int barX = x + 12, barY = y + 80, barWidth = imageWidth - 24;",
-                        "int barX = x + 12, barY = y + 91, barWidth = imageWidth - 24;")
-# Energy and stored-point rows shift down to preserve visual spacing.
-screen = screen.replace("12, 94, 0xFF84D6C4", "12, 105, 0xFF84D6C4")
-screen = screen.replace("12, 103, 0xFFB8D0B2", "12, 114, 0xFFB8D0B2")
 screen_path.write_text(screen, encoding="utf-8")
 
 # Version and readme for this coherent gameplay milestone.
