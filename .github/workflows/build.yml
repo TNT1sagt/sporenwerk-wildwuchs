@@ -43,11 +43,12 @@ jobs:
       - name: Apply V1.0.1 gameplay, GUI, and art update
         run: |
           set -euo pipefail
-          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py source/sporenwerk-wildwuchs/tools/
+          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py source/sporenwerk-wildwuchs/tools/
           python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_daemmerling.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_skill_tree.py source/sporenwerk-wildwuchs
+          python3 source/sporenwerk-wildwuchs/tools/add_questline.py source/sporenwerk-wildwuchs
 
       - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
