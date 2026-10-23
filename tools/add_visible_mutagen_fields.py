@@ -75,6 +75,7 @@ public final class MutagenFieldVisuals {
                                     (level.random.nextDouble() - 0.5D) * 0.012D,
                                     0.008D + level.random.nextDouble() * 0.012D,
                                     (level.random.nextDouble() - 0.5D) * 0.012D);
+                            particleBudget--;
                         }
                         // High-contrast cyan-blue sparks provide a second, unmistakable
                         // particle signature for Mutagen rather than ordinary ambient spores.
@@ -86,6 +87,7 @@ public final class MutagenFieldVisuals {
                                     (level.random.nextDouble() - 0.5D) * 0.006D,
                                     0.012D + level.random.nextDouble() * 0.018D,
                                     (level.random.nextDouble() - 0.5D) * 0.006D);
+                            particleBudget--;
                         }
                         if (particleBudget > 0 && level.random.nextFloat() < 0.05F) {
                             level.addParticle(ParticleTypes.PORTAL,
@@ -93,6 +95,7 @@ public final class MutagenFieldVisuals {
                                     pos.getY() + 0.8D + level.random.nextDouble() * 0.35D,
                                     pos.getZ() + 0.2D + level.random.nextDouble() * 0.6D,
                                     0.0D, 0.015D, 0.0D);
+                            particleBudget--;
                         }
                     } else if (state.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)
                             && state.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL) > 0
@@ -104,6 +107,7 @@ public final class MutagenFieldVisuals {
                                 (level.random.nextDouble() - 0.5D) * 0.008D,
                                 0.006D + level.random.nextDouble() * 0.01D,
                                 (level.random.nextDouble() - 0.5D) * 0.008D);
+                        particleBudget--;
                     }
                 }
             }
