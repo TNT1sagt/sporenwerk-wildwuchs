@@ -528,6 +528,12 @@ print("Generated German V1.2.0 README and crop-loop regression tests.")
 
 
 # Custom packed interface art: recessed industrial machine panels and a matching research archive.
+def panel_texture(path, size, draw_fn):
+    image = Image.new("RGBA", size, (0, 0, 0, 0))
+    draw_fn(ImageDraw.Draw(image))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(path, optimize=True)
+
 def draw_machine_gui(d):
     dark=(8,14,11,255); body=(20,31,24,255); panel=(13,23,17,255)
     edge=(72,92,69,255); gold=(153,109,52,255); pale=(202,190,140,255)
