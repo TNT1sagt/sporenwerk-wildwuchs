@@ -12,7 +12,7 @@ require(version_match is not None and tuple(int(part) for part in version_match.
 blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
 require("MUTAGEN_BODEN" in blocks and ".lightLevel(state -> 4)" in blocks, "infected terrain must have a low glow")
 visual = read("src/main/java/de/sporenwerk/client/MutagenFieldVisuals.java")
-for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.PORTAL", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 5L"):
+for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.SOUL_FIRE_FLAME", "ParticleTypes.PORTAL", "0.42F", "0.16F", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 5L"):
     require(token in visual, "client visuals missing " + token)
 scanner = read("src/main/java/de/sporenwerk/item/FeldscannerItem.java")
 for token in ("public InteractionResultHolder<ItemStack> use(Level level", "MutationNodeData.get(serverLevel)", "MutationField.mutagenStrengthAt(serverLevel, target)", "infectedTerrain++", "mutatedPlants++", "message.sporenwerk.scanner.survey"):
