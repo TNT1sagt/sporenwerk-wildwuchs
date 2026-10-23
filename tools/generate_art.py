@@ -121,6 +121,16 @@ def icon(name,kind):
   d.polygon([(21,6),(21,10),(25,10)],fill=(154,137,92,255))
   ln(d,[(11,12),(21,12)],MET,1);ln(d,[(11,15),(20,15)],MET,1);ln(d,[(11,18),(17,18)],MET,1)
   ln(d,[(11,21),(18,19)],RD,1);r(d,(19,18,20,19),RED);r(d,(21,17,22,18),RD)
+ elif kind=="medicine":
+  # Amber-red glass vial with a root infusion and a restrained cream label.
+  d.polygon([(12,4),(20,4),(20,8),(22,10),(24,14),(24,24),(21,28),(11,28),(8,24),(8,14),(10,10),(12,8)],fill=OUT)
+  r(d,(13,2,18,6),OUT);r(d,(12,3,19,5),MET);r(d,(13,6,18,8),HI)
+  d.polygon([(11,13),(21,13),(22,16),(22,23),(19,26),(13,26),(10,23),(10,16)],fill=RD)
+  d.polygon([(12,15),(15,15),(15,24),(12,22)],fill=RED)
+  r(d,(17,15,19,19),RH);r(d,(14,20,17,21),AM)
+  r(d,(11,18,21,22),CREAM);r(d,(12,19,20,21),PAPER)
+  r(d,(14,19,18,19),RD);r(d,(15,20,17,20),AD)
+  ln(d,[(12,12),(13,10),(17,10)],HI,2)
  else: raise ValueError(kind)
  save(im,"item",name)
 def entity_skin():
@@ -148,7 +158,7 @@ entity_skin()
 
 for i in range(3): crop_mush(i);crop_reed(i);crop_root(i);crop_moss(i)
 machine("feldsammler","field");machine("saatgutpresse","press");machine("biomasse_bioreaktor","reactor")
-for n,k in {"faser":"fiber","bernsteinkappe":"cap","rotwurzel":"root","filtermoos":"moss","faserrohr_samen":"seed","bernsteinkappe_sporen":"spores","rotwurzel_samen":"seed","filtermoos_sporen":"spores","pflanzenreste":"waste","biomasse":"biomass","feldwissen":"knowledge","maschinenteil":"gear","filter":"filter","feldhandbuch":"book","verwitterte_notiz":"note"}.items(): icon(n,k)
+for n,k in {"faser":"fiber","bernsteinkappe":"cap","rotwurzel":"root","filtermoos":"moss","faserrohr_samen":"seed","bernsteinkappe_sporen":"spores","rotwurzel_samen":"seed","filtermoos_sporen":"spores","pflanzenreste":"waste","biomasse":"biomass","feldwissen":"knowledge","maschinenteil":"gear","filter":"filter","feldhandbuch":"book","verwitterte_notiz":"note","wurzelkonzentrat":"medicine"}.items(): icon(n,k)
 print("Sporenwerk 32x32 pixel-art resources regenerated.")
 
 
