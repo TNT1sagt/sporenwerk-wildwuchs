@@ -72,7 +72,7 @@ jobs:
 
       - name: Validate automated collector residue transaction
         working-directory: source/sporenwerk-wildwuchs
-        run: python3 tools/test_machine_farming_loop.py
+        run: python3 tools/test_machine_farming_loop.py .
 
       - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
