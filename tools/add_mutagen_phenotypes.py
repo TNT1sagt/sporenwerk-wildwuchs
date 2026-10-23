@@ -481,6 +481,36 @@ for _crop_name, _age_stages in _age_to_stage.items():
         json.dumps({"variants": _variants}, indent=2) + "\n",
     )
 
+# The legacy validator expected exactly the eight vanilla "age=N" variant keys.
+# With the new synchronized property, keys are "age=N,mutagen_level=M"; validate age coverage
+# by parsing the first property instead of rejecting correct multi-property crop state maps.
+validator_path = ROOT / "tools/validate_resources.py"
+if validator_path.is_file():
+    validator = validator_path.read_text(encoding="utf-8")
+    if "AGE_7 values" in validator and "covered_ages" not in validator:
+        validator_lines = validator.splitlines()
+        message_line = next((i for i, line in enumerate(validator_lines) if "AGE_7 values" in line), None)
+        if message_line is None:
+            raise SystemExit("Cannot locate legacy AGE_7 validator message")
+        assignment_line = next(
+            (i for i in range(message_line, -1, -1)
+             if re.search(r"\bmissing\s*=", validator_lines[i])),
+            None,
+        )
+        if assignment_line is None:
+            raise SystemExit("Cannot locate legacy missing-age calculation")
+        indent = re.match(r"\s*", validator_lines[assignment_line]).group(0)
+        # The original validator uses a single-line missing-age comprehension.
+        validator_lines[assignment_line] = (
+            indent + "covered_ages = {key.split(',', 1)[0] for key in variants}"
+        )
+        validator_lines.insert(
+            assignment_line + 1,
+            indent + 'missing = sorted(f"age={age}" for age in range(8) if f"age={age}" not in covered_ages)',
+        )
+        validator = "\n".join(validator_lines) + "\n"
+        validator_path.write_text(validator, encoding="utf-8")
+
 # Active saved sources determine the strongest tier overlapping a position.
 nodes_path = "src/main/java/de/sporenwerk/infection/MutationNodeData.java"
 nodes = read(nodes_path)
