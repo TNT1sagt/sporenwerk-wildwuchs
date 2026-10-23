@@ -97,17 +97,38 @@ public final class MutagenFieldVisuals {
                                     0.0D, 0.015D, 0.0D);
                             particleBudget--;
                         }
-                    } else if (state.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)
-                            && state.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL) > 0
-                            && particleBudget > 0 && level.random.nextFloat() < 0.12F) {
-                        level.addParticle(ParticleTypes.WARPED_SPORE,
-                                pos.getX() + 0.2D + level.random.nextDouble() * 0.6D,
-                                pos.getY() + 0.5D + level.random.nextDouble() * 0.6D,
-                                pos.getZ() + 0.2D + level.random.nextDouble() * 0.6D,
-                                (level.random.nextDouble() - 0.5D) * 0.008D,
-                                0.006D + level.random.nextDouble() * 0.01D,
-                                (level.random.nextDouble() - 0.5D) * 0.008D);
-                        particleBudget--;
+                    } else if (state.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)) {
+                        int mutagenLevel = state.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL);
+                        if (mutagenLevel > 0 && particleBudget > 0
+                                && level.random.nextFloat() < 0.08F + mutagenLevel * 0.04F) {
+                            level.addParticle(ParticleTypes.WARPED_SPORE,
+                                    pos.getX() + 0.2D + level.random.nextDouble() * 0.6D,
+                                    pos.getY() + 0.5D + level.random.nextDouble() * 0.6D,
+                                    pos.getZ() + 0.2D + level.random.nextDouble() * 0.6D,
+                                    (level.random.nextDouble() - 0.5D) * 0.008D,
+                                    0.006D + level.random.nextDouble() * 0.01D,
+                                    (level.random.nextDouble() - 0.5D) * 0.008D);
+                            particleBudget--;
+                        }
+                        // Tier 2 gains a drifting portal shimmer; tier 3 adds bright end-rod sparks.
+                        if (mutagenLevel >= 2 && particleBudget > 0 && level.random.nextFloat() < 0.10F) {
+                            level.addParticle(ParticleTypes.PORTAL,
+                                    pos.getX() + 0.2D + level.random.nextDouble() * 0.6D,
+                                    pos.getY() + 0.55D + level.random.nextDouble() * 0.55D,
+                                    pos.getZ() + 0.2D + level.random.nextDouble() * 0.6D,
+                                    0.0D, 0.012D + level.random.nextDouble() * 0.01D, 0.0D);
+                            particleBudget--;
+                        }
+                        if (mutagenLevel >= 3 && particleBudget > 0 && level.random.nextFloat() < 0.08F) {
+                            level.addParticle(ParticleTypes.END_ROD,
+                                    pos.getX() + 0.25D + level.random.nextDouble() * 0.5D,
+                                    pos.getY() + 0.55D + level.random.nextDouble() * 0.45D,
+                                    pos.getZ() + 0.25D + level.random.nextDouble() * 0.5D,
+                                    (level.random.nextDouble() - 0.5D) * 0.008D,
+                                    0.012D + level.random.nextDouble() * 0.018D,
+                                    (level.random.nextDouble() - 0.5D) * 0.008D);
+                            particleBudget--;
+                        }
                     }
                 }
             }
