@@ -21,7 +21,10 @@ entity = read("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java")
 for token in ("isRepelledBySporeWard()", 'getLong("SporenwerkWardRepelledUntil")',
               "new BloomScentGoal(this)", "new CropThreatGoal(this)"):
     require(token in entity, "Dämmerling counterplay missing " + token)
-require("!mob.isRepelledBySporeWard()" in entity, "ward must stop ongoing mob goals, not only block new starts")
+require(entity.count("mob.getTarget() != null || mob.isRepelledBySporeWard()") >= 3,
+        "ward must stop both bloom-scent goal starts/continuations and crop-threat goal starts")
+require("&& !mob.isRepelledBySporeWard()" in entity,
+        "ward must stop the active crop-threat goal, not only block new starts")
 
 recipe = json.loads(read("src/main/resources/data/sporenwerk/recipes/sporenabwehr.json"))
 require(recipe["result"]["item"] == "sporenwerk:sporenabwehr", "recipe must create the ward")
