@@ -40,49 +40,24 @@ if old in s:
 elif "Automation may feed the four recipe inputs" not in s:
     raise SystemExit("Could not find the current item-handler capability declaration")
 
-# Explicitly separate internal extraction from the receive-only external Forge Energy endpoint.
-# Match the anonymous EnergyStorage body by braces instead of assuming field order/format.
-energy_pos = s.find("new EnergyStorage(")
-if energy_pos < 0:
-    raise SystemExit("Internal EnergyStorage initializer not found")
-energy_open = s.find("{", energy_pos)
-if energy_open < 0:
-    raise SystemExit("Internal EnergyStorage body not found")
-depth = 0
-energy_close = -1
-for index in range(energy_open, len(s)):
-    if s[index] == "{":
-        depth += 1
-    elif s[index] == "}":
-        depth -= 1
-        if depth == 0:
-            energy_close = index
-            break
-if energy_close < 0:
-    raise SystemExit("Internal EnergyStorage body is unbalanced")
-internal_energy = s[energy_pos:energy_close + 1]
-if re.search(r"canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}", internal_energy):
-    internal_energy = re.sub(
-        r"@Override\s+public boolean canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}",
-        "@Override public boolean canExtract() { return true; }",
-        internal_energy,
-        count=1,
-    )
-elif "canExtract() { return true; }" not in internal_energy:
-    relative_open = energy_open - energy_pos
-    internal_energy = internal_energy[:relative_open + 1] + "\n        @Override public boolean canExtract() { return true; }\n" + internal_energy[relative_open + 1:]
-s = s[:energy_pos] + internal_energy + s[energy_close + 1:]
-
-# The Forge capability exposed to cables is a separate read-only adapter.
+# The earlier Forge patcher normalizes the EnergyStorage declaration and exposes a
+# receive-only IEnergyStorage adapter. Harden any remaining internal override without
+# assuming whether the project uses EnergyStorage or a small subclass.
 cap_start = s.find("private final LazyOptional<IEnergyStorage> energyCapability")
 if cap_start < 0:
     raise SystemExit("External Forge Energy capability declaration not found")
+internal_prefix = s[:cap_start]
+internal_prefix = re.sub(
+    r"@Override\s+public boolean canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}",
+    "@Override public boolean canExtract() { return true; }",
+    internal_prefix,
+)
+s = internal_prefix + s[cap_start:]
 external_window = s[cap_start:cap_start + 2400]
 if "extractEnergy(int maxExtract, boolean simulate) { return 0; }" not in external_window:
     raise SystemExit("External FE adapter is not receive-only")
 if "canExtract() { return false; }" not in external_window:
     raise SystemExit("External FE adapter must refuse extraction")
-
 
 be_path.write_text(s, encoding="utf-8")
 
@@ -128,7 +103,7 @@ readme.write_text(rs, encoding="utf-8")
 # A lightweight source-level regression test runs on every build before ForgeGradle.
 test_script = r'''#!/usr/bin/env python3
 from pathlib import Path
-import sys
+import re, sys
 
 root = Path(sys.argv[1]).resolve()
 p = root / "src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java"
@@ -166,11 +141,14 @@ require("slot >= 4" in handler, "automation extraction must be restricted to out
 require("inventory.insertItem(slot, stack, simulate)" in handler, "valid input must be delegated to the recipe handler")
 require("inventory.extractItem(slot, amount, simulate)" in handler, "output extraction must delegate to persistent inventory")
 
-energy = anonymous_body(s, "new EnergyStorage(", "new EnergyStorage(")
-external = anonymous_body(s, "private final LazyOptional<IEnergyStorage> energyCapability", "new IEnergyStorage()")
-require(energy is not None and "canExtract() { return true; }" in energy, "internal FE storage must be drainable by processors")
-require(external is not None, "external Forge Energy adapter must exist")
-require("extractEnergy(int maxExtract, boolean simulate) { return 0; }" in external, "external cables must not extract energy")
+cap_start = s.find("private final LazyOptional<IEnergyStorage> energyCapability")
+require(cap_start >= 0, "external Forge Energy capability must exist")
+internal = s[:cap_start]
+external = s[cap_start:cap_start + 2400]
+require(not re.search(r"canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}", internal),
+        "internal FE must not disable extraction, because machines consume stored FE")
+require("extractEnergy(int maxExtract, boolean simulate) { return 0; }" in external,
+        "external cables must not extract energy")
 require("canExtract() { return false; }" in external, "external Forge Energy endpoint must remain receive-only")
 require("private boolean consumePower(int cost)" in s and "energyStorage.extractEnergy(cost, false)" in s,
         "machine production must consume internal FE when the optional power integration is active")
