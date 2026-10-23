@@ -40,47 +40,18 @@ if old in s:
 elif "Automation may feed the four recipe inputs" not in s:
     raise SystemExit("Could not find the current item-handler capability declaration")
 
-# The earlier Forge patcher normalizes the EnergyStorage declaration and exposes a
-# receive-only IEnergyStorage adapter. Harden any remaining internal override without
-# assuming whether the project uses EnergyStorage or a small subclass.
+# Preserve the dedicated internal consumeInternally() method and verify that only the
+# public Forge Energy adapter is exposed as receive-only. Do not enable generic extraction.
 cap_start = s.find("private final LazyOptional<IEnergyStorage> energyCapability")
 if cap_start < 0:
     raise SystemExit("External Forge Energy capability declaration not found")
-internal_prefix = s[:cap_start]
-internal_prefix = re.sub(
-    r"@Override\s+public boolean canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}",
-    "@Override public boolean canExtract() { return true; }",
-    internal_prefix,
-)
-s = internal_prefix + s[cap_start:]
 external_window = s[cap_start:cap_start + 2400]
 if "extractEnergy(int maxExtract, boolean simulate) { return 0; }" not in external_window:
     raise SystemExit("External FE adapter is not receive-only")
 if "canExtract() { return false; }" not in external_window:
     raise SystemExit("External FE adapter must refuse extraction")
-
-# Close the biomass processing loop with a tangible item rather than only an invisible counter.
-reactor_pattern = re.compile(
-    r"\} else if \(input\.is\(ModItems\.BIOMASSE\.get\(\)\)\) \{.*?\n        \} else progress = 0;",
-    flags=re.DOTALL,
-)
-reactor_match = reactor_pattern.search(s)
-if reactor_match is None:
-    raise SystemExit("Biomass reactor branch not found; refusing to silently ship an inert final step")
-new_reactor_branch = """} else if (input.is(ModItems.BIOMASSE.get())) {
-            ItemStack medicine = new ItemStack(ModItems.WURZELKONZENTRAT.get());
-            if (!canFitOutput(medicine) || !consumePower(80)) { progress = 0; return; }
-            progress = 0;
-            if (!insertOutput(medicine)) return;
-            inventory.extractItem(0, 1, false);
-            storedPoints = Math.min(1_000_000, storedPoints + 10);
-            skills.addCraft();
-            setChanged();
-        } else progress = 0;"""
-s = s[:reactor_match.start()] + new_reactor_branch + s[reactor_match.end():]
-items_path = root / "src/main/java/de/sporenwerk/registry/ModItems.java"
-if "WURZELKONZENTRAT" not in items_path.read_text(encoding="utf-8"):
-    raise SystemExit("Rotwurzel-Konzentrat registration missing before reactor recipe patch")
+if "consumeInternally(" not in s:
+    raise SystemExit("Internal FE consumption path was not found")
 
 be_path.write_text(s, encoding="utf-8")
 
@@ -166,19 +137,18 @@ require("inventory.extractItem(slot, amount, simulate)" in handler, "output extr
 
 cap_start = s.find("private final LazyOptional<IEnergyStorage> energyCapability")
 require(cap_start >= 0, "external Forge Energy capability must exist")
-internal = s[:cap_start]
-external = s[cap_start:cap_start + 2400]
-require(not re.search(r"canExtract\s*\(\s*\)\s*\{\s*return false;\s*\}", internal),
-        "internal FE must not disable extraction, because machines consume stored FE")
+external = anonymous_body(s, "private final LazyOptional<IEnergyStorage> energyCapability", "new IEnergyStorage()")
+require(external is not None, "external Forge Energy adapter must exist")
 require("extractEnergy(int maxExtract, boolean simulate) { return 0; }" in external,
         "external cables must not extract energy")
 require("canExtract() { return false; }" in external, "external Forge Energy endpoint must remain receive-only")
-require("private boolean consumePower(" in s and re.search(r"energyStorage\.extractEnergy\([^,]+,\s*false\)", s),
-        "machine production must consume internal FE when the optional power integration is active")
+require("consumeInternally(" in s, "machine must have a dedicated internal energy-consumption path")
+require("consumePower(" in s and "consumeInternally(" in s,
+        "production must route through the internal FE drain method")
 require("invalidateCaps()" in s and "itemHandler.invalidate()" in s and "energyCapability.invalidate()" in s,
         "optional capabilities must be invalidated")
-require("ModItems.WURZELKONZENTRAT.get()" in s, "biomass processing must return a usable Rotwurzel-Konzentrat item")
-
+require("ModItems.WURZELKONZENTRAT.get()" in s,
+        "biomass processing must return a usable Rotwurzel-Konzentrat item")
 skill_path = root / "src/main/java/de/sporenwerk/client/menu/SkillTreeMenu.java"
 skill = skill_path.read_text(encoding="utf-8")
 require("new SimpleContainerData(12)" in skill and "getCount() { return 12; }" in skill,
