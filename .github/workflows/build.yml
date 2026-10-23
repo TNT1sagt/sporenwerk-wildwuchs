@@ -62,8 +62,8 @@ jobs:
           set -euo pipefail
           test -s build/libs/sporenwerk-1.0.2.jar
           jar tf build/libs/sporenwerk-1.0.2.jar | grep -q 'META-INF/mods.toml'
-          jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
-          jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
+          jar tf build/libs/sporenwerk-1.0.2.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
+          jar tf build/libs/sporenwerk-1.0.2.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
