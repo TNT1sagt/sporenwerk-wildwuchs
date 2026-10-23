@@ -180,14 +180,20 @@ residue_new = """            boolean filterMossPhenotype = mutationCropState.is(
             float residueChance = filterMossPhenotype
                     ? (mutagenStrength >= 3 ? 0.70F : 0.55F) : 0.35F;
             boolean yieldsResidue = level.random.nextFloat() < residueChance;"""
-replace_once(be_path, residue_old, residue_new, "filter-moss collector residue chance")
+if residue_old in be:
+    be = be.replace(residue_old, residue_new, 1)
+elif residue_new not in be:
+    raise SystemExit("Cannot locate collector residue chance")
 spore_old_machine = """            boolean yieldsMutagenSpores = MutationField.isInActiveMutagenField(level, target)
                     && level.random.nextFloat() < 0.22F;"""
 spore_new_machine = """            boolean yieldsMutagenSpores = mutagenStrength > 0
                     && level.random.nextFloat() <
                     (mutagenStrength >= 3 ? 0.35F : mutagenStrength == 2 ? 0.22F : 0.12F);"""
-replace_once(be_path, spore_old_machine, spore_new_machine, "collector spore chance by strength")
-(ROOT / be_path).write_text(read(be_path), encoding="utf-8")
+if spore_old_machine in be:
+    be = be.replace(spore_old_machine, spore_new_machine, 1)
+elif spore_new_machine not in be:
+    raise SystemExit("Cannot locate collector mutagen-spore chance")
+(ROOT / be_path).write_text(be, encoding="utf-8")
 
 # Source-level regression suite verifies tier boundaries, sterile suppression, crop traits and
 # the collector's atomic output reservation, so the patch fails closed if upstream code drifts.
