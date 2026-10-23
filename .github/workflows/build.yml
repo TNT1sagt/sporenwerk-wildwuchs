@@ -47,7 +47,6 @@ jobs:
           python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_daemmerling.py source/sporenwerk-wildwuchs
-          python3 source/sporenwerk-wildwuchs/tools/add_skilltree.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_skill_tree.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_questline.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_localization.py source/sporenwerk-wildwuchs
