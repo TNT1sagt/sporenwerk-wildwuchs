@@ -159,6 +159,8 @@ import java.util.Map;
  */
 public final class MutationAnchorData extends SavedData {
     private static final String DATA_NAME = "sporenwerk_mutation_anchors";
+    public static final int FIELD_RADIUS = 8;
+    public static final int FIELD_HALF_HEIGHT = 12;
     public static final int SWEEP_VOLUME = 17 * 17 * 25;
     public static final int SWEEP_BATCH = 192;
     private final Map<Long, Integer> anchors = new LinkedHashMap<>();
@@ -196,8 +198,8 @@ public final class MutationAnchorData extends SavedData {
             BlockPos anchor = BlockPos.of(packed);
             long dx = (long) target.getX() - anchor.getX();
             long dz = (long) target.getZ() - anchor.getZ();
-            if (dx * dx + dz * dz <= 64L
-                    && Math.abs(target.getY() - anchor.getY()) <= 12) return true;
+            if (dx * dx + dz * dz <= (long) FIELD_RADIUS * FIELD_RADIUS
+                    && Math.abs(target.getY() - anchor.getY()) <= FIELD_HALF_HEIGHT) return true;
         }
         return false;
     }
@@ -246,14 +248,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /** All terrain spread is source-bound. A seed cannot infect outside its finite 8 x 7 x 8 field. */
 public final class MutationField {
     public static final int RADIUS = 8;
-    public static final int HALF_HEIGHT = 3;
+    public static final int INFECTION_HALF_HEIGHT = 3;
     private MutationField() {}
 
     public static boolean insideBounds(BlockPos origin, BlockPos target) {
         long dx = (long) target.getX() - origin.getX();
         long dz = (long) target.getZ() - origin.getZ();
         return dx * dx + dz * dz <= (long) RADIUS * RADIUS
-                && Math.abs(target.getY() - origin.getY()) <= HALF_HEIGHT;
+                && Math.abs(target.getY() - origin.getY()) <= INFECTION_HALF_HEIGHT;
     }
 
     public static boolean hasAnchor(ServerLevel level, BlockPos target) {
@@ -292,7 +294,7 @@ public final class MutationField {
             return false;
         }
         record.initialize(original, origin);
-        level.sendBlockUpdated(target, ModBlocks.MUTAGEN_BODEN.get().defaultBlockState(),
+        level.sendBlockUpdated(target, original,
                 ModBlocks.MUTAGEN_BODEN.get().defaultBlockState(), 3);
         return true;
     }
@@ -344,8 +346,8 @@ public final class MutationField {
 
     public static void healNearbyPlayers(ServerLevel level, BlockPos origin) {
         for (Player player : level.getEntitiesOfClass(Player.class,
-                new net.minecraft.world.phys.AABB(origin).inflate(RADIUS, 12, RADIUS))) {
-            if (Math.abs(player.getY() - origin.getY()) > 12) continue;
+                new net.minecraft.world.phys.AABB(origin).inflate(RADIUS, MutationAnchorData.FIELD_HALF_HEIGHT, RADIUS))) {
+            if (Math.abs(player.getY() - origin.getY()) > MutationAnchorData.FIELD_HALF_HEIGHT) continue;
             int infection = InfectionState.level(player);
             if (infection > 0 && player.tickCount % 40 == 0) InfectionState.cure(player, 2);
         }
@@ -353,9 +355,9 @@ public final class MutationField {
 
     private static void exposeNearbyPlayers(ServerLevel level, BlockPos origin) {
         for (Player player : level.getEntitiesOfClass(Player.class,
-                new net.minecraft.world.phys.AABB(origin).inflate(RADIUS, HALF_HEIGHT, RADIUS))) {
+                new net.minecraft.world.phys.AABB(origin).inflate(RADIUS, INFECTION_HALF_HEIGHT, RADIUS))) {
             if (player.isCreative() || player.isSpectator()
-                    || Math.abs(player.getY() - origin.getY()) > HALF_HEIGHT) continue;
+                    || Math.abs(player.getY() - origin.getY()) > INFECTION_HALF_HEIGHT) continue;
             if (player.tickCount % 100 == 0 && !hasAnchor(level, player.blockPosition())) {
                 InfectionState.setLevel(player, InfectionState.level(player) + 1);
             }
@@ -366,7 +368,7 @@ public final class MutationField {
         for (int i = 0; i < attempts; i++) {
             int dx = random.nextInt(RADIUS * 2 + 1) - RADIUS;
             int dz = random.nextInt(RADIUS * 2 + 1) - RADIUS;
-            int dy = random.nextInt(HALF_HEIGHT * 2 + 1) - HALF_HEIGHT;
+            int dy = random.nextInt(INFECTION_HALF_HEIGHT * 2 + 1) - INFECTION_HALF_HEIGHT;
             if (dx * dx + dz * dz > RADIUS * RADIUS) continue;
             BlockPos pos = origin.offset(dx, dy, dz);
             BlockState state = level.getBlockState(pos);
@@ -636,6 +638,34 @@ for path in ("blockstates/mutagen_boden.json", "models/block/mutagen_boden.json"
 loot = json.loads(read("src/main/resources/data/sporenwerk/loot_tables/blocks/mutagen_boden.json"))
 require(loot.get("pools") == [], "internal infested terrain must not drop a fake copy of the replaced block")
 print("Reversible terrain state, bounded spread, immune barriers, persistent anchors, recipes and resources passed.")
+''')
+
+write("tools/test_mutation_containment.py", r'''
+from pathlib import Path
+import sys
+root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
+def read(path): return (root / path).read_text(encoding="utf-8")
+def require(ok, message):
+    if not ok: raise SystemExit("Mutation/containment regression: " + message)
+field = read("src/main/java/de/sporenwerk/infection/MutationField.java")
+anchors = read("src/main/java/de/sporenwerk/infection/MutationAnchorData.java")
+node = read("src/main/java/de/sporenwerk/block/MutationNodeBlock.java")
+anchor = read("src/main/java/de/sporenwerk/block/MutationAnchorBlock.java")
+events = read("src/main/java/de/sporenwerk/infection/InfectionEvents.java")
+blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
+require("RADIUS = 8" in field and "INFECTION_HALF_HEIGHT = 3" in field
+        and "FIELD_HALF_HEIGHT = 12" in anchors, "infection and healing bounds must be explicit")
+require("hasAnchor(level, target)" in field, "healing anchors must suppress infection inside their field")
+require("hasImmuneBoundary(level, target)" in field and "SPORENRESISTENTER_BLOCK" in field,
+        "immune boundary blocks must be recognized by terrain conversion")
+require("spreadFromNode(level, pos, random)" in node and "empowerNearbyCrops" in field
+        and "crop.getStateForAge" in field, "the mutagen node must drive real crop effects")
+require("MutationField.healArea(level, pos, random)" in anchor
+        and "InfectionState.cure(player, 2)" in field, "anchor must reverse terrain infection and cure players")
+require("MobEffects.WEAKNESS" not in events, "mutation progression must not punish the player with weakness")
+for name in ("INFEKTIONSHERD", "MUTATION_ANCHOR", "SPORENRESISTENTER_BLOCK", "MUTAGEN_BODEN"):
+    require(name in blocks, name + " block registration missing")
+print("Mutation perks, bounded fields, healing anchors, immune boundaries and terrain registrations passed.")
 ''')
 
 # This source snapshot is the actual project that ForgeGradle builds in CI.
