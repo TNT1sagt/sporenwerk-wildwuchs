@@ -80,6 +80,15 @@ public final class MutationField {
         }
     }
 
+    public static void exposeNearbyPlayers(ServerLevel level, BlockPos origin) {
+        for (Player player : level.getEntitiesOfClass(Player.class,
+                new net.minecraft.world.phys.AABB(origin).inflate(RADIUS, 3, RADIUS))) {
+            if (player.isCreative() || player.isSpectator() || Math.abs(player.getY()-origin.getY()) > 3) continue;
+            if (player.tickCount % 100 != 0 || hasAnchor(level, player.blockPosition())) continue;
+            InfectionState.setLevel(player, InfectionState.level(player) + 1);
+        }
+    }
+
     public static void healNearbyPlayers(ServerLevel level, BlockPos origin) {
         for (Player player : level.getEntitiesOfClass(Player.class,
                 new net.minecraft.world.phys.AABB(origin).inflate(RADIUS, HALF_HEIGHT, RADIUS))) {
@@ -117,6 +126,7 @@ public final class MutationNodeBlock extends Block {
     @Override public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (MutationField.hasAnchor(level, pos) || MutationField.hasImmuneBoundary(level, pos)) return;
         MutationField.empowerNearbyCrops(level, pos);
+        MutationField.exposeNearbyPlayers(level, pos);
     }
 }
 """)
@@ -274,6 +284,7 @@ require("RADIUS = 8" in state and "HALF_HEIGHT = 12" in state, "field radius and
 require("hasAnchor(level, pos)" in node, "healing anchor must suppress nearby mutagen fields")
 require("hasImmuneBoundary(level, pos)" in node and "SPORENRESISTENTER_BLOCK" in state, "immune boundary blocks must be recognized")
 require("empowerNearbyCrops(level, pos)" in node and "crop.getStateForAge" in state, "mutagen node must have an actual farming effect")
+require("exposeNearbyPlayers(level, pos)" in node and "InfectionState.setLevel(player, InfectionState.level(player) + 1)" in state, "mutagen field must expose nearby players to controlled infection")
 require("healNearbyPlayers(level, pos)" in anchor and "InfectionState.cure(player, 2)" in state, "anchor must actively reduce player infection")
 require("MobEffects.WEAKNESS" not in events, "mutation progression must not punish the player with weakness")
 for name in ("INFEKTIONSHERD","MUTATION_ANCHOR","SPORENRESISTENTER_BLOCK"):
@@ -290,7 +301,7 @@ doc += """
 
 ## 1.4.0 — mutation fields and player agency
 - Infection thresholds grant positive abilities (night vision, haste, speed, resistance); this system applies no weakness or other negative status as a price for choosing mutation.
-- The Mutagen Node accelerates only Sporenwerk crops inside a bounded 8-block horizontal radius and 3-block vertical band.
+- The Mutagen Node exposes nearby players to infection and accelerates only Sporenwerk crops inside a bounded 8-block horizontal radius and 3-block vertical band.
 - The Mutation Anchor gradually cures players in a bounded 8-block radius and 12-block vertical band, and suppresses nearby Mutagen Nodes. Serum remains available as a portable way back.
 - Spore-Resistant Blocks can mark the boundary of controlled test plots. This milestone does not claim arbitrary terrain blocks are reversibly transformed; that requires state-preserving infection conversion and is a separate next milestone.
 """
