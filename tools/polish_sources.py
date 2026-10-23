@@ -77,7 +77,7 @@ p.write_text(s, encoding="utf-8")
 # while exposing a receive-only capability externally so cables cannot pull energy back out.
 p = ROOT / "src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java"
 s = p.read_text(encoding="utf-8")
-s = s.replace("        @Override\\n        public boolean canExtract() { return false; }\\n", "")
+s = s.replace("        @Override\n        public boolean canExtract() { return false; }\n", "")
 old_energy_capability = "private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);"
 new_energy_capability = """private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new IEnergyStorage() {
         @Override public int receiveEnergy(int maxReceive, boolean simulate) { return energyStorage.receiveEnergy(maxReceive, simulate); }
