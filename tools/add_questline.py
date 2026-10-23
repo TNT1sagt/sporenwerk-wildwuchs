@@ -465,16 +465,19 @@ Kopiere zusätzlich lang/de_de.snbt in config/ftbquests/quests/lang/de_de.snbt. 
     readme_path.write_text(readme_text, encoding="utf-8")
 
 
-# Spawn eggs are an item registry entry, which is populated before entity types. Forge's
-# DeferredSpawnEggItem delays resolving the entity RegistryObject until it is actually used.
+# Spawn eggs are registered before entity types. Forge's supplier-based ForgeSpawnEggItem defers lookup.
 p = ROOT / "src/main/java/de/sporenwerk/registry/ModItems.java"
 s = p.read_text(encoding="utf-8")
-s = s.replace("import net.minecraftforge.common.ForgeSpawnEggItem;", "import net.minecraftforge.common.ForgeSpawnEggItem;")
+s = s.replace("import net.minecraft.world.item.SpawnEggItem;", "import net.minecraftforge.common.ForgeSpawnEggItem;")
+s = s.replace("import net.minecraftforge.common.DeferredSpawnEggItem;", "import net.minecraftforge.common.ForgeSpawnEggItem;")
 s = s.replace(
-    "new ForgeSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())",
+    "new SpawnEggItem(ModEntities.DAEMMERLING.get(), 0x263D2D, 0xB23843, new Item.Properties())",
     "new ForgeSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())"
 )
-if "new SpawnEggItem(ModEntities.DAEMMERLING.get()" in s or "new ForgeSpawnEggItem(ModEntities.DAEMMERLING," not in s:
-    raise SystemExit("Could not install deferred spawn-egg registration safely")
+s = s.replace(
+    "new DeferredSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())",
+    "new ForgeSpawnEggItem(ModEntities.DAEMMERLING, 0x263D2D, 0xB23843, new Item.Properties())"
+)
+if "new ForgeSpawnEggItem(ModEntities.DAEMMERLING," not in s:
+    raise SystemExit("Could not install supplier-based ForgeSpawnEggItem registration")
 p.write_text(s, encoding="utf-8")
-
