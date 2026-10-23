@@ -100,6 +100,8 @@ jobs:
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'de/sporenwerk/item/MyzelkompostItem.class'
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'assets/sporenwerk/textures/item/myzelkompost.png'
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'data/sporenwerk/advancements/compost_loop.json'
+          jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'assets/sporenwerk/textures/gui/machine_interface.png'
+          jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'assets/sporenwerk/textures/gui/skilltree_interface.png'
           jar tf build/libs/sporenwerk-1.2.0.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
 
       - name: Smoke-test dedicated server startup without optional mods
