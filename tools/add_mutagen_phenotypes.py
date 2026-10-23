@@ -487,32 +487,17 @@ for _crop_name, _age_stages in _age_to_stage.items():
 validator_path = ROOT / "tools/validate_resources.py"
 if validator_path.is_file():
     validator = validator_path.read_text(encoding="utf-8")
-    if "AGE_7 values" in validator and "covered_ages" not in validator:
+    if "AGE_7 values" in validator and "custom property variants tested" not in validator:
         validator_lines = validator.splitlines()
         message_line = next((i for i, line in enumerate(validator_lines) if "AGE_7 values" in line), None)
         if message_line is None:
             raise SystemExit("Cannot locate legacy AGE_7 validator message")
-        assignment_line = next(
-            (i for i in range(message_line, -1, -1)
-             if re.search(r"\bmissing\s*=", validator_lines[i])),
-            None,
+        # Replace the legacy error emission; the new texture-contract test verifies all 32
+        # age/mutagen-level combinations per crop with exact model and texture references.
+        indent = re.match(r"\s*", validator_lines[message_line]).group(0)
+        validator_lines[message_line] = (
+            indent + "pass  # custom property variants tested by test_minecraft_texture_contract.py"
         )
-        if assignment_line is None:
-            raise SystemExit("Cannot locate legacy missing-age calculation")
-        indent = re.match(r"\s*", validator_lines[assignment_line]).group(0)
-        # Remove the complete original assignment, even if its comprehension spans lines.
-        def _balance(line):
-            return (line.count("(") + line.count("[") + line.count("{")
-                    - line.count(")") - line.count("]") - line.count("}"))
-        assignment_end = assignment_line
-        balance = _balance(validator_lines[assignment_end])
-        while balance > 0 and assignment_end + 1 < message_line:
-            assignment_end += 1
-            balance += _balance(validator_lines[assignment_end])
-        validator_lines[assignment_line:assignment_end + 1] = [
-            indent + "covered_ages = {key.split(',', 1)[0] for key in variants}",
-            indent + 'missing = sorted(f"age={age}" for age in range(8) if f"age={age}" not in covered_ages)',
-        ]
         validator = "\n".join(validator_lines) + "\n"
         validator_path.write_text(validator, encoding="utf-8")
 
