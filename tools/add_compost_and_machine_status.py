@@ -127,6 +127,45 @@ write("src/main/resources/data/sporenwerk/recipes/myzelkompost.json", '''
 }
 ''')
 
+# The bioreactor turns processed biomass into a tangible growing resource.
+be_path = SRC / "block/entity/MachineBlockEntity.java"
+be = be_path.read_text(encoding="utf-8")
+old_branch = '''} else if (input.is(ModItems.BIOMASSE.get())) {
+            ItemStack medicine = new ItemStack(ModItems.WURZELKONZENTRAT.get());
+            if (!canFitOutput(medicine) || !consumePower(80)) { progress = 0; return; }
+            progress = 0;
+            if (!insertOutput(medicine)) return;
+            inventory.extractItem(0, 1, false);
+            storedPoints = Math.min(1_000_000, storedPoints + 10);
+            skills.addCraft();
+            setChanged();
+        } else progress = 0;'''
+new_branch = '''} else if (input.is(ModItems.BIOMASSE.get())) {
+            ItemStack compost = new ItemStack(ModItems.MYZELKOMPOST.get(), 2);
+            if (!canFitOutput(compost) || !consumePower(80)) { progress = 0; return; }
+            progress = 0;
+            if (!insertOutput(compost)) return;
+            inventory.extractItem(0, 1, false);
+            storedPoints = Math.min(1_000_000, storedPoints + 10);
+            skills.addCraft();
+            setChanged();
+        } else progress = 0;'''
+if old_branch in be:
+    be = be.replace(old_branch,new_branch,1)
+elif "new ItemStack(ModItems.MYZELKOMPOST.get(), 2)" not in be:
+    raise SystemExit("Could not update the bioreactor's second production step")
+be_path.write_text(be,encoding="utf-8")
+
+# Keep the mechanical contract test aligned with the named bioreactor output.
+test_path = ROOT / "tools/test_machine_io_contract.py"
+if test_path.exists():
+    ts = test_path.read_text(encoding="utf-8")
+    ts = ts.replace("ModItems.WURZELKONZENTRAT.get()", "ModItems.MYZELKOMPOST.get()")
+    ts = ts.replace("biomass processing must return a usable Rotwurzel-Konzentrat item",
+                    "biomass processing must return usable Myzelkompost")
+    test_path.write_text(ts,encoding="utf-8")
+
+
 # Mature crops sometimes provide waste; early immature harvests do not flood inventory with residue.
 max_ages = {"faserrohr": 5, "bernsteinkappe": 3, "rotwurzel": 7, "filtermoos": 4}
 for crop, age in max_ages.items():
@@ -154,13 +193,14 @@ de.update({
     "item.sporenwerk.myzelkompost": "Myzelkompost",
     "tooltip.sporenwerk.myzelkompost.effect": "Düngt eine Pflanze wie Knochenmehl.",
     "tooltip.sporenwerk.myzelkompost.source": "Aus Pflanzenresten und Biomasse gepresst.",
-    "gui.sporenwerk.machine.input_count": "Eingabe: %s Items",
-    "gui.sporenwerk.machine.output_count": "Puffer: %s / 512 Items",
+    "gui.sporenwerk.machine.input_count": "Eingabe %s",
+    "gui.sporenwerk.machine.output_count": "Puffer %s/512",
     "gui.sporenwerk.machine.status.idle": "WARTE AUF ZUTATEN",
     "gui.sporenwerk.machine.status.running": "PRODUKTION LÄUFT",
     "gui.sporenwerk.machine.status.power": "FE NACHLADEN",
     "gui.sporenwerk.machine.status.output": "AUSGABEPUFFER VOLL",
-    "gui.sporenwerk.machine.status.ready": "ZYKLUS ABGESCHLOSSEN"
+    "gui.sporenwerk.machine.status.ready": "ZYKLUS ABGESCHLOSSEN",
+    "gui.sporenwerk.machine.status.scanning": "FELD WIRD GEPRÜFT"
 })
 de_path.write_text(json.dumps(de, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -170,13 +210,14 @@ en.update({
     "item.sporenwerk.myzelkompost": "Mycelium Compost",
     "tooltip.sporenwerk.myzelkompost.effect": "Fertilizes a plant like bone meal.",
     "tooltip.sporenwerk.myzelkompost.source": "Pressed from plant residue and biomass.",
-    "gui.sporenwerk.machine.input_count": "Input: %s items",
-    "gui.sporenwerk.machine.output_count": "Buffer: %s / 512 items",
+    "gui.sporenwerk.machine.input_count": "Input %s",
+    "gui.sporenwerk.machine.output_count": "Buffer %s/512",
     "gui.sporenwerk.machine.status.idle": "WAITING FOR INPUT",
     "gui.sporenwerk.machine.status.running": "PROCESSING",
     "gui.sporenwerk.machine.status.power": "NEEDS FE",
     "gui.sporenwerk.machine.status.output": "OUTPUT BUFFER FULL",
-    "gui.sporenwerk.machine.status.ready": "CYCLE COMPLETE"
+    "gui.sporenwerk.machine.status.ready": "CYCLE COMPLETE",
+    "gui.sporenwerk.machine.status.scanning": "SCANNING FIELD"
 })
 en_path.write_text(json.dumps(en, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -270,6 +311,7 @@ if "public int inputItemCount()" not in ms:
         if (outputBufferFull()) return "output";
         if (!hasMachineInput()) return "idle";
         if (net.minecraftforge.fml.ModList.get().isLoaded("mekanism") && energyFe() < requiredEnergy()) return "power";
+        if (machineType().equals("feldsammler")) return "scanning";
         return progress() >= 100 ? "ready" : "running";
     }
 
@@ -284,8 +326,10 @@ screen_path = SRC / "client/menu/MachineScreen.java"
 screen = screen_path.read_text(encoding="utf-8")
 old = '''        g.drawString(font, Component.literal(menu.progress() >= 100 ? "BEREIT" : "ARBEITET " + menu.progress() + "%"),
                 12, 70, 0xFFE7D9A5, false);'''
-new = '''        g.drawString(font, Component.literal("INPUT " + menu.inputItemCount() + "  /  OUTPUT " + menu.outputItemCount() + "/512"),
+new = '''        g.drawString(font, Component.translatable("gui.sporenwerk.machine.input_count", menu.inputItemCount()),
                 12, 62, 0xFFB8D0B2, false);
+        g.drawString(font, Component.translatable("gui.sporenwerk.machine.output_count", menu.outputItemCount()),
+                112, 62, 0xFFB8D0B2, false);
         String status = Component.translatable("gui.sporenwerk.machine.status." + menu.statusKey()).getString();
         g.drawString(font, Component.literal(status + " · " + menu.progress() + "%"),
                 12, 70, menu.statusKey().equals("power") || menu.statusKey().equals("output") ? 0xFFE78E7D : 0xFFE7D9A5, false);'''
