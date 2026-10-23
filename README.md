@@ -1,3 +1,9 @@
+## Version 1.17.0 — Feldscanner mit Mutagen-Risikoprofil
+
+- Der Luftscan zeigt zusätzlich die Menge aktiven Mutagenbodens, mutierte Pflanzen getrennt nach Stufe I/II/III und Heilanker im erfassten Bereich.
+- Die Risikozeile hilft, eine Farm als Ertragszone, Hochrisikofeld oder eingedämmte Versuchsfläche einzuschätzen. Der Scan bleibt auf 12 Blöcke Radius und ±4 Blöcke Höhe begrenzt.
+- Die Diagnose läuft serverseitig; der Scanner verwendet keine clientseitig geschätzten Feldwerte. Deutsche und englische Texte sowie die Zählung aller drei Pflanzenstufen werden durch Regressionstests abgesichert.
+
 ## Version 1.14.0 — Sporenfilter und Expositionsschutz
 
 - **Sporenfiltermaske:** Herstellbarer Helm mit eigener Pixeltextur, Rüstungs-Layer, deutscher und englischer Lokalisierung und Reparatur mit Leder.

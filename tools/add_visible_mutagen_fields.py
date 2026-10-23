@@ -246,7 +246,8 @@ if "public InteractionResultHolder<ItemStack> use(Level level" not in scanner:
         if (!(level instanceof ServerLevel serverLevel)) return InteractionResultHolder.pass(stack);
 
         BlockPos center = player.blockPosition();
-        int activeNodes = 0, inactiveNodes = 0, infectedTerrain = 0, mutatedPlants = 0, strongestField = 0;
+        int activeNodes = 0, inactiveNodes = 0, infectedTerrain = 0, activeTerrain = 0, mutatedPlants = 0, strongestField = 0;
+        int tier1Plants = 0, tier2Plants = 0, tier3Plants = 0, anchors = 0;
         MutationNodeData nodeData = MutationNodeData.get(serverLevel);
 
         // Survey only a 12-block radius and a narrow vertical slice; never scan the whole world.
@@ -265,9 +266,18 @@ if "public InteractionResultHolder<ItemStack> use(Level level" not in scanner:
                             inactiveNodes++;
                         }
                     }
-                    if (targetState.is(ModBlocks.MUTAGEN_BODEN.get())) infectedTerrain++;
-                    if (targetState.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)
-                            && targetState.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL) > 0) mutatedPlants++;
+                    if (targetState.is(ModBlocks.MUTAGEN_BODEN.get())) {
+                        infectedTerrain++;
+                        if (MutationField.mutagenStrengthAt(serverLevel, target) > 0) activeTerrain++;
+                    }
+                    if (targetState.is(ModBlocks.MUTATION_ANCHOR.get())) anchors++;
+                    if (targetState.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)) {
+                        int cropTier = targetState.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL);
+                        if (cropTier > 0) mutatedPlants++;
+                        if (cropTier == 1) tier1Plants++;
+                        else if (cropTier == 2) tier2Plants++;
+                        else if (cropTier == 3) tier3Plants++;
+                    }
                 }
             }
         }
@@ -276,6 +286,11 @@ if "public InteractionResultHolder<ItemStack> use(Level level" not in scanner:
                 .withStyle(strongestField >= 3 ? ChatFormatting.LIGHT_PURPLE
                         : strongestField == 2 ? ChatFormatting.GOLD
                         : strongestField == 1 ? ChatFormatting.YELLOW : ChatFormatting.GRAY), false);
+        player.displayClientMessage(Component.translatable("message.sporenwerk.scanner.survey_detail",
+                activeTerrain, tier1Plants, tier2Plants, tier3Plants, anchors)
+                .withStyle(tier3Plants > 0 ? ChatFormatting.LIGHT_PURPLE
+                        : tier2Plants > 0 ? ChatFormatting.GOLD
+                        : tier1Plants > 0 ? ChatFormatting.YELLOW : ChatFormatting.AQUA), false);
         return InteractionResultHolder.sidedSuccess(stack, false);
     }
 
@@ -292,6 +307,10 @@ for locale, message in (
     path = ASSETS / "lang" / locale
     data = json.loads(path.read_text(encoding="utf-8"))
     data["message.sporenwerk.scanner.survey"] = message
+    if locale == "de_de.json":
+        data["message.sporenwerk.scanner.survey_detail"] = "Risiko-Profil: aktiver Boden %1$s; Pflanzen Stufe I/II/III %2$s/%3$s/%4$s; Heilanker %5$s."
+    else:
+        data["message.sporenwerk.scanner.survey_detail"] = "Risk profile: active terrain %1$s; crops tier I/II/III %2$s/%3$s/%4$s; healing anchors %5$s."
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 build_path = ROOT / "build.gradle"
@@ -307,7 +326,7 @@ heading = "## Version 1.13.0 — Sichtbare Mutagenfelder und Feldanalyse"
 section = """## Version 1.13.0 — Sichtbare Mutagenfelder und Feldanalyse
 
 - **Sichtbarer Befall:** Mutagenboden hat drei server-synchronisierte Stärke-Stufen mit eigenen, zunehmend hellen Texturen und Adern; seine Stufe wird aus der tatsächlichen Feldstärke aktiver Herde aktualisiert. Mutierte Pflanzen ergänzen dies mit Sporen bei Stufe 1, Portal-Schimmer ab Stufe 2 und hellen Endstab-Funken auf Stufe 3. Alle Partikeleffekte teilen sich ein festes Budget.
-- **Scanner mit zwei Modi:** Rechtsklick auf einen Block untersucht Herd, Heilanker, Barriere oder Boden. Rechtsklick in die Luft analysiert einen 12-Block-Radius und zählt aktive/inaktive Herde, befallenen Boden und mutierte Pflanzen; die Spitzenstärke stammt aus Serverdaten.
+- **Scanner mit zwei Modi:** Rechtsklick auf einen Block untersucht Herd, Heilanker, Barriere oder Boden. Rechtsklick in die Luft analysiert einen 12-Block-Radius und meldet aktive/inaktive Herde, befallenen und aktiven Boden, Pflanzen in Mutationsstufe I/II/III sowie vorhandene Heilanker. Die Werte stammen aus Serverdaten und zeigen, ob eine Anlage Ertrag, Gefahr oder Eindämmung priorisieren sollte.
 - **Release-Prüfung:** Eigener Test für Lichtlevel, Partikel-Event, Scanner-Modi und Übersetzungen, dazu Forge-Build, JAR-Validierung und Server-Smoke-Test.
 
 Automatische CI-Tests ersetzen keinen manuellen Sichttest im Minecraft-Client.
