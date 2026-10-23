@@ -210,6 +210,15 @@ if machine_test_path.is_file():
         machine_test = machine_test.replace(old_assertion, new_assertion, 1)
     elif new_assertion not in machine_test:
         raise SystemExit("Cannot update farming-loop regression for the phenotype-aware residue chance")
+    old_field_assertion = """require("MutationField.isInActiveMutagenField(level, target)" in be,
+        "automated fields must award the same controlled mutagen by-product")"""
+    new_field_assertion = """require("MutationField.mutagenStrengthAt(level, target)" in be
+        and "mutagenStrength > 0" in be,
+        "automated fields must use the saved-source intensity and healing-zone rules")"""
+    if old_field_assertion in machine_test:
+        machine_test = machine_test.replace(old_field_assertion, new_field_assertion, 1)
+    elif new_field_assertion not in machine_test:
+        raise SystemExit("Cannot update collector regression for the shared field-strength query")
     machine_test_path.write_text(machine_test, encoding="utf-8")
 
 # Source-level regression suite verifies tier boundaries, sterile suppression, crop traits and
