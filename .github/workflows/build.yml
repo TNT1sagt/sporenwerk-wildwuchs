@@ -1,4 +1,4 @@
-name: Build Sporenwerk for Forge 1.20.1
+name: Build Sporenwerk 1.0.2 for Forge 1.20.1
 
 on:
   push:
@@ -43,9 +43,10 @@ jobs:
       - name: Apply V1.0.1 gameplay, GUI, and art update
         run: |
           set -euo pipefail
-          cp tools/polish_sources.py tools/generate_art.py source/sporenwerk-wildwuchs/tools/
+          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py source/sporenwerk-wildwuchs/tools/
           python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
+          python3 source/sporenwerk-wildwuchs/tools/add_daemmerling.py source/sporenwerk-wildwuchs
 
       - name: Validate JSON, textures, and model references
         working-directory: source/sporenwerk-wildwuchs
@@ -59,15 +60,15 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: |
           set -euo pipefail
-          test -s build/libs/sporenwerk-1.0.1.jar
-          jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'META-INF/mods.toml'
+          test -s build/libs/sporenwerk-1.0.2.jar
+          jar tf build/libs/sporenwerk-1.0.2.jar | grep -q 'META-INF/mods.toml'
           jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
           jar tf build/libs/sporenwerk-1.0.1.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.0.1-forge-1.20.1
-          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.0.1.jar
+          name: sporenwerk-1.0.2-forge-1.20.1
+          path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.0.2.jar
           if-no-files-found: error
           retention-days: 14
