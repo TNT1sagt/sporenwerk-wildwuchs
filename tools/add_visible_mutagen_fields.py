@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import re
 import sys
+from PIL import Image, ImageDraw
 
 ROOT = Path(sys.argv[1]).resolve()
 SRC = ROOT / "src/main/java/de/sporenwerk"
@@ -26,6 +27,90 @@ if ".lightLevel(state -> 4)" not in blocks:
         raise SystemExit("Cannot find MUTAGEN_BODEN properties for visible field glow")
     blocks = blocks.replace(old, new, 1)
 blocks_path.write_text(blocks, encoding="utf-8")
+
+# Persist the server-authoritative field strength in the terrain block state so the
+# renderer can show three unmistakable contamination stages without client guesses.
+terrain_path = SRC / "block/InfestedTerrainBlock.java"
+terrain = terrain_path.read_text(encoding="utf-8")
+if "public static final IntegerProperty MUTAGEN_LEVEL" not in terrain:
+    terrain = terrain.replace(
+        "import net.minecraft.world.level.block.state.BlockState;",
+        "import net.minecraft.world.level.block.state.BlockState;\n"
+        "import net.minecraft.world.level.block.state.StateDefinition;\n"
+        "import net.minecraft.world.level.block.state.properties.IntegerProperty;",
+        1)
+    terrain = terrain.replace(
+        "public final class InfestedTerrainBlock extends BaseEntityBlock {\n"
+        "    public InfestedTerrainBlock(Properties properties) { super(properties); }",
+        "public final class InfestedTerrainBlock extends BaseEntityBlock {\n"
+        "    public static final IntegerProperty MUTAGEN_LEVEL = IntegerProperty.create(\"mutagen_level\", 0, 3);\n"
+        "    public InfestedTerrainBlock(Properties properties) {\n"
+        "        super(properties);\n"
+        "        registerDefaultState(defaultBlockState().setValue(MUTAGEN_LEVEL, 0));\n"
+        "    }\n\n"
+        "    @Override\n"
+        "    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {\n"
+        "        builder.add(MUTAGEN_LEVEL);\n"
+        "    }",
+        1)
+    terrain = terrain.replace(
+        "    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {\n"
+        "        BlockEntity blockEntity = level.getBlockEntity(pos);",
+        "    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {\n"
+        "        int strength = MutationField.mutagenStrengthAt(level, pos);\n"
+        "        if (state.getValue(MUTAGEN_LEVEL) != strength) {\n"
+        "            level.setBlock(pos, state.setValue(MUTAGEN_LEVEL, strength), 3);\n"
+        "            state = level.getBlockState(pos);\n"
+        "        }\n"
+        "        BlockEntity blockEntity = level.getBlockEntity(pos);",
+        1)
+    if "public static final IntegerProperty MUTAGEN_LEVEL" not in terrain or "MutationField.mutagenStrengthAt(level, pos)" not in terrain:
+        raise SystemExit("Could not install synchronized terrain strength tiers")
+    terrain_path.write_text(terrain, encoding="utf-8")
+
+# Build dedicated block textures for each strength. The base remains recognizable, while
+# higher tiers gain increasingly bright, denser veins instead of relying on particles alone.
+texture_dir = ASSETS / "textures/block"
+base_texture = Image.open(texture_dir / "mutagen_boden.png").convert("RGBA")
+tier_styles = {
+    1: ((65, 222, 170, 255), (148, 70, 210, 255)),
+    2: ((255, 170, 55, 255), (225, 67, 180, 255)),
+    3: ((75, 245, 255, 255), (238, 245, 255, 255)),
+}
+for tier, (vein, core) in tier_styles.items():
+    image = base_texture.copy()
+    draw = ImageDraw.Draw(image)
+    if tier == 1:
+        draw.line([(0, 11), (4, 8), (7, 10), (10, 6), (15, 8)], fill=vein, width=1)
+        draw.point((7, 10), fill=core)
+        draw.point((11, 6), fill=core)
+    elif tier == 2:
+        draw.line([(0, 4), (4, 7), (7, 5), (10, 9), (15, 5)], fill=vein, width=2)
+        draw.line([(1, 13), (5, 11), (8, 13), (12, 11), (15, 13)], fill=core, width=1)
+        for px, py in ((3, 6), (7, 5), (10, 9), (13, 6)):
+            draw.rectangle((px, py, px + 1, py + 1), fill=core)
+    else:
+        draw.line([(0, 3), (4, 6), (7, 3), (10, 7), (15, 4)], fill=vein, width=2)
+        draw.line([(0, 12), (4, 9), (7, 12), (11, 9), (15, 12)], fill=core, width=2)
+        for px, py in ((2, 2), (5, 7), (8, 4), (11, 8), (14, 6), (4, 13), (9, 11), (13, 13)):
+            draw.rectangle((px, py, min(15, px + 1), min(15, py + 1)), fill=core)
+    image.save(texture_dir / f"mutagen_boden_strength{tier}.png", optimize=True)
+
+blockstates_path = ASSETS / "blockstates/mutagen_boden.json"
+blockstates_path.write_text(json.dumps({
+    "variants": {
+        f"mutagen_level={tier}": {
+            "model": "sporenwerk:block/mutagen_boden" if tier == 0
+                     else f"sporenwerk:block/mutagen_boden_strength{tier}"
+        } for tier in range(4)
+    }
+}, indent=2) + "\n", encoding="utf-8")
+for tier in range(1, 4):
+    model_path = ASSETS / f"models/block/mutagen_boden_strength{tier}.json"
+    model_path.write_text(json.dumps({
+        "parent": "minecraft:block/cube_all",
+        "textures": {"all": f"sporenwerk:block/mutagen_boden_strength{tier}"}
+    }, indent=2) + "\n", encoding="utf-8")
 
 # These are cosmetic client particles only, based on synchronized infected-terrain
 # and crop states. No client-side code changes the world or calculates game mechanics.
