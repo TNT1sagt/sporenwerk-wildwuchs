@@ -255,6 +255,6 @@ build.write_text(s, encoding="utf-8")
 readme = ROOT / "README.md"
 s = readme.read_text(encoding="utf-8")
 s += """
-\\n## Questline 1.1.0\\nThe five chapter objectives are shipped as vanilla advancements, so there is no mandatory FTB Quests dependency. They award seeds, machine parts, and filters. The final chapter is unlocked by a rare, harmless narrative note dropped by the weak Dämmerling. FTB Quests remains optional; its native import file still needs validation against the exact modpack release.\\n"""
+\n## Questline 1.1.0\nThe five chapter objectives are shipped as vanilla advancements, so there is no mandatory FTB Quests dependency. They award seeds, machine parts, and filters. The final chapter is unlocked by a rare, harmless narrative note dropped by the weak Dämmerling. FTB Quests remains optional; its native import file still needs validation against the exact modpack release.\n"""
 readme.write_text(s, encoding="utf-8")
 print("Added five progression chapters and the rare Field Report story item.")
