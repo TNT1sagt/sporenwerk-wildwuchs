@@ -100,6 +100,30 @@ p = ROOT / "src/main/java/de/sporenwerk/client/ClientHorrorEvents.java"
 s = p.read_text(encoding="utf-8").replace("SoundEvents.AMBIENT_CAVE,", "SoundEvents.AMBIENT_CAVE.value(),")
 p.write_text(s, encoding="utf-8")
 
+# Forge's safe DistExecutor only permits a dedicated static method reference in a separate class.
+# Keeping client configuration registration out of Sporenwerk itself avoids server-side class loading failures.
+p = ROOT / "src/main/java/de/sporenwerk/Sporenwerk.java"
+s = p.read_text(encoding="utf-8")
+s = s.replace("() -> Sporenwerk::registerClientConfig", "() -> de.sporenwerk.client.ClientConfigRegistration::register")
+p.write_text(s, encoding="utf-8")
+
+write("src/main/java/de/sporenwerk/client/ClientConfigRegistration.java", '''
+package de.sporenwerk.client;
+
+import de.sporenwerk.SporenwerkConfig;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+
+public final class ClientConfigRegistration {
+    private ClientConfigRegistration() {}
+
+    public static void register() {
+        ModLoadingContext.get().registerConfig(
+                ModConfig.Type.CLIENT, SporenwerkConfig.SPEC, "sporenwerk-client.toml");
+    }
+}
+''')
+
 # New output version.
 p = ROOT / "build.gradle"
 s = p.read_text(encoding="utf-8")
