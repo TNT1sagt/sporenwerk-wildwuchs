@@ -28,7 +28,7 @@ replace_once(
 )
 replace_once(
     "src/main/java/de/sporenwerk/registry/ModItems.java",
-    'public static final RegistryObject<Item> FELDHANDBUCH = ITEMS.register("feldhandbuch", () -> new FeldhandbuchItem(new Item.Properties().stacksTo(1)));',
+    'public static final RegistryObject<Item> FELDHANDBUCH = ITEMS.register("feldhandbuch",\n            () -> new FeldhandbuchItem(new Item.Properties().stacksTo(1)));',
     'public static final RegistryObject<Item> FELDHANDBUCH = ITEMS.register("feldhandbuch", () -> new FeldhandbuchItem(new Item.Properties().stacksTo(1)));\n    public static final RegistryObject<Item> VERWITTERTE_NOTIZ = ITEMS.register("verwitterte_notiz", () -> new VerwitterteNotizItem(new Item.Properties().stacksTo(1)));'
 )
 replace_once(
