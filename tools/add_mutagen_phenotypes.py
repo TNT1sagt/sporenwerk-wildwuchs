@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Add active-field strength tiers and crop-specific mutation phenotypes."""
 from pathlib import Path
+import json
 import re
 import sys
 
@@ -296,6 +297,190 @@ if "ItemBlockRenderTypes.setRenderLayer(ModBlocks.FASERROHR.get(), RenderType.cu
     client_source = client_source.replace(setup_old, setup_new, 1)
 client_path.write_text(client_source, encoding="utf-8")
 
+# Persistent crop appearance: strength is a real synced block-state property.
+# It is recalculated by the server on crop random ticks so it falls back to normal after cure/source shutdown.
+crop_base_rel = "src/main/java/de/sporenwerk/block/crop/AbstractSporeCropBlock.java"
+crop_java = read(crop_base_rel)
+crop_imports = [
+    "import net.minecraft.core.BlockPos;",
+    "import net.minecraft.server.level.ServerLevel;",
+    "import net.minecraft.util.RandomSource;",
+    "import net.minecraft.world.level.block.Block;",
+    "import net.minecraft.world.level.block.state.BlockState;",
+    "import net.minecraft.world.level.block.state.StateDefinition;",
+    "import net.minecraft.world.level.block.state.properties.IntegerProperty;",
+    "import de.sporenwerk.infection.MutationField;",
+]
+for _imp in crop_imports:
+    if _imp not in crop_java:
+        _pkg = "package de.sporenwerk.block.crop;"
+        if _pkg not in crop_java:
+            raise SystemExit("Cannot locate crop base package for mutation property")
+        crop_java = crop_java.replace(_pkg, _pkg + "\n\n" + _imp, 1)
+
+_class_anchor = "public abstract class AbstractSporeCropBlock extends CropBlock {"
+if "public static final IntegerProperty MUTAGEN_LEVEL" not in crop_java:
+    if _class_anchor not in crop_java:
+        raise SystemExit("Cannot locate AbstractSporeCropBlock declaration")
+    crop_java = crop_java.replace(
+        _class_anchor,
+        _class_anchor + '\n    public static final IntegerProperty MUTAGEN_LEVEL = IntegerProperty.create("mutagen_level", 0, 3);',
+        1,
+    )
+
+# Set the default state to unmutated without replacing CropBlock's default age.
+_ctor_match = re.search(r"protected\s+AbstractSporeCropBlock\s*\([^)]*\)\s*\{", crop_java)
+if not _ctor_match:
+    raise SystemExit("Cannot locate AbstractSporeCropBlock constructor")
+_ctor_start = _ctor_match.start()
+_ctor_end = method_end(crop_java, "protected AbstractSporeCropBlock")
+_ctor_body = crop_java[_ctor_start:_ctor_end]
+if "setValue(MUTAGEN_LEVEL, 0)" not in _ctor_body:
+    if "super(properties);" not in _ctor_body:
+        raise SystemExit("Cannot locate crop super-constructor call")
+    _ctor_body = _ctor_body.replace(
+        "super(properties);",
+        "super(properties);\n        registerDefaultState(defaultBlockState().setValue(MUTAGEN_LEVEL, 0));",
+        1,
+    )
+    crop_java = crop_java[:_ctor_start] + _ctor_body + crop_java[_ctor_end:]
+
+if "createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)" not in crop_java:
+    _ctor_end = method_end(crop_java, "protected AbstractSporeCropBlock")
+    _state_methods = """
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(MUTAGEN_LEVEL);
+    }
+
+    /** Mature plants also tick so field strength changes are reflected without replanting. */
+    @Override
+    public boolean isRandomlyTicking(BlockState state) {
+        return true;
+    }
+"""
+    crop_java = crop_java[:_ctor_end] + _state_methods + crop_java[_ctor_end:]
+
+_random_tick_call = "        super.randomTick(state, level, pos, random);"
+_mutation_refresh = """        int activeMutagenStrength = MutationField.mutagenStrengthAt(level, pos);
+        if (state.getValue(MUTAGEN_LEVEL) != activeMutagenStrength) {
+            state = state.setValue(MUTAGEN_LEVEL, activeMutagenStrength);
+            level.setBlock(pos, state, 2);
+        }
+        super.randomTick(state, level, pos, random);"""
+if "int activeMutagenStrength = MutationField.mutagenStrengthAt(level, pos);" not in crop_java:
+    if _random_tick_call not in crop_java:
+        raise SystemExit("Cannot locate crop random-tick hook for visible mutation refresh")
+    crop_java = crop_java.replace(_random_tick_call, _mutation_refresh, 1)
+(ROOT / crop_base_rel).write_text(crop_java, encoding="utf-8")
+
+# Build palette-shifted 16x16 alpha sprites. Their silhouettes remain voxel-pixel art;
+# only the phenotype palette and small vein pixels change with local mutagen strength.
+def _mutated_crop_sprite(source_path, crop_name, strength):
+    with Image.open(source_path) as source:
+        image = source.convert("RGBA")
+    new_pixels = []
+    for r, g, b, a in image.getdata():
+        if a == 0:
+            new_pixels.append((0, 0, 0, 0))
+            continue
+        if max(r, g, b) < 62:  # keep the one-pixel outline dark and readable
+            new_pixels.append((max(8, r // 2), max(10, g // 2), max(12, b // 2), a))
+        elif g >= r and g >= b:  # green leaves and stems
+            if strength == 1:
+                new_pixels.append((max(12, r // 2), min(255, g + 5), min(255, b + 42), a))
+            elif strength == 2:
+                new_pixels.append((min(255, r + 48), max(12, g // 2), min(255, b + 78), a))
+            else:
+                new_pixels.append((min(255, r + 82), max(8, g // 3), min(255, b + 120), a))
+        elif r > g and g >= b and g > 80:  # amber caps and crimson roots
+            if g >= 125:  # preserve the species' cap shape at low mutation
+                if strength == 1:
+                    new_pixels.append((r, min(255, g + 18), min(255, b + 42), a))
+                elif strength == 2:
+                    new_pixels.append((min(255, r * 2 // 3 + 25), min(255, g // 2 + 10), min(255, b + 95), a))
+                else:
+                    new_pixels.append((min(255, r * 4 // 5 + 18), min(255, g // 3 + 20), min(255, b + 145), a))
+            elif strength == 1:
+                new_pixels.append((min(255, r + 12), min(255, g + 30), min(255, b + 42), a))
+            elif strength == 2:
+                new_pixels.append((min(255, r * 4 // 5 + 30), max(12, g // 2), min(255, b + 85), a))
+            else:
+                new_pixels.append((min(255, r + 55), max(18, g // 2), min(255, b + 125), a))
+        elif r > 175 and g > 145 and b > 115:  # pale mushroom stems and spore highlights
+            if strength == 1:
+                new_pixels.append((min(255, r - 8), min(255, g + 8), min(255, b + 28), a))
+            elif strength == 2:
+                new_pixels.append((min(255, r - 6), min(255, g + 2), 255, a))
+            else:
+                new_pixels.append((min(255, r - 18), 255, min(255, b + 36), a))
+        else:
+            if strength == 1:
+                new_pixels.append((r, min(255, g + 8), min(255, b + 24), a))
+            elif strength == 2:
+                new_pixels.append((min(255, r + 35), max(8, g // 2), min(255, b + 70), a))
+            else:
+                new_pixels.append((min(255, r + 65), max(8, g // 3), min(255, b + 105), a))
+    image.putdata(new_pixels)
+    draw = ImageDraw.Draw(image)
+    # Tiny, hard-edged field traces differ by plant so the variant is visible at 16x16.
+    traces = {
+        "faserrohr": [(13, 6), (11, 9), (15, 12)],
+        "bernsteinkappe": [(8, 14), (15, 10), (22, 15)],
+        "rotwurzel": [(14, 19), (16, 22), (14, 25)],
+        "filtermoos": [(7, 18), (13, 14), (20, 18), (23, 21)],
+    }.get(crop_name, [])
+    trace_colors = {
+        1: (81, 218, 181, 255),
+        2: (220, 93, 242, 255),
+        3: (111, 250, 229, 255),
+    }
+    for x, y in traces:
+        if 0 <= x < 16 and 0 <= y < 16:
+            pixel = image.getpixel((x, y))
+            if pixel[3] > 0:
+                draw.point((x, y), fill=trace_colors[strength])
+    return image
+
+_age_to_stage = {
+    "faserrohr": [0, 1, 1, 2, 2, 2, 2, 2],
+    "bernsteinkappe": [0, 1, 2, 2, 2, 2, 2, 2],
+    "rotwurzel": [0, 0, 1, 1, 2, 2, 2, 2],
+    "filtermoos": [0, 1, 2, 2, 2, 2, 2, 2],
+}
+for _crop_name, _age_stages in _age_to_stage.items():
+    for _stage in range(3):
+        _base_texture = BLOCK_TEXTURES / f"{_crop_name}_stage{_stage}.png"
+        if not _base_texture.is_file():
+            raise SystemExit(f"Missing source crop texture {_base_texture}")
+        for _strength in range(1, 4):
+            _mutant = _mutated_crop_sprite(_base_texture, _crop_name, _strength)
+            _texture_name = f"{_crop_name}_stage{_stage}_mutagen{_strength}"
+            _save_texture(_texture_name, _mutant)
+            write(
+                f"src/main/resources/assets/sporenwerk/models/block/{_texture_name}.json",
+                json.dumps({
+                    "parent": "minecraft:block/crop",
+                    "textures": {"crop": f"sporenwerk:block/{_texture_name}"},
+                }, indent=2) + "\n",
+            )
+    _variants = {}
+    for _age, _stage in enumerate(_age_stages):
+        for _strength in range(4):
+            if _strength == 0:
+                _model_name = f"{_crop_name}_stage{_stage}"
+            else:
+                _model_name = f"{_crop_name}_stage{_stage}_mutagen{_strength}"
+            _variants[f"age={_age},mutagen_level={_strength}"] = {
+                "model": f"sporenwerk:block/{_model_name}"
+            }
+    write(
+        f"src/main/resources/assets/sporenwerk/blockstates/{_crop_name}.json",
+        json.dumps({"variants": _variants}, indent=2) + "\n",
+    )
+
 # Active saved sources determine the strongest tier overlapping a position.
 nodes_path = "src/main/java/de/sporenwerk/infection/MutationNodeData.java"
 nodes = read(nodes_path)
@@ -561,18 +746,19 @@ print("Active field strength tiers, crop-specific phenotypes, anchor suppression
 # Bump the actual mod version after all earlier patch scripts have run.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build = re.sub(r"version = '[^']+'", "version = '1.10.0'", build, count=1)
+build = re.sub(r"version = '[^']+'", "version = '1.11.0'", build, count=1)
 build_path.write_text(build, encoding="utf-8")
 readme = ROOT / "README.md"
 doc = readme.read_text(encoding="utf-8")
 doc += """
 
-## 1.10.0 — Minecraft texture and crop rendering repair
+## 1.11.0 — Visible mutagen crop phenotypes
 - Mutagen fields now have three spatial strength tiers, based on distance and vertical separation from an active saved source. Sterile anchors and deactivated fields grant no mutation tier.
 - Stronger fields accelerate Sporenwerk crop growth more often. Harvest traits are crop-specific: Faserrohr gains guaranteed fiber yield, Rotwurzel can form extra roots, Bernsteinkappe can overproduce at peak strength, and Filtermoos yields extra plant residue.
 - Mutagenic spore odds scale with local strength (12%, 22%, 35%). Manual harvesting and the automated Field Collector share the crop-yield rules; the collector still reserves every possible output before it spends energy or consumes a crop.
 - Cube faces now use opaque, 16x16 Minecraft block textures rather than transparent item sprites. The four custom crops explicitly use the cutout render layer so their transparent backgrounds render properly in-world. The texture QA sheet shows the actual block faces and no longer flags a spawn egg as a missing PNG.
-- Regression checks cover model-to-texture references, opaque world-face textures, cutout crops, spatial tier boundaries, anchor suppression, manual and automated phenotypes, and atomic machine output.
+- Each crop now stores a synced `mutagen_level` block state from 0 to 3. It selects a distinct 16x16 texture/model for each mutation tier, refreshes on server crop ticks, and returns to its normal sprite when the active field no longer covers it or a healing anchor suppresses the field.
+- Regression checks cover model-to-texture references, opaque world-face textures, cutout crops, all 32 age/mutation variants per plant, synced state refresh, spatial tier boundaries, anchor suppression, manual and automated phenotypes, and atomic machine output.
 """
 readme.write_text(doc, encoding="utf-8")
 print("Installed Sporenwerk 1.9.0 mutagen field strength tiers and crop phenotypes.")
