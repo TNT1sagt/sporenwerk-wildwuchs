@@ -172,6 +172,11 @@ de.update({
   "tooltip.sporenwerk.machine.biomasse_bioreaktor.line3": "Mit Mekanism kann die Maschine FE aus Universal-Kabeln annehmen.",
   "tooltip.sporenwerk.machine.buffer": "Rechtsklick öffnet Inventar und Fortschritt."
 })
+de.update({
+  "item.sporenwerk.wurzelkonzentrat": "Rotwurzel-Konzentrat",
+  "tooltip.sporenwerk.wurzelkonzentrat.heal": "Stellt 2 Herzen wieder her.",
+  "tooltip.sporenwerk.wurzelkonzentrat.cooldown": "Abklingzeit: 5 Sekunden. Leere Flasche wird zurückgegeben."
+})
 de_path.write_text(json.dumps(de, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 en = {
