@@ -151,7 +151,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sporenwerk-1.2.0-art-preview
-          path: source/sporenwerk-wildwuchs/build/reports/sporenwerk-art-preview.png
+          path: source/sporenwerk-wildwuchs/qa-output/sporenwerk-art-preview.png
           if-no-files-found: error
           retention-days: 14
 
