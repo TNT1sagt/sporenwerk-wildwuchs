@@ -46,15 +46,17 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          # SavedData.Factory is nested under SavedData in Minecraft 1.20.1.
+          # Forge 47.x for Minecraft 1.20.1 uses the three-argument storage overload.
           p = Path("src/main/java/de/sporenwerk/skill/SkillData.java")
           s = p.read_text(encoding="utf-8")
-          old = "private static final Factory<SkillData> FACTORY = new Factory<>("
-          new = "private static final SavedData.Factory<SkillData> FACTORY = new SavedData.Factory<>("
+          s = s.replace("import net.minecraft.util.datafix.DataFixTypes;\\n", "")
+          s = s.replace("    private static final Factory<SkillData> FACTORY = new Factory<>(SkillData::new, SkillData::load, DataFixTypes.LEVEL);\\n", "")
+          old = 'return level.getServer().overworld().getDataStorage().computeIfAbsent(FACTORY, "sporenwerk_progression");'
+          new = 'return level.getServer().overworld().getDataStorage().computeIfAbsent(SkillData::load, SkillData::new, "sporenwerk_progression");'
           if old in s:
               s = s.replace(old, new, 1)
-          if new not in s:
-              raise SystemExit("Could not apply SavedData.Factory fix")
+          if new not in s or "Factory<SkillData>" in s:
+              raise SystemExit("Could not apply legacy computeIfAbsent fix")
           p.write_text(s, encoding="utf-8")
 
           # BlockEntity coordinates are obtained from getBlockPos(), not a local 'pos' variable.
