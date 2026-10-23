@@ -58,6 +58,7 @@ write("src/main/java/de/sporenwerk/item/FeldscannerItem.java", """
 package de.sporenwerk.item;
 
 import de.sporenwerk.infection.MutationField;
+import de.sporenwerk.infection.MutationAnchorData;
 import de.sporenwerk.infection.MutationNodeData;
 import de.sporenwerk.registry.ModBlocks;
 import net.minecraft.ChatFormatting;
@@ -108,7 +109,7 @@ public final class FeldscannerItem extends Item {
             }
         } else if (state.is(ModBlocks.MUTATION_ANCHOR.get())) {
             reading = Component.translatable("message.sporenwerk.scanner.anchor",
-                    MutationField.RADIUS, MutationField.HALF_HEIGHT)
+                    MutationAnchorData.FIELD_RADIUS, MutationAnchorData.FIELD_HALF_HEIGHT)
                     .withStyle(ChatFormatting.AQUA);
         } else if (state.is(ModBlocks.SPORENRESISTENTER_BLOCK.get())) {
             reading = Component.translatable("message.sporenwerk.scanner.barrier")
@@ -319,6 +320,7 @@ require("MutationField.mutagenStrengthAt(serverLevel, pos)" in scanner,
         "scan must reuse server-authoritative saved field strength")
 for token in (
     "MutationNodeData.get(serverLevel).isActive(pos)",
+    "MutationAnchorData.FIELD_RADIUS, MutationAnchorData.FIELD_HALF_HEIGHT",
     "ModBlocks.INFEKTIONSHERD.get()",
     "ModBlocks.MUTATION_ANCHOR.get()",
     "ModBlocks.SPORENRESISTENTER_BLOCK.get()",
