@@ -145,7 +145,7 @@ if "private boolean isRepelledBySporeWard()" not in entity:
     entity = entity.replace(anchor, method + anchor, 1)
 
 # Guard both starts/continuations of the Mutagen Bloom scent goal.
-entity = entity.replaceAll(
+entity = entity.replace(
     "if (!mob.isAlive() || mob.getTarget() != null) return false;",
     "if (!mob.isAlive() || mob.getTarget() != null || mob.isRepelledBySporeWard()) return false;"
 )
