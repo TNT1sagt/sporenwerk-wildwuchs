@@ -11,6 +11,19 @@ require(version_match is not None and tuple(int(part) for part in version_match.
         "build must remain on the visible-field milestone or newer")
 blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
 require("MUTAGEN_BODEN" in blocks and ".lightLevel(state -> 4)" in blocks, "infected terrain must have a low glow")
+terrain = read("src/main/java/de/sporenwerk/block/InfestedTerrainBlock.java")
+for token in ("IntegerProperty MUTAGEN_LEVEL", "IntegerProperty.create(\"mutagen_level\", 0, 3)", "registerDefaultState(defaultBlockState().setValue(MUTAGEN_LEVEL, 0))", "MutationField.mutagenStrengthAt(level, pos)", "state.setValue(MUTAGEN_LEVEL, strength)"):
+    require(token in terrain, "terrain strength state missing " + token)
+terrain_states = json.loads(read("src/main/resources/assets/sporenwerk/blockstates/mutagen_boden.json"))
+for tier in range(4):
+    model = terrain_states["variants"].get(f"mutagen_level={tier}", {}).get("model")
+    expected = "sporenwerk:block/mutagen_boden" if tier == 0 else f"sporenwerk:block/mutagen_boden_strength{tier}"
+    require(model == expected, f"terrain visual tier {tier} must map to {expected}")
+    if tier:
+        require((root / f"src/main/resources/assets/sporenwerk/models/block/mutagen_boden_strength{tier}.json").is_file(),
+                f"terrain visual tier {tier} model is missing")
+        require((root / f"src/main/resources/assets/sporenwerk/textures/block/mutagen_boden_strength{tier}.png").is_file(),
+                f"terrain visual tier {tier} texture is missing")
 visual = read("src/main/java/de/sporenwerk/client/MutagenFieldVisuals.java")
 for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.SOUL_FIRE_FLAME", "ParticleTypes.PORTAL", "ParticleTypes.END_ROD", "mutagenLevel >= 2", "mutagenLevel >= 3", "0.42F", "0.16F", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 10L", "int particleBudget = 24", "particleBudget--", "dy = -2; dy <= 2 && particleBudget > 0"):
     require(token in visual, "client visuals missing " + token)
