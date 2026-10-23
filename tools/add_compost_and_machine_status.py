@@ -253,6 +253,10 @@ if "public int inputItemCount()" not in ms:
 
     public boolean hasMachineInput() { return inputItemCount() > 0; }
 
+    public String machineType() {
+        return machine.getBlockState().getBlock().builtInRegistryHolder().key().location().getPath();
+    }
+
     public int requiredEnergy() {
         return switch (machineType()) {
             case "feldsammler" -> 20;
