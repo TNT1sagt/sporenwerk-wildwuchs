@@ -66,6 +66,28 @@ jobs:
           jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'META-INF/mods.toml'
           jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/client/menu/MachineScreen.class'
           jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'assets/sporenwerk/textures/item/feldhandbuch.png'
+          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/client/menu/SkillTreeScreen.class'
+          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/entity/DaemmerlingEntity.class'
+          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'de/sporenwerk/item/VerwitterteNotizItem.class'
+          jar tf build/libs/sporenwerk-1.1.0.jar | grep -q 'data/sporenwerk/advancements/field_behind_glass.json'
+
+      - name: Package optional FTB Quests import
+        run: |
+          set -euo pipefail
+          test -s source/sporenwerk-wildwuchs/extras/ftbquests/config/ftbquests/quests/chapters/sporenwerk_wildwuchs.snbt
+          mkdir -p packages
+          cp -R source/sporenwerk-wildwuchs/extras/ftbquests/. packages/
+          cd packages
+          zip -qr "$GITHUB_WORKSPACE/sporenwerk-ftbquests-import-1.20.1.zip" .
+          unzip -t "$GITHUB_WORKSPACE/sporenwerk-ftbquests-import-1.20.1.zip"
+
+      - name: Upload optional FTB Quests import
+        uses: actions/upload-artifact@v4
+        with:
+          name: sporenwerk-ftbquests-import-1.20.1
+          path: sporenwerk-ftbquests-import-1.20.1.zip
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
