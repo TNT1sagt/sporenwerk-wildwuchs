@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import json, sys
+import json, re, sys
 root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
 def read(path): return (root / path).read_text(encoding="utf-8")
 def require(ok, message):
     if not ok: raise SystemExit("Visible mutagen field regression: " + message)
-require("version = '1.13.0'" in read("build.gradle"), "build version must be 1.13.0")
+version_text = read("build.gradle")
+version_match = re.search(r"version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)['\"]", version_text)
+require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 13, 0),
+        "build must remain on the visible-field milestone or newer")
 blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
 require("MUTAGEN_BODEN" in blocks and ".lightLevel(state -> 4)" in blocks, "infected terrain must have a low glow")
 visual = read("src/main/java/de/sporenwerk/client/MutagenFieldVisuals.java")
