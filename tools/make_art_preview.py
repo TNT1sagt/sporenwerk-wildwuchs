@@ -9,11 +9,11 @@ assets = root / "src/main/resources/assets/sporenwerk"
 out = root / "qa-output/sporenwerk-art-preview.png"
 out.parent.mkdir(parents=True, exist_ok=True)
 
-W, H = 1400, 920
+W, H = 1400, 1120
 canvas = Image.new("RGB", (W, H), (17, 25, 21))
 draw = ImageDraw.Draw(canvas)
 font = ImageFont.load_default()
-draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.2.0  /  ART REVIEW", fill=(234, 219, 169), font=font)
+draw.text((24, 15), "SPORENWERK: WILDWUCHS 1.10.0  /  MINECRAFT PIXEL TEXTURE QA", fill=(234, 219, 169), font=font)
 draw.line((24, 35, W-24, 35), fill=(103, 132, 100), width=1)
 
 def panel(x, y, w, h, title):
@@ -43,26 +43,41 @@ for i, name in enumerate(machine_names):
     paste_scaled(assets/"textures/block"/f"{name}_panel.png", 735+i*210, 105, 160, 130, name.upper())
     paste_scaled(assets/"models/block"/f"{name}.json", 735+i*210, 250, 1, 1, None) if False else None
 
-panel(24, 365, 1352, 240, "CROP GROWTH STAGES")
+panel(24, 365, 1352, 200, "OPAQUE MINECRAFT BLOCK FACES (16x16)")
+block_faces = [
+    ("infektionsherd_top", "Mutagenherd"),
+    ("mutagen_boden_top", "Infizierter Boden"),
+    ("mutagen_boden_side", "Boden-Seite"),
+    ("mutationsanker_top", "Heilanker"),
+    ("sporenresistenter_block_top", "Resistenter Block"),
+    ("feldsammler", "Feldsammler vorne"),
+    ("feldsammler_side", "Feldsammler Seite"),
+    ("feldsammler_top", "Feldsammler oben"),
+]
+for idx, (name, label) in enumerate(block_faces):
+    x = 37 + idx*165
+    paste_scaled(assets/"textures/block"/f"{name}.png", x, 395, 88, 104, label)
+
+panel(24, 580, 1352, 200, "CROP GROWTH STAGES / CUTOUT")
 crop_names = ["faserrohr", "bernsteinkappe", "rotwurzel", "filtermoos"]
 for row, name in enumerate(crop_names):
     x = 45 + row*332
-    draw.text((x, 392), name.upper(), fill=(221, 197, 127), font=font)
+    draw.text((x, 606), name.upper(), fill=(221, 197, 127), font=font)
     for stage in range(3):
         path = assets/"textures/block"/f"{name}_stage{stage}.png"
-        paste_scaled(path, x+stage*96, 414, 86, 105, f"stage {stage+1}")
+        paste_scaled(path, x+stage*96, 625, 86, 92, f"stage {stage+1}")
 
-panel(24, 620, 1352, 275, "ITEM ICONS AND STORY")
+panel(24, 795, 1352, 295, "ITEM ICONS AND MUTAGEN RESEARCH")
 items = [
     "faser", "bernsteinkappe", "rotwurzel", "filtermoos", "faserrohr_samen",
     "bernsteinkappe_sporen", "rotwurzel_samen", "filtermoos_sporen",
     "pflanzenreste", "biomasse", "feldwissen", "maschinenteil", "filter",
     "feldhandbuch", "wurzelkonzentrat", "myzelkompost", "verwitterte_notiz",
-    "daemmerling_spawn_egg"
+    "mutagenprobe", "mutagenextrakt", "mutagene_sporen"
 ]
 for idx, name in enumerate(items):
     col, row = idx % 9, idx // 9
-    x, y = 45 + col*145, 655 + row*108
-    paste_scaled(assets/"textures/item"/f"{name}.png", x, y, 86, 76, name)
+    x, y = 35 + col*150, 822 + row*84
+    paste_scaled(assets/"textures/item"/f"{name}.png", x, y, 78, 57, name)
 canvas.save(out, optimize=True)
 print(f"Wrote art preview: {out}")
