@@ -500,14 +500,19 @@ if validator_path.is_file():
         if assignment_line is None:
             raise SystemExit("Cannot locate legacy missing-age calculation")
         indent = re.match(r"\s*", validator_lines[assignment_line]).group(0)
-        # The original validator uses a single-line missing-age comprehension.
-        validator_lines[assignment_line] = (
-            indent + "covered_ages = {key.split(',', 1)[0] for key in variants}"
-        )
-        validator_lines.insert(
-            assignment_line + 1,
+        # Remove the complete original assignment, even if its comprehension spans lines.
+        def _balance(line):
+            return (line.count("(") + line.count("[") + line.count("{")
+                    - line.count(")") - line.count("]") - line.count("}"))
+        assignment_end = assignment_line
+        balance = _balance(validator_lines[assignment_end])
+        while balance > 0 and assignment_end + 1 < message_line:
+            assignment_end += 1
+            balance += _balance(validator_lines[assignment_end])
+        validator_lines[assignment_line:assignment_end + 1] = [
+            indent + "covered_ages = {key.split(',', 1)[0] for key in variants}",
             indent + 'missing = sorted(f"age={age}" for age in range(8) if f"age={age}" not in covered_ages)',
-        )
+        ]
         validator = "\n".join(validator_lines) + "\n"
         validator_path.write_text(validator, encoding="utf-8")
 
