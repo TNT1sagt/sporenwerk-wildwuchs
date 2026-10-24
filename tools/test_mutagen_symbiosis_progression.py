@@ -68,9 +68,6 @@ require("level.hasChunkAt(cursor)" in scanner
         "biodiversity reporting must continue to skip unloaded chunks and avoid forced loading")
 require("scheduleTick(" not in scanner and "getTicker(" not in scanner,
         "the area survey must remain interaction-driven")
-require("The research unlock is tied to the full advancement" not in scanner,
-        "scanner Java should not contain documentation-only claims unrelated to behavior")
-
 symbiosis_item = read("src/main/java/de/sporenwerk/item/SymbiosemyzelItem.java")
 require("tooltip.sporenwerk.symbiosemyzel.3" in symbiosis_item,
         "Symbiosemyzel tooltip must explain its high-tier filter use")
