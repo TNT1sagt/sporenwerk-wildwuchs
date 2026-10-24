@@ -89,6 +89,13 @@ public final class SporeFilterMaskItem extends ArmorItem {
                 .withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltermaske.2")
                 .withStyle(ChatFormatting.GRAY));
+        int maxDurability = stack.getMaxDamage();
+        int remainingDurability = Math.max(0, maxDurability - stack.getDamageValue());
+        int percent = maxDurability <= 0 ? 0 : remainingDurability * 100 / maxDurability;
+        ChatFormatting conditionColor = percent <= 20 ? ChatFormatting.RED
+                : percent <= 50 ? ChatFormatting.GOLD : ChatFormatting.GREEN;
+        tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltermaske.condition", percent)
+                .withStyle(conditionColor));
         super.appendHoverText(stack, level, tooltip, flag);
     }
 }
@@ -342,7 +349,8 @@ for locale, entries in (
     ("de_de.json", {
         "item.sporenwerk.sporenfiltermaske": "Sporenfiltermaske",
         "tooltip.sporenwerk.sporenfiltermaske.1": "Trage sie im Kopf-Slot, um Mutagen-Exposition abzufangen.",
-        "tooltip.sporenwerk.sporenfiltermaske.2": "Jeder abgefangene Feldimpuls verbraucht Filterhaltbarkeit. Mit Leder reparierbar.",
+        "tooltip.sporenwerk.sporenfiltermaske.2": "Jeder abgefangene Feldimpuls verbraucht Filterhaltbarkeit. Mit Filtereinsätzen warten.",
+        "tooltip.sporenwerk.sporenfiltermaske.condition": "Filterzustand: %s Prozent Haltbarkeit",
         "item.sporenwerk.sporenfiltereinsatz": "Sporenfiltereinsatz",
         "tooltip.sporenwerk.sporenfiltereinsatz.1": "Mit getragener Maske in der Hand rechtsklicken, um sie zu warten.",
         "tooltip.sporenwerk.sporenfiltereinsatz.2": "Stellt bis zu 60 Haltbarkeit wieder her.",
@@ -353,7 +361,8 @@ for locale, entries in (
     ("en_us.json", {
         "item.sporenwerk.sporenfiltermaske": "Spore Filter Mask",
         "tooltip.sporenwerk.sporenfiltermaske.1": "Wear in the helmet slot to intercept mutagen exposure.",
-        "tooltip.sporenwerk.sporenfiltermaske.2": "Each intercepted field pulse consumes durability. Repair with leather.",
+        "tooltip.sporenwerk.sporenfiltermaske.2": "Each intercepted field pulse consumes durability. Maintain it with filter cartridges.",
+        "tooltip.sporenwerk.sporenfiltermaske.condition": "Filter condition: %s percent durability",
         "item.sporenwerk.sporenfiltereinsatz": "Spore Filter Cartridge",
         "tooltip.sporenwerk.sporenfiltereinsatz.1": "Use while wearing the mask to replace its filter.",
         "tooltip.sporenwerk.sporenfiltereinsatz.2": "Restores up to 60 durability.",
@@ -379,7 +388,7 @@ readme = readme_path.read_text(encoding="utf-8")
 heading = "## Version 1.14.0 — Sporenfilter und Expositionsschutz"
 section = """## Version 1.14.0 — Sporenfilter und Expositionsschutz
 
-- **Sporenfiltermaske:** Herstellbarer Helm mit eigener Pixeltextur, passendem Rüstungs-Layer und zwei Sprachen.
+- **Sporenfiltermaske:** Herstellbarer Helm mit eigener Pixeltextur, passendem Rüstungs-Layer und zweisprachiger Anzeige der verbleibenden Haltbarkeit (grün, gelb, rot).
 - **Austauschbarer Filtereinsatz:** Stelle ihn aus mutagenen Sporen, Filtermoos und Holzkohle her. Rechtsklick mit dem Einsatz, während die Maske getragen wird, stellt bis zu 60 Haltbarkeit wieder her; pro Wartung wird ein Einsatz verbraucht. In Kreativ wird kein Einsatz verbraucht.
 - **Echte Feld-Gegenmaßnahme:** Die Maske fängt Feld-Expositionsimpulse ab, statt Infektion nur nachträglich zu heilen. Jeder abgefangene Impuls verbraucht Haltbarkeit; ohne Maske bleibt die bisherige Feldgefahr bestehen.
 - **Balance und Persistenz:** Der Schutz greift direkt in die serverseitige Expositionslogik ein und speichert den verlängerten Expositions-Cooldown im Spieler-NBT. Clienteffekte können die Mechanik nicht vortäuschen.
@@ -409,6 +418,10 @@ mask_item = read("src/main/java/de/sporenwerk/item/SporeFilterMaskItem.java")
 require("appendHoverText" in mask_item and "tooltip.sporenwerk.sporenfiltermaske.1" in mask_item
         and "tooltip.sporenwerk.sporenfiltermaske.2" in mask_item,
         "mask must show its protective function in the in-game tooltip")
+for token in ("stack.getMaxDamage()", "remainingDurability * 100 / maxDurability",
+              "percent <= 20 ? ChatFormatting.RED", "percent <= 50 ? ChatFormatting.GOLD",
+              "tooltip.sporenwerk.sporenfiltermaske.condition"):
+    require(token in mask_item, "mask condition display is missing " + token)
 creative = read("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java")
 require("output.accept(ModItems.SPORENFILTERMASKE.get())" in creative,
         "mask must appear in the creative catalogue")
@@ -470,6 +483,7 @@ for locale in ("de_de.json","en_us.json"):
         "item.sporenwerk.sporenfiltermaske",
         "tooltip.sporenwerk.sporenfiltermaske.1",
         "tooltip.sporenwerk.sporenfiltermaske.2",
+        "tooltip.sporenwerk.sporenfiltermaske.condition",
         "item.sporenwerk.sporenfiltereinsatz",
         "tooltip.sporenwerk.sporenfiltereinsatz.1",
         "tooltip.sporenwerk.sporenfiltereinsatz.2",
