@@ -559,6 +559,67 @@ new_active = """    public static boolean isInActiveMutagenField(Level level, Bl
     }"""
 replace_once(field_path, old_active, new_active, "shared active-field predicate")
 
+# Field intensity is also a survival trade-off: weak fields are manageable, while the
+# strongest tier causes more frequent exposure. Healing anchors make strength zero.
+events_path = "src/main/java/de/sporenwerk/infection/InfectionEvents.java"
+events = read(events_path)
+if "import net.minecraft.network.chat.Component;" not in events:
+    events = events.replace(
+        "import net.minecraft.world.effect.MobEffectInstance;",
+        "import net.minecraft.ChatFormatting;\nimport net.minecraft.network.chat.Component;\nimport net.minecraft.world.effect.MobEffectInstance;",
+        1,
+    )
+elif "import net.minecraft.ChatFormatting;" not in events:
+    events = events.replace(
+        "import net.minecraft.network.chat.Component;",
+        "import net.minecraft.ChatFormatting;\nimport net.minecraft.network.chat.Component;",
+        1,
+    )
+exposure_anchor = """        boolean exposed = level.getMaxLocalRawBrightness(player.blockPosition()) < 8
+                && !level.getEntitiesOfClass(DaemmerlingEntity.class,
+                    player.getBoundingBox().inflate(6.0D), entity -> entity.isAlive()).isEmpty();
+
+        if (exposed && player.tickCount % 100 == 0) {"""
+exposure_patch = """        int mutagenStrength = MutationField.mutagenStrengthAt(level, player.blockPosition());
+        int fieldExposureInterval = mutagenStrength >= 3 ? 300 : mutagenStrength == 2 ? 600
+                : mutagenStrength == 1 ? 1200 : 0;
+        boolean fieldExposurePulse = fieldExposureInterval > 0
+                && player.tickCount % fieldExposureInterval == 0;
+
+        boolean exposed = level.getMaxLocalRawBrightness(player.blockPosition()) < 8
+                && !level.getEntitiesOfClass(DaemmerlingEntity.class,
+                    player.getBoundingBox().inflate(6.0D), entity -> entity.isAlive()).isEmpty();
+
+        if (fieldExposurePulse) {
+            InfectionState.setLevel(player, infection + 1);
+            player.displayClientMessage(Component.translatable(
+                    "message.sporenwerk.mutagen.field_exposure", mutagenStrength)
+                    .withStyle(ChatFormatting.LIGHT_PURPLE), true);
+        } else if (exposed && player.tickCount % 100 == 0) {"""
+if "int fieldExposureInterval = " not in events:
+    if exposure_anchor not in events:
+        raise SystemExit("Cannot locate infection exposure branch for mutagen field risk")
+    events = events.replace(exposure_anchor, exposure_patch, 1)
+old_cure = """else if (!exposed && !InfectionState.surrendered(player)
+                && infection > 0"""
+new_cure = """else if (mutagenStrength == 0 && !exposed && !InfectionState.surrendered(player)
+                && infection > 0"""
+if new_cure not in events:
+    if old_cure not in events:
+        raise SystemExit("Cannot locate passive infection recovery branch")
+    events = events.replace(old_cure, new_cure, 1)
+(ROOT / events_path).write_text(events, encoding="utf-8")
+
+# The warning is localized on both supported language packs.
+for filename, message in (
+    ("de_de.json", "Mutagenstufe %s: Deine Infektion steigt!"),
+    ("en_us.json", "Mutagen tier %s: your infection is increasing!"),
+):
+    language_path = ROOT / "src/main/resources/assets/sporenwerk/lang" / filename
+    language = json.loads(language_path.read_text(encoding="utf-8"))
+    language["message.sporenwerk.mutagen.field_exposure"] = message
+    language_path.write_text(json.dumps(language, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
 # Plant growth accelerates with local strength, but not inside an anchor's sterile zone.
 field = read(field_path)
 growth_old = "            if (random.nextFloat() < 0.20F) level.setBlock(pos, crop.getStateForAge(crop.getAge(state) + 1), 2);"
@@ -732,6 +793,7 @@ nodes = read("src/main/java/de/sporenwerk/infection/MutationNodeData.java")
 field = read("src/main/java/de/sporenwerk/infection/MutationField.java")
 crop = read("src/main/java/de/sporenwerk/block/crop/AbstractSporeCropBlock.java")
 machine = read("src/main/java/de/sporenwerk/block/entity/MachineBlockEntity.java")
+events = read("src/main/java/de/sporenwerk/infection/InfectionEvents.java")
 require("getFieldStrengthAt(BlockPos target, int radius, int halfHeight)" in nodes,
         "strength must come from persisted active sources")
 require("horizontalSquared <= 4L && vertical <= 1 ? 3" in nodes
@@ -785,7 +847,21 @@ for name, stages in age_stages.items():
                                 else f"sporenwerk:block/{name}_stage{stage}_mutagen{strength}")
             require(model.get("textures", {}).get("crop") == expected_texture,
                     name + " mutation state must select its own stage texture")
-print("Mutagen tiers, crop-specific yields, 128 visible age/mutation variants, and collector transactions passed.")
+require("MutationField.mutagenStrengthAt(level, player.blockPosition())" in events,
+        "player exposure must use server-authoritative local field strength")
+require("mutagenStrength >= 3 ? 300 : mutagenStrength == 2 ? 600" in events
+        and "mutagenStrength == 1 ? 1200 : 0" in events,
+        "tier 1, 2, and 3 must apply progressively faster infection pressure")
+require("if (fieldExposurePulse)" in events and "InfectionState.setLevel(player, infection + 1)" in events
+        and "message.sporenwerk.mutagen.field_exposure" in events,
+        "field exposure must raise infection and warn the player")
+require("mutagenStrength == 0 && !exposed && !InfectionState.surrendered(player)" in events,
+        "daylight recovery must not erase infection while a mutagen field is actively exposing the player")
+for name in ("de_de.json", "en_us.json"):
+    language = json.loads(read(f"src/main/resources/assets/sporenwerk/lang/{name}"))
+    require("message.sporenwerk.mutagen.field_exposure" in language,
+            name + " must localize the field-risk warning")
+print("Mutagen tiers, crop-specific yields, field-risk scaling, visible variants, and collector transactions passed.")
 ''')
 
 # Bump the actual mod version after all earlier patch scripts have run.
@@ -801,6 +877,7 @@ doc += """
 - Mutagen fields now have three spatial strength tiers, based on distance and vertical separation from an active saved source. Sterile anchors and deactivated fields grant no mutation tier.
 - Stronger fields accelerate Sporenwerk crop growth more often. Harvest traits are crop-specific: Faserrohr gains guaranteed fiber yield, Rotwurzel can form extra roots, Bernsteinkappe can overproduce at peak strength, and Filtermoos yields extra plant residue.
 - Mutagenic spore odds scale with local strength (12%, 22%, 35%). Manual harvesting and the automated Field Collector share the crop-yield rules; the collector still reserves every possible output before it spends energy or consumes a crop.
+- Field risk scales too: at strengths 1/2/3, staying inside an active field raises infection at most once every 60/30/15 seconds. A healing anchor suppresses both the field benefits and this exposure; passive daylight recovery does not cancel exposure while the player remains in an active field.
 - Cube faces now use opaque, 16x16 Minecraft block textures rather than transparent item sprites. The four custom crops explicitly use the cutout render layer so their transparent backgrounds render properly in-world. The texture QA sheet shows the actual block faces and no longer flags a spawn egg as a missing PNG.
 - Each crop now stores a synced `mutagen_level` block state from 0 to 3. It selects a distinct 16x16 texture/model for each mutation tier, refreshes on server crop ticks, and returns to its normal sprite when the active field no longer covers it or a healing anchor suppresses the field.
 - Regression checks cover model-to-texture references, opaque world-face textures, cutout crops, all 32 age/mutation variants per plant, synced state refresh, spatial tier boundaries, anchor suppression, manual and automated phenotypes, and atomic machine output.
