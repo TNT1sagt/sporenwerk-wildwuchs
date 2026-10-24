@@ -1,18 +1,35 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.45.0 — Multi-System-Feldanalyse, Rotwurzel-Gegenmittel und Mutagenblüten-Signal.**
+**Aktueller Entwicklungsstand: 1.47.0 — Symbiose-Forschung, Filter-Endstufe und Biodiversitätsdiagnose.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.45.0
+## Aktueller Schwerpunkt — 1.47.0
 
-- Der Feldscanner analysiert sowohl einzelne Blöcke als auch einen lokalen Bereich über Mutagenboden, mutierte Pflanzen, Sporenabwehr, Dämpferladungen, Sirenen, Relais und nahe Kristallpirscher.
-- Rotwurzel-Konzentrat heilt zwei Herzen und entfernt Gift sowie Resonanzverlangsamung; eine eigene Rückmeldung nennt die tatsächlich entfernten Effekte.
-- Mutagenblüten haben zusätzlich zu den bestehenden Partikeln und Belohnungen ein akustisches Ereignissignal.
-- Der Bereichsscan bleibt serverseitig, einmalig pro Interaktion, auf 17×9×17 Blöcke begrenzt und überspringt ungeladene Chunks.
-- Die Release-Pipeline prüft Regressionen, übersetzte Texte, Forge-Build, installierbare JAR und den dedizierten Serverstart.
+- Artenvielfalt ist nun Teil der Ausrüstungsprogression: Symbiosemyzel aus einem artenreichen Mutagenfeld wird für den mutagenen Filtereinsatz der höchsten Stufe benötigt.
+- Rezeptfreigabe erfordert beide Forschungsfunde: Mutagenextrakt und Symbiosemyzel.
+- Der Feldscanner zählt die vier Sporenwerk-Pflanzenarten im gesamten Messbereich und erklärt die zusätzliche Nahbereichsbedingung für Symbiosemyzel.
+- Die Biodiversitätsdiagnose bleibt einmalig, serverseitig und chunk-sicher; der Gesamtwert behauptet nicht, dass ein passender lokaler Pflanzencluster existiert.
+- Die Release-Pipeline prüft Ressourcen, Übersetzungen, Regressionen, Forge-Build, installierbare JAR und dedizierten Serverstart.
 
 ---
+
+## Version 1.47.0 — Symbiose-Forschung und Filter-Endstufe
+
+- **Ökologie wird zur Ausrüstungsprogression:** Der mutagene Filtereinsatz der höchsten Stufe benötigt Symbiosemyzel zusätzlich zu verstärktem Einsatz, Mutagenextrakt und Amethystsplitter.
+- **Echte Forschungsfreigabe:** Das Rezept wird erst freigeschaltet, nachdem sowohl Mutagenextrakt als auch Symbiosemyzel entdeckt wurden. Tooltipps erklären die drei Einsatzzwecke des Myzels.
+- **Scanner mit Biodiversitätsdiagnose:** Der Umgebungsbericht zählt die vier Sporenwerk-Pflanzenarten im gesamten Messbereich. Er weist ausdrücklich darauf hin, dass drei verschiedene Arten dicht beieinander in Feldstufe II/III wachsen müssen.
+- **Bestehende Balance bleibt erhalten:** Haltbarkeit, serverseitige Forschungsprüfung und übrige Komponenten der Upgrade-Kette bleiben erhalten; ergänzt wird nur die ökologische Zutat für die Endstufe.
+- **Qualitätssicherung:** Regressionen prüfen Zutaten, Freigabelogik, Scannerzählung, Chunk-Sicherheit und DE/EN-Texte; Forge-Build, JAR-Prüfung und Serverstart bleiben Pflicht.
+
+## Version 1.46.0 — Mutagen-Symbiose und nachhaltige Resonanzpflege
+
+- **Artenreiche Felder werden belohnt:** Bei der Ernte im aktiven Mutagenfeld der Stufe II oder III kann selten Symbiosemyzel entstehen, wenn in der begrenzten Nachbarschaft mindestens drei verschiedene Sporenwerk-Pflanzenarten wachsen.
+- **Ein gemeinsamer Erntevertrag:** Manuelle Ernte und Feldsammler verwenden dieselbe serverseitige Biodiversitätsprüfung und dieselbe stufenabhängige Chance. Der Feldsammler reserviert Symbiosemyzel zusammen mit Produkt, Pflanzenresten und mutagenen Sporen, bevor er Energie verbraucht oder die Pflanze verändert.
+- **Nützlich für die Abwehr:** Symbiosemyzel stellt bei einem Rechtsklick auf einen Resonanzdämpfer genau eine Ladung wieder her. Ein Kristallpirscher-Resonanzsplitter bleibt der schnellere Weg zur vollständigen Aufladung. Bei vollem Dämpfer wird kein Symbiosemyzel verbraucht.
+- **Rückmeldung und Forschung:** Eigenes 16×16-Item-Artwork, Tooltip, deutsche/englische Texte und ein Forschungsfortschritt dokumentieren den Fund. Die visuelle QA-Vorschau zeigt das neue Item.
+- **Ressourcengrenzen:** Die Biodiversitätsabfrage ist auf Radius 3 und Höhe ±1 begrenzt, überspringt ungeladene Chunks und läuft nur im Erntevorgang. Kein Block-Ticker und kein erzwungenes Chunk-Laden.
+- **Qualitätssicherung:** Regressionen prüfen die Artenzählung, Chancen nach Feldstärke, identische manuelle/automatisierte Ernte, atomare Maschinenpufferreservierung, Dämpferladung, Relay-Aktualisierung, Texte und Ressourcen.
 
 ## Version 1.45.0 — Multi-System-Feldanalyse, Gegenmittel und Ereignisfeedback
 
