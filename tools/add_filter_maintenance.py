@@ -376,6 +376,63 @@ write("src/main/resources/assets/sporenwerk/models/item/sporenfilterwartungstisc
     "parent": "sporenwerk:block/sporenfilterwartungstisch"
 }, ensure_ascii=False, indent=2) + "\n")
 
+# A crisp crystal sprite and opaque block faces are authored as real 16x16 pixel textures.
+core_icon = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+d = ImageDraw.Draw(core_icon)
+core_outline = (25, 24, 36, 255)
+violet_core = (103, 54, 145, 255)
+violet_light = (185, 127, 226, 255)
+teal_light = (131, 247, 220, 255)
+d.polygon([(7, 0), (11, 2), (15, 7), (12, 12), (8, 15), (3, 12), (0, 7), (3, 3)], fill=core_outline)
+d.polygon([(7, 2), (10, 3), (13, 7), (11, 11), (8, 13), (4, 11), (2, 7), (4, 4)], fill=violet_core)
+d.polygon([(7, 2), (10, 3), (8, 7), (4, 5)], fill=violet_light)
+d.polygon([(8, 7), (13, 7), (11, 11), (8, 13)], fill=(69, 155, 151, 255))
+d.point((5, 6), fill=teal_light)
+d.point((9, 4), fill=(234, 216, 255, 255))
+core_icon.save(item_texture_dir / "mutagenkernkristall.png", optimize=True)
+write("src/main/resources/assets/sporenwerk/models/item/mutagenkernkristall.json", json.dumps({
+    "parent": "minecraft:item/generated",
+    "textures": {"layer0": "sporenwerk:item/mutagenkernkristall"}
+}, ensure_ascii=False, indent=2) + "\\n")
+
+stabilizer_top = Image.new("RGBA", (16, 16), (30, 48, 51, 255))
+d = ImageDraw.Draw(stabilizer_top)
+d.rectangle((0, 0, 15, 15), outline=(15, 25, 29, 255), width=2)
+d.rectangle((2, 2, 13, 13), fill=(59, 89, 92, 255))
+d.rectangle((4, 4, 11, 11), fill=(27, 39, 46, 255))
+d.polygon([(7, 4), (9, 5), (11, 8), (9, 11), (7, 12), (5, 9), (5, 7)], fill=violet_core)
+d.point((7, 5), fill=teal_light)
+d.point((8, 8), fill=violet_light)
+stabilizer_top.save(texture_dir / "mutagenfeld_stabilisator_top.png", optimize=True)
+
+stabilizer_side = Image.new("RGBA", (16, 16), (19, 30, 35, 255))
+d = ImageDraw.Draw(stabilizer_side)
+d.rectangle((1, 1, 14, 4), fill=(107, 135, 136, 255))
+d.rectangle((2, 2, 13, 3), fill=(57, 84, 88, 255))
+d.rectangle((1, 5, 14, 12), fill=(35, 51, 59, 255))
+d.rectangle((2, 6, 13, 11), fill=(60, 91, 91, 255))
+d.rectangle((4, 7, 11, 10), fill=(25, 36, 43, 255))
+d.rectangle((6, 7, 9, 10), fill=violet_core)
+d.point((7, 7), fill=teal_light)
+d.rectangle((1, 13, 14, 14), fill=(115, 145, 144, 255))
+d.rectangle((2, 14, 4, 15), fill=(17, 28, 31, 255))
+d.rectangle((11, 14, 13, 15), fill=(17, 28, 31, 255))
+stabilizer_side.save(texture_dir / "mutagenfeld_stabilisator_side.png", optimize=True)
+
+write("src/main/resources/assets/sporenwerk/blockstates/mutagenfeld_stabilisator.json", json.dumps({
+    "variants": {"": {"model": "sporenwerk:block/mutagenfeld_stabilisator"}}
+}, ensure_ascii=False, indent=2) + "\\n")
+write("src/main/resources/assets/sporenwerk/models/block/mutagenfeld_stabilisator.json", json.dumps({
+    "parent": "minecraft:block/cube_column",
+    "textures": {
+        "end": "sporenwerk:block/mutagenfeld_stabilisator_top",
+        "side": "sporenwerk:block/mutagenfeld_stabilisator_side"
+    }
+}, ensure_ascii=False, indent=2) + "\\n")
+write("src/main/resources/assets/sporenwerk/models/item/mutagenfeld_stabilisator.json", json.dumps({
+    "parent": "sporenwerk:block/mutagenfeld_stabilisator"
+}, ensure_ascii=False, indent=2) + "\\n")
+
 # Tiered recipes form a real upgrade chain rather than three unrelated free refills.
 write("src/main/resources/data/sporenwerk/recipes/sporenfiltereinsatz_verstaerkt.json", """
 {
@@ -439,6 +496,44 @@ write("src/main/resources/data/sporenwerk/advancements/recipes/misc/sporenfilter
 }
 """)
 
+write("src/main/resources/data/sporenwerk/recipes/mutagenfeld_stabilisator.json", """
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IRI", "SKS", "IMI"],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "R": { "item": "minecraft:redstone" },
+    "S": { "item": "sporenwerk:sporenresistenter_block" },
+    "K": { "item": "sporenwerk:mutagenkernkristall" },
+    "M": { "item": "sporenwerk:mutagenextrakt" }
+  },
+  "result": { "item": "sporenwerk:mutagenfeld_stabilisator", "count": 1 }
+}
+""")
+
+write("src/main/resources/data/sporenwerk/advancements/recipes/misc/mutagenfeld_stabilisator.json", """
+{
+  "parent": "sporenwerk:first_mutagen_bloom",
+  "display": {
+    "icon": { "item": "sporenwerk:mutagenfeld_stabilisator" },
+    "title": { "translate": "advancements.sporenwerk.mutagen_stabilizer.title" },
+    "description": { "translate": "advancements.sporenwerk.mutagen_stabilizer.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "find_condensed_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["sporenwerk:mutagenkernkristall"] }] }
+    }
+  },
+  "requirements": [["find_condensed_core"]],
+  "rewards": { "recipes": ["sporenwerk:mutagenfeld_stabilisator"] }
+}
+""")
+
 # Extend both locales without deleting existing field/scanner/filter strings.
 locale_additions = {
     "de_de.json": {
@@ -456,7 +551,17 @@ locale_additions = {
         "message.sporenwerk.filterbench.repaired": "Wartung abgeschlossen: %s Haltbarkeit wiederhergestellt.",
         "message.sporenwerk.filterbench.research_required": "Schließe zuerst die Mutagenlabor-Forschung ab.",
         "advancements.sporenwerk.filter_mutagen_research.title": "Mutagenfilter-Protokoll",
-        "advancements.sporenwerk.filter_mutagen_research.description": "Entdecke Mutagenextrakt, um den mutagenen Filtereinsatz freizuschalten."
+        "advancements.sporenwerk.filter_mutagen_research.description": "Entdecke Mutagenextrakt, um den mutagenen Filtereinsatz freizuschalten.",
+        "item.sporenwerk.mutagenkernkristall": "Kondensierter Mutagenkern",
+        "tooltip.sporenwerk.mutagenkernkristall.1": "Seltenes Nebenprodukt einer Mutagenblüte.",
+        "tooltip.sporenwerk.mutagenkernkristall.2": "Kernstück für einen lokalen Feldstabilisator.",
+        "block.sporenwerk.mutagenfeld_stabilisator": "Mutagenfeld-Stabilisator",
+        "item.sporenwerk.mutagenfeld_stabilisator": "Mutagenfeld-Stabilisator",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator.1": "Dämpft den Mutagenblüten-Impuls im Umkreis von 4 Blöcken.",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator.2": "Passive Stabilisierung nahe deiner Forschungsanlage.",
+        "message.sporenwerk.mutagen.stabilized": "Der Feldstabilisator dämpft den Blütenimpuls.",
+        "advancements.sporenwerk.mutagen_stabilizer.title": "Feldstabilisierung",
+        "advancements.sporenwerk.mutagen_stabilizer.description": "Berge einen kondensierten Mutagenkern und schalte den Feldstabilisator frei."
     },
     "en_us.json": {
         "item.sporenwerk.sporenfiltereinsatz_verstaerkt": "Reinforced Spore Filter Cartridge",
@@ -473,7 +578,17 @@ locale_additions = {
         "message.sporenwerk.filterbench.repaired": "Maintenance complete: restored %s durability.",
         "message.sporenwerk.filterbench.research_required": "Complete the Mutagen Laboratory research first.",
         "advancements.sporenwerk.filter_mutagen_research.title": "Mutagen Filter Protocol",
-        "advancements.sporenwerk.filter_mutagen_research.description": "Discover Mutagen Extract to unlock the Mutagenic Filter Cartridge."
+        "advancements.sporenwerk.filter_mutagen_research.description": "Discover Mutagen Extract to unlock the Mutagenic Filter Cartridge.",
+        "item.sporenwerk.mutagenkernkristall": "Condensed Mutagen Core",
+        "tooltip.sporenwerk.mutagenkernkristall.1": "Rare residue left by a Mutagen Bloom.",
+        "tooltip.sporenwerk.mutagenkernkristall.2": "Core component for a local field stabilizer.",
+        "block.sporenwerk.mutagenfeld_stabilisator": "Mutagen Field Stabilizer",
+        "item.sporenwerk.mutagenfeld_stabilisator": "Mutagen Field Stabilizer",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator.1": "Dampens the Mutagen Bloom pulse within 4 blocks.",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator.2": "Passive stabilization for nearby research facilities.",
+        "message.sporenwerk.mutagen.stabilized": "The field stabilizer dampens the bloom pulse.",
+        "advancements.sporenwerk.mutagen_stabilizer.title": "Field Stabilization",
+        "advancements.sporenwerk.mutagen_stabilizer.description": "Recover a condensed Mutagen Core to unlock the field stabilizer."
     }
 }
 for filename, additions in locale_additions.items():
@@ -489,6 +604,12 @@ if "sporenfilterwartungstisch_top" not in preview:
     preview = preview.replace(
         '    ("sporenabwehr_active", "Sporenabwehr AN"),',
         '    ("sporenabwehr_active", "Sporenabwehr AN"),\n    ("sporenfilterwartungstisch_top", "Filtertisch oben"),\n    ("sporenfilterwartungstisch_side", "Filtertisch Seite"),',
+        1,
+    )
+if '"mutagenfeld_stabilisator_top"' not in preview:
+    preview = preview.replace(
+        '    ("sporenfilterwartungstisch_side", "Filtertisch Seite"),',
+        '    ("sporenfilterwartungstisch_side", "Filtertisch Seite"),\n    ("mutagenfeld_stabilisator_top", "Stabilisator oben"),\n    ("mutagenfeld_stabilisator_side", "Stabilisator Seite"),',
         1,
     )
 preview = preview.replace("W, H = 1400, 1320", "W, H = 1400, 1360")
@@ -508,26 +629,29 @@ preview = preview.replace('panel(24, 995, 1352, 295, "ITEM ICONS AND MUTAGEN RES
 preview = preview.replace('35 + col*150, 1022 + row*84', '35 + col*150, 1062 + row*84')
 if '"sporenfiltereinsatz_verstaerkt"' not in preview:
     preview = preview.replace('"mutagenprobe", "mutagenextrakt", "mutagene_sporen", "feldscanner"',
-                              '"mutagenprobe", "mutagenextrakt", "mutagene_sporen", "feldscanner",\n    "sporenfiltereinsatz", "sporenfiltereinsatz_verstaerkt", "sporenfiltereinsatz_mutagen"')
+                              '"mutagenprobe", "mutagenextrakt", "mutagene_sporen", "feldscanner",\n    "sporenfiltereinsatz", "sporenfiltereinsatz_verstaerkt", "sporenfiltereinsatz_mutagen", "mutagenkernkristall"')
 preview_path.write_text(preview, encoding="utf-8")
 
 # This is the final patch in CI, so it owns the current artifact version.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.21.0'", build, count=1)
+build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.22.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.21.0")
+    raise SystemExit("Could not bump build.gradle to version 1.22.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
-heading = "## Version 1.21.0 — Mutagene Filterforschung und Filterwerkstatt"
-section = """## Version 1.21.0 — Mutagene Filterforschung und Filterwerkstatt
+heading = "## Version 1.22.0 — Feldstabilisierung und Mutagenkern"
+section = """## Version 1.22.0 — Feldstabilisierung und Mutagenkern
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.
 - **Echte Upgrade-Kette:** Standardeinsatz → verstärkter Einsatz mit Mutagenextrakt und Kupfer → mutagener Einsatz mit weiterem Extrakt und Amethyst. Der Wartungstisch wird aus Eisen, Kupfer, Redstone, Filtermoos, einem resistenten Block und einem Werktisch hergestellt.
 - **Mutagene Forschungsfreigabe:** Der mutagene Einsatz wird erst nach der Mutagenlabor-Entdeckung im Rezeptbuch freigeschaltet. Sowohl die direkte Reparatur als auch die Wartungsstation prüfen serverseitig, ob das Forschungs-Advancement abgeschlossen ist.
+- **Kondensierter Mutagenkern:** Eine Stärke-3-Mutagenblüte hinterlässt mit 12 % Chance einen einsammelbaren Kern; der gespeicherte Cooldown begrenzt die Ereignisfrequenz pro Feld.
+- **Mutagenfeld-Stabilisator:** Der aus dem seltenen Kern herstellbare Block dämpft den gefährlichen Blüten-Expositionsimpuls im Radius von 4 Blöcken. Die Blüte und ihr Pflanzenwachstum bleiben sichtbar, aber die lokale Arbeitszone wird sicherer.
+- **Rezeptfreigabe durch Entdeckung:** Das Rezept für den Stabilisator erscheint, sobald der Spieler einen kondensierten Mutagenkern einsammelt. Eigene Pixelgrafiken, Blockmodelle, Übersetzungen und Regressionstests decken die vollständige Kette ab.
 - **Erste Mutagenblüte:** Wer eine gefährliche Blüte erstmals erlebt, erhält das Advancement „Das Feld atmet“ und ein einmaliges Feldprotokoll mit 3 Feldwissen und 2 Myzelkompost. Die Belohnung wird nur einmal pro Spieler vergeben.
 - **Sicherer Betrieb:** Einsatzverbrauch nur bei erfolgreicher Wartung; volle Masken verbrauchen keinen Filter. Kreativspieler verbrauchen keine Einsätze. Handbedienung bleibt als alternative Reparaturmethode verfügbar.
 - **Qualitätssicherung:** Neue Verträge prüfen Registrierungen, Upgrade-Rezepte, Tisch-Blockstates/Modelle/Texturen, alle Übersetzungen und die Haltbarkeitswerte. Die Vorschau zeigt die zusätzlichen Texturen und Item-Icons.
@@ -538,4 +662,4 @@ Der automatische Serverstart bestätigt die technische Startfähigkeit, ersetzt 
 if heading not in readme:
     readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed Sporenwerk 1.21.0 Filter Maintenance Bench and three-grade cartridge progression.")
+print("Installed Sporenwerk 1.22.0 Filter Maintenance Bench and three-grade cartridge progression.")
