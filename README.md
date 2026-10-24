@@ -1,17 +1,32 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.27.0 — klar unterscheidbare Mutagenfelder.**
+**Aktueller Entwicklungsstand: 1.28.0 — Mutagenfelder, die sich unterscheiden und automatisieren lassen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.27.0
+## Aktueller Schwerpunkt — 1.28.0
 
 - Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
 - Mutagenfeld-Stufe III: dunkle Kristallplatten mit cyanfarbenen Kanten, hellen Kernen und deutlich stärkerem Leuchten.
 - Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
+- Ein Scan an der Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Gefahrenwert von 0 bis 15, ohne Welt-Scans bei jedem Redstone-Tick auszulösen.
 
 ---
+
+## Version 1.28.0 — Redstone-Gefahrenausgang der Kontrollstation
+
+- Rechtsklick auf die Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Ausgang zwischen 0 und 15.
+- Signal 0: kein erfasster Befall. Signal 3: mutagenaktive Pflanzen ohne erfassten Mutagenboden. Signale 4–10: normaler Mutagenboden abhängig von der gemessenen Menge. Signale 11–15: Stärke-III-Hotspots abhängig von ihrer Anzahl.
+- Comparator-Abfragen lesen nur den gespeicherten Wert. Der begrenzte Scan findet ausschließlich beim Stations-Scan statt und wird nicht bei jedem Redstone-Tick wiederholt.
+- Deutsche und englische Statusmeldungen und Regressionstests sind enthalten. Nach Feldänderungen erneut scannen, um den Ausgang zu aktualisieren.
+
+## Version 1.27.0 — Mutagenfelder mit eindeutigen Stufensignaturen
+
+- Stufe I: dunkler Moosboden mit grünen Myzeladern.
+- Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
+- Stufe III: dunkle Kristallplatten mit cyanfarbenen Kanten und hellen Kernen.
+- Beleuchtung und Partikeleffekte folgen der server-synchronisierten Feldstärke.
 
 ## Version 1.17.0 — Feldscanner mit Mutagen-Risikoprofil
 

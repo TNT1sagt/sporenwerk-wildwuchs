@@ -20,8 +20,8 @@ def require(condition, message):
 
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.27\.0['\"]", build) is not None,
-        "the release must be version 1.27.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.28\.0['\"]", build) is not None,
+        "the release must be version 1.28.0")
 
 blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
 for token in (
@@ -102,6 +102,6 @@ for tier in range(1, 4):
     require(f"mutagen_boden_strength{tier}" in preview,
             f"art QA preview is missing Mutagen field tier {tier}")
 readme = read("README.md")
-require("Version 1.27.0" in readme and "Version 1.26.0" in readme,
-        "new release notes must preserve the 1.26.0 history")
+require("Version 1.28.0" in readme and "Version 1.27.0" in readme,
+        "new release notes must preserve the 1.27.0 history")
 print("Distinct Mutagen field textures, lighting, particles, model mapping, preview, and release history passed.")
