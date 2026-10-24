@@ -20,7 +20,7 @@ def require(condition, message):
 
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\\.28\\.0['\"]", build) is not None,
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.28\.0['\"]", build) is not None,
         "the release must be version 1.28.0")
 
 blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
