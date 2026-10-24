@@ -70,7 +70,7 @@ for locale in ("de_de.json", "en_us.json"):
 
 build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.29\.0['\"]", build) is not None,
-        "artifact must be version 1.28.0")
+        "artifact must be version 1.29.0")
 readme = read("README.md")
 require("Version 1.29.0" in readme and "Version 1.28.0" in readme,
         "release notes must add 1.29.0 and preserve 1.28.0")
