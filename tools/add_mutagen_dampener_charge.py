@@ -274,6 +274,21 @@ def top_texture(charge):
            fill=(66, 195 + 12*charge, 190 + 15*charge, 255), width=1)
     d.line([(14, 7), (12, 7), (11, 8), (12, 9), (14, 9)],
            fill=(66, 195 + 12*charge, 190 + 15*charge, 255), width=1)
+    # Keep the uncharged face visibly textured instead of nearly flat black.
+    # These muted service marks add readable material variation without implying charge.
+    if charge == 0:
+        for xy, color in (
+            ((4, 2), (79, 83, 76, 255)),
+            ((5, 2), (113, 86, 57, 255)),
+            ((10, 2), (45, 72, 70, 255)),
+            ((11, 2), (93, 72, 50, 255)),
+            ((4, 13), (56, 67, 72, 255)),
+            ((5, 13), (84, 107, 98, 255)),
+            ((10, 13), (48, 63, 68, 255)),
+            ((11, 13), (128, 97, 62, 255)),
+        ):
+            d.point(xy, fill=color)
+
     if charge >= 2:
         d.point((7, 3), fill=highlight)
         d.point((8, 3), fill=highlight)
