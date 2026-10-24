@@ -26,7 +26,12 @@ for token in (
     "AREA_SCAN_VERTICAL_RADIUS = 4",
     "InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)",
     "private record AreaSurvey(",
-    "private static AreaSurvey surveyArea(ServerLevel level, BlockPos origin, Player player)",
+    "private static AreaSurvey surveyArea(ServerLevel level, BlockPos origin)",
+    "MutationNodeData.get(level)",
+    "state.is(ModBlocks.INFEKTIONSHERD.get())",
+    "state.is(ModBlocks.MUTATION_ANCHOR.get())",
+    "message.sporenwerk.scanner.survey.nodes",
+    "message.sporenwerk.scanner.survey.guidance.uncontained",
     "level.hasChunkAt(cursor)",
     "level.getMinBuildHeight()",
     "level.getMaxBuildHeight() - 1",
@@ -44,6 +49,8 @@ for token in (
     "message.sporenwerk.scanner.survey.loaded",
 ):
     require(token in scanner, "scanner contract missing: " + token)
+require(scanner.count("public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)") == 1,
+        "area scanning must extend the existing air-use action, not duplicate it")
 require("getChunk(" not in scanner and "getChunkNow(" not in scanner,
         "scanner must not force-load chunks")
 require("scheduleTick(" not in scanner and "getTicker(" not in scanner,
@@ -84,6 +91,8 @@ for filename in ("de_de.json", "en_us.json"):
     for key in (
         "tooltip.sporenwerk.feldscanner.3",
         "message.sporenwerk.scanner.survey.header",
+        "message.sporenwerk.scanner.survey.nodes",
+        "message.sporenwerk.scanner.survey.guidance.uncontained",
         "message.sporenwerk.scanner.survey.fields",
         "message.sporenwerk.scanner.survey.crops",
         "message.sporenwerk.scanner.survey.devices",
