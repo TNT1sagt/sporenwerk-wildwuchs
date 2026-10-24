@@ -43,8 +43,8 @@ for token in (
 # The signal must be telegraphed before effect application, and recheck the protected-player list.
 require(entity.index("RESONANCE_WINDUP_TICKS") < entity.index("MobEffects.MOVEMENT_SLOWDOWN"),
         "warning phase must precede pulse effect")
-require(entity.index("for (Player player : nearbyUnprotectedPlayers())") < entity.index("resonanceCooldown = RESONANCE_COOLDOWN_TICKS"),
-        "cooldown only begins after the pulse is released")
+require("if (resonanceCooldown > 0)" in entity and "resonanceCooldown = RESONANCE_COOLDOWN_TICKS" in entity,
+        "pulse cooldown must rate-limit successful and dampened attempts")
 require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "pulse logic must never force-load chunks")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.35\.0['\"]", build) is not None,
