@@ -176,6 +176,13 @@ stabilizer_registration = """    public static final RegistryObject<Block> MUTAG
 replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
              bench_registration, bench_registration + "\n\n" + stabilizer_registration,
              "field stabilizer block registration")
+reinforced_registration = """    public static final RegistryObject<Block> MUTAGENFELD_STABILISATOR_VERSTAERKT = BLOCKS.register("mutagenfeld_stabilisator_verstaerkt",
+            () -> new MutagenFieldStabilizerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE)
+                    .strength(5.0f, 12.0f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST),
+                    MutagenFieldStabilizerBlock.REINFORCED_RADIUS));"""
+replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
+             stabilizer_registration, stabilizer_registration + "\n\n" + reinforced_registration,
+             "reinforced field stabilizer registration")
 ward_item = '        ModItems.ITEMS.register("sporenabwehr", () -> new net.minecraft.world.item.BlockItem(SPORENABWEHR.get(), new Item.Properties()));'
 bench_item = '        ModItems.ITEMS.register("sporenfilterwartungstisch", () -> new net.minecraft.world.item.BlockItem(SPORENFILTERWARTUNGSTISCH.get(), new Item.Properties()));'
 replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
@@ -183,6 +190,9 @@ replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
 stabilizer_item = '        ModItems.ITEMS.register("mutagenfeld_stabilisator", () -> new net.minecraft.world.item.BlockItem(MUTAGENFELD_STABILISATOR.get(), new Item.Properties()));'
 replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
              bench_item, bench_item + "\n" + stabilizer_item, "field stabilizer inventory item")
+reinforced_item = '        ModItems.ITEMS.register("mutagenfeld_stabilisator_verstaerkt", () -> new net.minecraft.world.item.BlockItem(MUTAGENFELD_STABILISATOR_VERSTAERKT.get(), new Item.Properties()));'
+replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
+             stabilizer_item, stabilizer_item + "\n" + reinforced_item, "reinforced field stabilizer inventory item")
 
 # Add the new consumables and bench to the existing catalogue.
 creative_path = SRC / "registry/ModCreativeTabs.java"
@@ -204,6 +214,11 @@ if "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get());" not in creative:
     if stabilizer_creative not in creative:
         raise SystemExit("Cannot locate maintenance bench for stabilizer creative entry")
     creative = creative.replace(stabilizer_creative, stabilizer_creative + "\n                        output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get());", 1)
+if "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR_VERSTAERKT.get());" not in creative:
+    anchor = "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get());"
+    if anchor not in creative:
+        raise SystemExit("Cannot locate base stabilizer entry for reinforced tier")
+    creative = creative.replace(anchor, anchor + "\n                        output.accept(ModBlocks.MUTAGENFELD_STABILISATOR_VERSTAERKT.get());", 1)
 creative_path.write_text(creative, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/block/SporeFilterMaintenanceBlock.java", """
@@ -280,8 +295,21 @@ import net.minecraft.world.level.block.Block;
 
 /** Solid containment component that attenuates high-intensity Mutagen Bloom exposure nearby. */
 public final class MutagenFieldStabilizerBlock extends Block {
+    public static final int STANDARD_RADIUS = 4;
+    public static final int REINFORCED_RADIUS = 8;
+    private final int protectionRadius;
+
     public MutagenFieldStabilizerBlock(Properties properties) {
+        this(properties, STANDARD_RADIUS);
+    }
+
+    public MutagenFieldStabilizerBlock(Properties properties, int protectionRadius) {
         super(properties);
+        this.protectionRadius = Math.max(1, protectionRadius);
+    }
+
+    public int protectionRadius() {
+        return protectionRadius;
     }
 }
 """)
@@ -289,17 +317,23 @@ public final class MutagenFieldStabilizerBlock extends Block {
 # A placed stabilizer provides bounded, local counterplay to the exposure part of a bloom.
 bloom_path = SRC / "infection/MutagenBloom.java"
 bloom_source = bloom_path.read_text(encoding="utf-8")
+if "import de.sporenwerk.block.MutagenFieldStabilizerBlock;" not in bloom_source:
+    bloom_source = bloom_source.replace("import de.sporenwerk.registry.ModBlocks;", "import de.sporenwerk.registry.ModBlocks;\nimport de.sporenwerk.block.MutagenFieldStabilizerBlock;", 1)
 if "private static boolean hasNearbyStabilizer(ServerLevel level, BlockPos center)" not in bloom_source:
     anchor = "    private static void exposeNearbyPlayers(ServerLevel level, BlockPos origin) {"
-    helper = """    /** Searches a small sphere only; avoid forcing loads at chunk borders. */
+    helper = """    /**
+     * Bounded local scan. Horizontal range follows the placed tier; vertical range is half as tall.
+     * Never asks Minecraft to load a chunk as a side effect of a protection check.
+     */
     private static boolean hasNearbyStabilizer(ServerLevel level, BlockPos center) {
-        for (int dx = -4; dx <= 4; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                for (int dz = -4; dz <= 4; dz++) {
-                    if (dx * dx + dy * dy + dz * dz > 16) continue;
+        for (int dx = -MutagenFieldStabilizerBlock.REINFORCED_RADIUS; dx <= MutagenFieldStabilizerBlock.REINFORCED_RADIUS; dx++) {
+            for (int dy = -MutagenFieldStabilizerBlock.REINFORCED_RADIUS / 2; dy <= MutagenFieldStabilizerBlock.REINFORCED_RADIUS / 2; dy++) {
+                for (int dz = -MutagenFieldStabilizerBlock.REINFORCED_RADIUS; dz <= MutagenFieldStabilizerBlock.REINFORCED_RADIUS; dz++) {
                     BlockPos probe = center.offset(dx, dy, dz);
                     if (!level.hasChunkAt(probe)) continue;
-                    if (level.getBlockState(probe).is(ModBlocks.MUTAGENFELD_STABILISATOR.get())) return true;
+                    if (!(level.getBlockState(probe).getBlock() instanceof MutagenFieldStabilizerBlock stabilizer)) continue;
+                    int radius = stabilizer.protectionRadius();
+                    if (dx * dx + dz * dz <= radius * radius && Math.abs(dy) <= Math.max(2, radius / 2)) return true;
                 }
             }
         }
@@ -419,6 +453,31 @@ d.rectangle((2, 14, 4, 15), fill=(17, 28, 31, 255))
 d.rectangle((11, 14, 13, 15), fill=(17, 28, 31, 255))
 stabilizer_side.save(texture_dir / "mutagenfeld_stabilisator_side.png", optimize=True)
 
+reinforced_top = Image.new("RGBA", (16, 16), (26, 37, 52, 255))
+d = ImageDraw.Draw(reinforced_top)
+d.rectangle((0, 0, 15, 15), outline=(12, 20, 31, 255), width=2)
+d.rectangle((2, 2, 13, 13), fill=(53, 80, 113, 255))
+d.rectangle((3, 3, 12, 12), outline=(137, 190, 229, 255), width=1)
+d.rectangle((5, 5, 10, 10), fill=(28, 43, 65, 255))
+d.polygon([(7, 4), (9, 5), (11, 8), (9, 11), (7, 12), (5, 9), (5, 7)], fill=violet_light)
+d.point((7, 5), fill=(213, 246, 255, 255))
+d.point((8, 8), fill=teal_light)
+reinforced_top.save(texture_dir / "mutagenfeld_stabilisator_verstaerkt_top.png", optimize=True)
+
+reinforced_side = Image.new("RGBA", (16, 16), (16, 27, 43, 255))
+d = ImageDraw.Draw(reinforced_side)
+d.rectangle((1, 1, 14, 4), fill=(126, 164, 199, 255))
+d.rectangle((2, 2, 13, 3), fill=(49, 76, 106, 255))
+d.rectangle((1, 5, 14, 12), fill=(33, 52, 77, 255))
+d.rectangle((2, 6, 13, 11), fill=(57, 86, 118, 255))
+d.rectangle((4, 7, 11, 10), fill=(15, 26, 42, 255))
+d.rectangle((6, 7, 9, 10), fill=violet_light)
+d.point((7, 7), fill=(213, 246, 255, 255))
+d.rectangle((1, 13, 14, 14), fill=(132, 177, 212, 255))
+d.rectangle((2, 14, 4, 15), fill=(12, 22, 34, 255))
+d.rectangle((11, 14, 13, 15), fill=(12, 22, 34, 255))
+reinforced_side.save(texture_dir / "mutagenfeld_stabilisator_verstaerkt_side.png", optimize=True)
+
 write("src/main/resources/assets/sporenwerk/blockstates/mutagenfeld_stabilisator.json", json.dumps({
     "variants": {"": {"model": "sporenwerk:block/mutagenfeld_stabilisator"}}
 }, ensure_ascii=False, indent=2) + "\n")
@@ -431,6 +490,19 @@ write("src/main/resources/assets/sporenwerk/models/block/mutagenfeld_stabilisato
 }, ensure_ascii=False, indent=2) + "\n")
 write("src/main/resources/assets/sporenwerk/models/item/mutagenfeld_stabilisator.json", json.dumps({
     "parent": "sporenwerk:block/mutagenfeld_stabilisator"
+}, ensure_ascii=False, indent=2) + "\n")
+write("src/main/resources/assets/sporenwerk/blockstates/mutagenfeld_stabilisator_verstaerkt.json", json.dumps({
+    "variants": {"": {"model": "sporenwerk:block/mutagenfeld_stabilisator_verstaerkt"}}
+}, ensure_ascii=False, indent=2) + "\n")
+write("src/main/resources/assets/sporenwerk/models/block/mutagenfeld_stabilisator_verstaerkt.json", json.dumps({
+    "parent": "minecraft:block/cube_column",
+    "textures": {
+        "end": "sporenwerk:block/mutagenfeld_stabilisator_verstaerkt_top",
+        "side": "sporenwerk:block/mutagenfeld_stabilisator_verstaerkt_side"
+    }
+}, ensure_ascii=False, indent=2) + "\n")
+write("src/main/resources/assets/sporenwerk/models/item/mutagenfeld_stabilisator_verstaerkt.json", json.dumps({
+    "parent": "sporenwerk:block/mutagenfeld_stabilisator_verstaerkt"
 }, ensure_ascii=False, indent=2) + "\n")
 
 # Tiered recipes form a real upgrade chain rather than three unrelated free refills.
@@ -533,6 +605,42 @@ write("src/main/resources/data/sporenwerk/advancements/recipes/misc/mutagenfeld_
   "rewards": { "recipes": ["sporenwerk:mutagenfeld_stabilisator"] }
 }
 """)
+write("src/main/resources/data/sporenwerk/recipes/mutagenfeld_stabilisator_verstaerkt.json", """
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["ACA", "KSK", "ARA"],
+  "key": {
+    "A": { "item": "minecraft:amethyst_shard" },
+    "C": { "item": "minecraft:copper_ingot" },
+    "K": { "item": "sporenwerk:mutagenkernkristall" },
+    "S": { "item": "sporenwerk:mutagenfeld_stabilisator" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": { "item": "sporenwerk:mutagenfeld_stabilisator_verstaerkt", "count": 1 }
+}
+""")
+write("src/main/resources/data/sporenwerk/advancements/recipes/misc/mutagenfeld_stabilisator_verstaerkt.json", """
+{
+  "parent": "sporenwerk:recipes/misc/mutagenfeld_stabilisator",
+  "display": {
+    "icon": { "item": "sporenwerk:mutagenfeld_stabilisator_verstaerkt" },
+    "title": { "translate": "advancements.sporenwerk.reinforced_mutagen_stabilizer.title" },
+    "description": { "translate": "advancements.sporenwerk.reinforced_mutagen_stabilizer.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "acquire_stabilizer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["sporenwerk:mutagenfeld_stabilisator"] }] }
+    }
+  },
+  "requirements": [["acquire_stabilizer"]],
+  "rewards": { "recipes": ["sporenwerk:mutagenfeld_stabilisator_verstaerkt"] }
+}
+""")
 
 # Extend both locales without deleting existing field/scanner/filter strings.
 locale_additions = {
@@ -557,6 +665,12 @@ locale_additions = {
         "tooltip.sporenwerk.mutagenkernkristall.2": "Kernstück für einen lokalen Feldstabilisator.",
         "block.sporenwerk.mutagenfeld_stabilisator": "Mutagenfeld-Stabilisator",
         "item.sporenwerk.mutagenfeld_stabilisator": "Mutagenfeld-Stabilisator",
+        "block.sporenwerk.mutagenfeld_stabilisator_verstaerkt": "Verstärkter Mutagenfeld-Stabilisator",
+        "item.sporenwerk.mutagenfeld_stabilisator_verstaerkt": "Verstärkter Mutagenfeld-Stabilisator",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator_verstaerkt.1": "Dämpft Blütenimpulse im horizontalen Radius von 8 Blöcken.",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator_verstaerkt.2": "Ein Upgrade für größere Mutagen-Forschungsanlagen.",
+        "advancements.sporenwerk.reinforced_mutagen_stabilizer.title": "Verstärkte Feldstabilisierung",
+        "advancements.sporenwerk.reinforced_mutagen_stabilizer.description": "Baue einen Standard-Stabilisator und sichere einen weiteren Mutagenkern.",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.1": "Dämpft den Mutagenblüten-Impuls im Umkreis von 4 Blöcken.",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.2": "Passive Stabilisierung nahe deiner Forschungsanlage.",
         "message.sporenwerk.mutagen.stabilized": "Der Feldstabilisator dämpft den Blütenimpuls.",
@@ -584,6 +698,12 @@ locale_additions = {
         "tooltip.sporenwerk.mutagenkernkristall.2": "Core component for a local field stabilizer.",
         "block.sporenwerk.mutagenfeld_stabilisator": "Mutagen Field Stabilizer",
         "item.sporenwerk.mutagenfeld_stabilisator": "Mutagen Field Stabilizer",
+        "block.sporenwerk.mutagenfeld_stabilisator_verstaerkt": "Reinforced Mutagen Field Stabilizer",
+        "item.sporenwerk.mutagenfeld_stabilisator_verstaerkt": "Reinforced Mutagen Field Stabilizer",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator_verstaerkt.1": "Dampens bloom pulses within an 8-block horizontal radius.",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator_verstaerkt.2": "An upgrade for larger Mutagen research facilities.",
+        "advancements.sporenwerk.reinforced_mutagen_stabilizer.title": "Reinforced Field Stabilization",
+        "advancements.sporenwerk.reinforced_mutagen_stabilizer.description": "Build a standard stabilizer and secure another Mutagen Core.",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.1": "Dampens the Mutagen Bloom pulse within 4 blocks.",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.2": "Passive stabilization for nearby research facilities.",
         "message.sporenwerk.mutagen.stabilized": "The field stabilizer dampens the bloom pulse.",
@@ -612,6 +732,12 @@ if '"mutagenfeld_stabilisator_top"' not in preview:
         '    ("sporenfilterwartungstisch_side", "Filtertisch Seite"),\n    ("mutagenfeld_stabilisator_top", "Stabilisator oben"),\n    ("mutagenfeld_stabilisator_side", "Stabilisator Seite"),',
         1,
     )
+if '"mutagenfeld_stabilisator_verstaerkt_top"' not in preview:
+    preview = preview.replace(
+        '    ("mutagenfeld_stabilisator_side", "Stabilisator Seite"),',
+        '    ("mutagenfeld_stabilisator_side", "Stabilisator Seite"),\n    ("mutagenfeld_stabilisator_verstaerkt_top", "Verstärkter Stabilisator oben"),\n    ("mutagenfeld_stabilisator_verstaerkt_side", "Verstärkter Stabilisator Seite"),',
+        1,
+    )
 preview = preview.replace("W, H = 1400, 1320", "W, H = 1400, 1360")
 preview = preview.replace("panel(24, 365, 1352, 210, \"OPAQUE MINECRAFT BLOCK FACES (16x16)\")",
                           "panel(24, 365, 1352, 245, \"OPAQUE MINECRAFT BLOCK FACES (16x16)\")")
@@ -635,22 +761,24 @@ preview_path.write_text(preview, encoding="utf-8")
 # This is the final patch in CI, so it owns the current artifact version.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.22.0'", build, count=1)
+build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.23.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.22.0")
+    raise SystemExit("Could not bump build.gradle to version 1.23.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
-heading = "## Version 1.22.0 — Feldstabilisierung und Mutagenkern"
-section = """## Version 1.22.0 — Feldstabilisierung und Mutagenkern
+heading = "## Version 1.23.0 — Mehrstufige Feldstabilisierung"
+section = """## Version 1.23.0 — Feldstabilisierung und Mutagenkern
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.
 - **Echte Upgrade-Kette:** Standardeinsatz → verstärkter Einsatz mit Mutagenextrakt und Kupfer → mutagener Einsatz mit weiterem Extrakt und Amethyst. Der Wartungstisch wird aus Eisen, Kupfer, Redstone, Filtermoos, einem resistenten Block und einem Werktisch hergestellt.
 - **Mutagene Forschungsfreigabe:** Der mutagene Einsatz wird erst nach der Mutagenlabor-Entdeckung im Rezeptbuch freigeschaltet. Sowohl die direkte Reparatur als auch die Wartungsstation prüfen serverseitig, ob das Forschungs-Advancement abgeschlossen ist.
 - **Kondensierter Mutagenkern:** Eine Stärke-3-Mutagenblüte hinterlässt mit 12 % Chance einen einsammelbaren Kern; der gespeicherte Cooldown begrenzt die Ereignisfrequenz pro Feld.
-- **Mutagenfeld-Stabilisator:** Der aus dem seltenen Kern herstellbare Block dämpft den gefährlichen Blüten-Expositionsimpuls im Radius von 4 Blöcken. Die Blüte und ihr Pflanzenwachstum bleiben sichtbar, aber die lokale Arbeitszone wird sicherer.
+- **Mutagenfeld-Stabilisator Stufe I:** Der aus dem seltenen Kern herstellbare Block dämpft den gefährlichen Blüten-Expositionsimpuls im horizontalen Radius von 4 Blöcken. Die Blüte und ihr Pflanzenwachstum bleiben sichtbar, aber die lokale Arbeitszone wird sicherer.
+- **Verstärkter Feldstabilisator Stufe II:** Ein eigener Block mit blauem Kristallgehäuse schützt im horizontalen Radius von 8 Blöcken und bis zu 4 Blöcken Höhenunterschied. Die Reichweite folgt der tatsächlich platzierten Stufe; der Schutzscan bleibt auf geladene Chunks und einen begrenzten Bereich beschränkt.
+- **Upgrade-Kette:** Ein Standard-Stabilisator, ein weiterer seltener Mutagenkern, Amethyst, Kupfer und Redstone ergeben die verstärkte Variante. Die Rezeptfreigabe folgt dem Besitz des Standard-Stabilisators.
 - **Rezeptfreigabe durch Entdeckung:** Das Rezept für den Stabilisator erscheint, sobald der Spieler einen kondensierten Mutagenkern einsammelt. Eigene Pixelgrafiken, Blockmodelle, Übersetzungen und Regressionstests decken die vollständige Kette ab.
 - **Erste Mutagenblüte:** Wer eine gefährliche Blüte erstmals erlebt, erhält das Advancement „Das Feld atmet“ und ein einmaliges Feldprotokoll mit 3 Feldwissen und 2 Myzelkompost. Die Belohnung wird nur einmal pro Spieler vergeben.
 - **Sicherer Betrieb:** Einsatzverbrauch nur bei erfolgreicher Wartung; volle Masken verbrauchen keinen Filter. Kreativspieler verbrauchen keine Einsätze. Handbedienung bleibt als alternative Reparaturmethode verfügbar.
@@ -662,4 +790,4 @@ Der automatische Serverstart bestätigt die technische Startfähigkeit, ersetzt 
 if heading not in readme:
     readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed Sporenwerk 1.22.0 Filter Maintenance Bench and three-grade cartridge progression.")
+print("Installed Sporenwerk 1.23.0 Filter Maintenance Bench and three-grade cartridge progression.")
