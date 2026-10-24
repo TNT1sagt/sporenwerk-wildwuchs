@@ -55,8 +55,19 @@ public final class MutagenResonanceDampenerBlock extends Block {
     }
 
     @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos,
+                        BlockState oldState, boolean moving) {
+        super.onPlace(state, level, pos, oldState, moving);
+        updatePower(state, level, pos);
+    }
+
+    @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos,
                                 Block neighborBlock, BlockPos neighborPos, boolean moving) {
+        updatePower(state, level, pos);
+    }
+
+    private void updatePower(BlockState state, Level level, BlockPos pos) {
         if (level.isClientSide) return;
         boolean powered = level.hasNeighborSignal(pos);
         if (state.getValue(POWERED) != powered) {
