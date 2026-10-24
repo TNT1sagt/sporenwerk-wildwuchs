@@ -49,7 +49,7 @@ jobs:
       - name: Apply Sporenwerk 1.36.0 gameplay, UI, and resource patches
         run: |
           set -euo pipefail
-          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py tools/add_machine_geometry.py tools/add_compost_and_machine_status.py tools/make_art_preview.py tools/fix_advancement_schemas.py tools/complete_machine_farming_loop.py tools/add_infection_system.py tools/add_mutation_containment.py tools/add_reversible_infection.py tools/add_containment_endgame.py tools/add_mutagen_research.py tools/add_mutagen_harvest.py tools/add_mutagen_phenotypes.py tools/add_field_scanner.py tools/add_visible_mutagen_fields.py tools/test_visible_mutagen_fields.py tools/add_spore_filter.py tools/test_spore_filter.py tools/add_mutagen_blooms.py tools/test_mutagen_blooms.py tools/add_spore_ward.py tools/test_spore_ward.py tools/add_filter_maintenance.py tools/add_mutagen_field_station.py tools/test_mutagen_field_station.py tools/add_mutagen_field_contrast.py tools/test_mutagen_field_contrast.py tools/add_mutagen_station_comparator.py tools/test_mutagen_station_comparator.py tools/add_mutagen_warning_siren.py tools/test_mutagen_warning_siren.py tools/add_mutagen_siren_severity.py tools/add_mutagen_siren_latch.py tools/test_mutagen_siren_latch.py tools/add_kristallpirscher.py tools/test_kristallpirscher.py tools/add_kristallpirscher_resonance.py tools/test_kristallpirscher_resonance.py tools/add_mutagen_resonance_dampener.py tools/test_mutagen_resonance_dampener.py tools/add_resonance_dampener_feedback.py tools/test_resonance_dampener_feedback.py tools/add_kristallpirscher_resonance_shards.py tools/test_kristallpirscher_resonance_shards.py tools/test_filter_maintenance.py tools/test_minecraft_texture_contract.py source/sporenwerk-wildwuchs/tools/
+          cp tools/polish_sources.py tools/generate_art.py tools/add_daemmerling.py tools/add_skill_tree.py tools/add_questline.py tools/add_localization.py tools/add_machine_visuals.py tools/harden_machine_io.py tools/add_machine_geometry.py tools/add_compost_and_machine_status.py tools/make_art_preview.py tools/fix_advancement_schemas.py tools/complete_machine_farming_loop.py tools/add_infection_system.py tools/add_mutation_containment.py tools/add_reversible_infection.py tools/add_containment_endgame.py tools/add_mutagen_research.py tools/add_mutagen_harvest.py tools/add_mutagen_phenotypes.py tools/add_field_scanner.py tools/add_visible_mutagen_fields.py tools/test_visible_mutagen_fields.py tools/add_spore_filter.py tools/test_spore_filter.py tools/add_mutagen_blooms.py tools/test_mutagen_blooms.py tools/add_spore_ward.py tools/test_spore_ward.py tools/add_filter_maintenance.py tools/add_mutagen_field_station.py tools/test_mutagen_field_station.py tools/add_mutagen_field_contrast.py tools/test_mutagen_field_contrast.py tools/add_mutagen_station_comparator.py tools/test_mutagen_station_comparator.py tools/add_mutagen_warning_siren.py tools/test_mutagen_warning_siren.py tools/add_mutagen_siren_severity.py tools/add_mutagen_siren_latch.py tools/test_mutagen_siren_latch.py tools/add_kristallpirscher.py tools/test_kristallpirscher.py tools/add_kristallpirscher_resonance.py tools/test_kristallpirscher_resonance.py tools/add_mutagen_resonance_dampener.py tools/test_mutagen_resonance_dampener.py tools/add_resonance_dampener_feedback.py tools/test_resonance_dampener_feedback.py tools/add_kristallpirscher_resonance_shards.py tools/test_kristallpirscher_resonance_shards.py tools/add_resonance_dampener_power_control.py tools/test_resonance_dampener_power_control.py tools/test_filter_maintenance.py tools/test_minecraft_texture_contract.py source/sporenwerk-wildwuchs/tools/
           python3 -m pip install --disable-pip-version-check --quiet pillow
           python3 source/sporenwerk-wildwuchs/tools/polish_sources.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_daemmerling.py source/sporenwerk-wildwuchs
@@ -86,6 +86,7 @@ jobs:
           python3 source/sporenwerk-wildwuchs/tools/add_mutagen_resonance_dampener.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_resonance_dampener_feedback.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/add_kristallpirscher_resonance_shards.py source/sporenwerk-wildwuchs
+          python3 source/sporenwerk-wildwuchs/tools/add_resonance_dampener_power_control.py source/sporenwerk-wildwuchs
           python3 source/sporenwerk-wildwuchs/tools/test_machine_io_contract.py source/sporenwerk-wildwuchs
 
       - name: Validate machine automation and energy boundaries
@@ -167,6 +168,10 @@ jobs:
       - name: Validate dampener feedback and blocked-pulse cooldown
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_resonance_dampener_feedback.py .
+
+      - name: Validate redstone-controlled resonance dampener states and power gating
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_resonance_dampener_power_control.py .
 
       - name: Validate Kristallpirscher resonance telegraph, mask counterplay, and cooldown
         working-directory: source/sporenwerk-wildwuchs
@@ -262,6 +267,10 @@ jobs:
           jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/models/block/mutagen_resonanzdaempfer.json'
           jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/textures/block/mutagen_resonanzdaempfer_top.png'
           jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/textures/block/mutagen_resonanzdaempfer_side.png'
+          jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/blockstates/mutagen_resonanzdaempfer.json'
+          jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/models/block/mutagen_resonanzdaempfer_active.json'
+          jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/textures/block/mutagen_resonanzdaempfer_top_active.png'
+          jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/textures/block/mutagen_resonanzdaempfer_side_active.png'
           jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'data/sporenwerk/recipes/mutagen_resonanzdaempfer.json'
           jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/textures/item/kristallpirscher_resonanzsplitter.png'
           jar tf build/libs/sporenwerk-1.36.0.jar | grep -q 'assets/sporenwerk/models/item/kristallpirscher_resonanzsplitter.json'
