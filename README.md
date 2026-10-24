@@ -11,8 +11,24 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Mutagenfeld-Stufe III: dunkle Kristallplatten mit cyanfarbenen Kanten, hellen Kernen und deutlich stärkerem Leuchten.
 - Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
 - Ein Scan an der Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Gefahrenwert von 0 bis 15, ohne Welt-Scans bei jedem Redstone-Tick auszulösen.
+- Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
 
 ---
+
+## Version 1.30.0 — Eskalierende Mutagen-Warnsirene
+
+- **Vier eindeutig sichtbare Zustände:** AUS, Warnung (Comparator-Signal 1–4), erhöht (5–10) und kritisch (11–15). Die Sirene speichert die empfangene Redstone-Stärke und bildet alle 16 Werte auf passende Blockmodelle ab.
+- **Akustische Eskalation:** Beim Wechsel in eine höhere Gefahrenstufe ertönt ein Glockenton mit tieferer Tonhöhe für höhere Gefahr. Der Ton wird nur bei Aktivierung oder Eskalation abgespielt, nicht bei jedem Redstone-Update.
+- **Direkt mit dem Comparator kombinierbar:** Der Ausgang der Mutagenfeld-Kontrollstation kann direkt in die Sirene geführt werden. Eine erneute Stationsmessung aktualisiert die Signalstärke und die Sirenenstufe.
+- **Qualitätssicherung:** Regressionstests decken Grenzwerte, alle 16 Blockstates, Texturen, Blockmodelle, Rezept, Übersetzungen und Forge-JAR ab.
+
+Automatische Tests ersetzen keinen manuellen Funktionstest des Comparator-/Sirenenaufbaus im Minecraft-Client.
+
+## Version 1.29.0 — Redstone-Warnsirene
+
+- Die craftbare Mutagen-Warnsirene reagiert auf Redstone und zeigt ihren Alarmzustand mit einer eigenen Pixeltextur.
+- Der Übergang von AUS auf AN spielt einen kurzen Warnton; ein dauerhaftes Eingangssignal erzeugt keinen Audio-Spam.
+- Rezept, Fortschrittsfreigabe, deutsche/englische Namen und Regressionstests sind enthalten.
 
 ## Version 1.28.0 — Redstone-Gefahrenausgang der Kontrollstation
 
