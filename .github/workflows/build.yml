@@ -3,6 +3,8 @@ name: Build Sporenwerk 1.28.0 for Forge 1.20.1
 on:
   push:
     branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 concurrency:
