@@ -39,13 +39,15 @@ for token in (
     "builder.add(SIGNAL)",
     "void neighborChanged(",
     "if (level.isClientSide) return;",
-    "int previousSignal = state.getValue(SIGNAL)",
-    "int nextSignal = level.getBestNeighborSignal(pos)",
-    "if (previousSignal == nextSignal) return;",
-    "level.setBlock(pos, state.setValue(SIGNAL, nextSignal), 3)",
-    "int previousBand = riskBand(previousSignal)",
-    "int nextBand = riskBand(nextSignal)",
+    "int latchedSignal = state.getValue(SIGNAL)",
+    "int liveSignal = level.getBestNeighborSignal(pos)",
+    "if (liveSignal <= latchedSignal) return;",
+    "level.setBlock(pos, state.setValue(SIGNAL, liveSignal), 3)",
+    "int previousBand = riskBand(latchedSignal)",
+    "int nextBand = riskBand(liveSignal)",
     "if (nextBand > previousBand)",
+    "InteractionResult use(",
+    'Component.translatable("message.sporenwerk.warnsirene.acknowledged", liveSignal)',
     "public static int riskBand(int signal)",
     "if (signal >= 11) return 3",
     "if (signal >= 5) return 2",
@@ -113,15 +115,17 @@ for locale in ("de_de.json", "en_us.json"):
     data = json.loads((ASSETS / "lang" / locale).read_text(encoding="utf-8"))
     require(data.get("block.sporenwerk.mutagen_warnsirene", "").strip(), locale + " block name missing")
     require(data.get("item.sporenwerk.mutagen_warnsirene", "").strip(), locale + " item name missing")
+    require(data.get("message.sporenwerk.warnsirene.acknowledged", "").strip(),
+            locale + " acknowledgement message missing")
 
 preview = read("tools/make_art_preview.py")
 for name in ("mutagen_warnsirene", "mutagen_warnsirene_active",
              "mutagen_warnsirene_elevated", "mutagen_warnsirene_critical"):
     require(name in preview, "art preview missing " + name)
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.30\.0['\"]", build) is not None,
-        "artifact must be version 1.30.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.31\.0['\"]", build) is not None,
+        "artifact must be version 1.31.0")
 readme = read("README.md")
-require("Version 1.30.0" in readme and "Version 1.29.0" in readme,
-        "release notes must preserve the 1.29.0 version history")
+require("Version 1.31.0" in readme and "Version 1.30.0" in readme,
+        "release notes must preserve the 1.30.0 version history")
 print("Mutagen warning siren registration, all 16 input values, severity bands, escalation tones, textures, recipe, locales, and version passed.")
