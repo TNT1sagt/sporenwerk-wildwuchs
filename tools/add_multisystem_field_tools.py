@@ -56,28 +56,14 @@ area_methods = """\
     private static final int AREA_SCAN_RADIUS = 8;
     private static final int AREA_SCAN_VERTICAL_RADIUS = 4;
 
-    private record AreaSurvey(int tierOneSoil, int tierTwoSoil, int tierThreeSoil,
-                              int mutatedCrops, int poweredWards, int dampenerCount,
-                              int availableChargeUnits, int activeAlarms, int criticalAlarms,
-                              int activeRelays, int maxRelaySignal, int maxStationSignal,
-                              int nearbyPirscher) {}
+    private record AreaSurvey(int activeNodes, int inactiveNodes, int strongestField, int anchors,
+                              int tierOneSoil, int tierTwoSoil, int tierThreeSoil, int mutatedCrops,
+                              int poweredWards, int dampenerCount, int availableChargeUnits,
+                              int activeAlarms, int criticalAlarms, int activeRelays,
+                              int maxRelaySignal, int maxStationSignal, int nearbyPirscher) {}
 
-    /**
-     * Right-clicking air performs one bounded, server-authoritative survey. It inspects
-     * only loaded chunks and never runs from a ticker or requests chunk loading.
-     */
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide) return InteractionResultHolder.sidedSuccess(stack, true);
-        if (!(level instanceof ServerLevel serverLevel)) return InteractionResultHolder.pass(stack);
-
-        AreaSurvey survey = surveyArea(serverLevel, player.blockPosition(), player);
-        reportAreaSurvey(player, survey);
-        return InteractionResultHolder.success(stack);
-    }
-
-    private static AreaSurvey surveyArea(ServerLevel level, BlockPos origin, Player player) {
+    private static AreaSurvey surveyArea(ServerLevel level, BlockPos origin) {
+        int activeNodes = 0, inactiveNodes = 0, strongestField = 0, anchors = 0;
         int tierOneSoil = 0;
         int tierTwoSoil = 0;
         int tierThreeSoil = 0;
@@ -90,6 +76,7 @@ area_methods = """\
         int activeRelays = 0;
         int maxRelaySignal = 0;
         int maxStationSignal = 0;
+        MutationNodeData nodeData = MutationNodeData.get(level);
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
 
         int minY = Math.max(level.getMinBuildHeight(), origin.getY() - AREA_SCAN_VERTICAL_RADIUS);
@@ -101,6 +88,17 @@ area_methods = """\
                 for (int y = minY; y <= maxY; y++) {
                     cursor.set(origin.getX() + dx, y, origin.getZ() + dz);
                     BlockState state = level.getBlockState(cursor);
+
+                    if (state.is(ModBlocks.INFEKTIONSHERD.get())) {
+                        if (nodeData.isActive(cursor)) {
+                            activeNodes++;
+                            strongestField = Math.max(strongestField,
+                                    MutationField.mutagenStrengthAt(level, cursor));
+                        } else {
+                            inactiveNodes++;
+                        }
+                    }
+                    if (state.is(ModBlocks.MUTATION_ANCHOR.get())) anchors++;
 
                     if (state.is(ModBlocks.MUTAGEN_BODEN.get())
                             && state.hasProperty(InfestedTerrainBlock.MUTAGEN_LEVEL)) {
@@ -147,15 +145,21 @@ area_methods = """\
 
         int nearbyPirscher = level.getEntitiesOfClass(KristallpirscherEntity.class,
                 new AABB(origin).inflate(AREA_SCAN_RADIUS, AREA_SCAN_VERTICAL_RADIUS, AREA_SCAN_RADIUS)).size();
-        return new AreaSurvey(tierOneSoil, tierTwoSoil, tierThreeSoil, mutatedCrops,
-                poweredWards, dampenerCount, availableChargeUnits, activeAlarms, criticalAlarms,
-                activeRelays, maxRelaySignal, maxStationSignal, nearbyPirscher);
+        return new AreaSurvey(activeNodes, inactiveNodes, strongestField, anchors,
+                tierOneSoil, tierTwoSoil, tierThreeSoil, mutatedCrops, poweredWards, dampenerCount,
+                availableChargeUnits, activeAlarms, criticalAlarms, activeRelays,
+                maxRelaySignal, maxStationSignal, nearbyPirscher);
     }
 
     private static void reportAreaSurvey(Player player, AreaSurvey survey) {
         player.displayClientMessage(Component.translatable(
                 "message.sporenwerk.scanner.survey.header", AREA_SCAN_RADIUS, AREA_SCAN_VERTICAL_RADIUS)
                 .withStyle(ChatFormatting.AQUA), false);
+        player.displayClientMessage(Component.translatable("message.sporenwerk.scanner.survey.nodes",
+                survey.activeNodes(), survey.inactiveNodes(), survey.anchors(), survey.strongestField())
+                .withStyle(survey.strongestField() >= 3 ? ChatFormatting.LIGHT_PURPLE
+                        : survey.activeNodes() > 0 && survey.anchors() == 0
+                        ? ChatFormatting.RED : ChatFormatting.AQUA), false);
         player.displayClientMessage(Component.translatable("message.sporenwerk.scanner.survey.fields",
                 survey.tierOneSoil(), survey.tierTwoSoil(), survey.tierThreeSoil())
                 .withStyle(survey.tierThreeSoil() > 0 ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GREEN), false);
@@ -176,6 +180,9 @@ area_methods = """\
         ChatFormatting guidanceColor;
         if (survey.nearbyPirscher() > 0) {
             guidanceKey = "message.sporenwerk.scanner.survey.guidance.pirscher";
+            guidanceColor = ChatFormatting.RED;
+        } else if (survey.activeNodes() > 0 && survey.anchors() == 0) {
+            guidanceKey = "message.sporenwerk.scanner.survey.guidance.uncontained";
             guidanceColor = ChatFormatting.RED;
         } else if (survey.criticalAlarms() > 0
                 || (survey.tierThreeSoil() > 0
@@ -257,6 +264,36 @@ tooltip_addition = """        tooltip.add(Component.translatable("tooltip.sporen
 if tooltip_addition.strip() not in scanner:
     require(tooltip_anchor in scanner, "could not locate scanner tooltip")
     scanner = scanner.replace(tooltip_anchor, tooltip_anchor + tooltip_addition, 1)
+# Replace the earlier air-click survey instead of adding a duplicate override.
+survey_use_signature = "public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)"
+survey_use_method = """    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (level.isClientSide) return InteractionResultHolder.sidedSuccess(stack, true);
+        if (!(level instanceof ServerLevel serverLevel)) return InteractionResultHolder.pass(stack);
+        AreaSurvey survey = surveyArea(serverLevel, player.blockPosition());
+        reportAreaSurvey(player, survey);
+        return InteractionResultHolder.success(stack);
+    }"""
+if survey_use_method not in scanner:
+    method_signature_index = scanner.find(survey_use_signature)
+    require(method_signature_index >= 0, "could not locate existing Feldscanner air-use method to merge")
+    method_start = scanner.rfind("    @Override", 0, method_signature_index)
+    opening = scanner.find("{", method_signature_index)
+    require(method_start >= 0 and opening >= 0, "malformed Feldscanner air-use method")
+    depth = 0
+    method_end = -1
+    for index in range(opening, len(scanner)):
+        if scanner[index] == "{":
+            depth += 1
+        elif scanner[index] == "}":
+            depth -= 1
+            if depth == 0:
+                method_end = index + 1
+                break
+    require(method_end > opening, "could not locate end of existing Feldscanner air-use method")
+    scanner = scanner[:method_start] + survey_use_method + scanner[method_end:]
+
 scanner_path.write_text(scanner, encoding="utf-8")
 
 
@@ -334,6 +371,8 @@ translations = {
         "message.sporenwerk.scanner.device.relay": "Containment-Relais: Modus %1$s, gespeichertes Comparator-Signal %2$s/15.",
         "message.sporenwerk.scanner.device.station": "Kontrollstation: zuletzt gespeicherter Gefahrenwert %1$s/15.",
         "message.sporenwerk.scanner.survey.header": "UMGEBUNGSSCAN: Radius %1$s Blöcke, Höhe ±%2$s. Nur geladene Chunks.",
+        "message.sporenwerk.scanner.survey.nodes": "Mutagenherde aktiv/inaktiv: %1$s/%2$s | Heilanker: %3$s | stärkstes aktives Feld: %4$s/3.",
+        "message.sporenwerk.scanner.survey.guidance.uncontained": "UNGESICHERT: Aktiver Mutagenherd ohne erkannten Heilanker im Messbereich.",
         "message.sporenwerk.scanner.survey.fields": "Mutagenboden nach Stufe — I: %1$s | II: %2$s | III: %3$s",
         "message.sporenwerk.scanner.survey.crops": "Mutierte Sporenwerk-Pflanzen im Messbereich: %1$s",
         "message.sporenwerk.scanner.survey.devices": "Aktive Abwehrsender: %1$s | Dämpfer: %2$s (Impulse: %3$s) | Sirenen: %4$s (kritisch: %5$s) | aktive Relais: %6$s (max. Signal: %7$s) | höchstes Stationssignal: %8$s",
@@ -361,6 +400,8 @@ translations = {
         "message.sporenwerk.scanner.device.relay": "Containment Relay: mode %1$s, stored comparator signal %2$s/15.",
         "message.sporenwerk.scanner.device.station": "Control Station: most recently stored hazard value %1$s/15.",
         "message.sporenwerk.scanner.survey.header": "AREA SURVEY: radius %1$s blocks, height ±%2$s. Loaded chunks only.",
+        "message.sporenwerk.scanner.survey.nodes": "Mutagen nodes active/inactive: %1$s/%2$s | healing anchors: %3$s | strongest active field: %4$s/3.",
+        "message.sporenwerk.scanner.survey.guidance.uncontained": "UNCONTAINED: An active Mutagen node has no detected healing anchor in the survey area.",
         "message.sporenwerk.scanner.survey.fields": "Mutagen soil by tier — I: %1$s | II: %2$s | III: %3$s",
         "message.sporenwerk.scanner.survey.crops": "Mutated Sporenwerk crops in survey area: %1$s",
         "message.sporenwerk.scanner.survey.devices": "Powered wards: %1$s | dampeners: %2$s (charges: %3$s) | sirens: %4$s (critical: %5$s) | active relays: %6$s (max signal: %7$s) | highest station signal: %8$s",
