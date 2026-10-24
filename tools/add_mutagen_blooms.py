@@ -72,12 +72,12 @@ if "import de.sporenwerk.item.MutagenCoreCrystalItem;" not in items:
     anchor = "import de.sporenwerk.item.MutageneSporenItem;"
     if anchor not in items:
         raise SystemExit("Cannot locate MutageneSporenItem import for the bloom core")
-    items = items.replace(anchor, anchor + "\\nimport de.sporenwerk.item.MutagenCoreCrystalItem;", 1)
+    items = items.replace(anchor, anchor + "\nimport de.sporenwerk.item.MutagenCoreCrystalItem;", 1)
 core_anchor = '    public static final RegistryObject<Item> MUTAGENE_SPOREN = ITEMS.register("mutagene_sporen", () -> new MutageneSporenItem(new Item.Properties().stacksTo(64)));'
 if "MUTAGENKERNKRISTALL" not in items:
     if core_anchor not in items:
         raise SystemExit("Cannot locate mutagen-spore item registration for core crystal")
-    items = items.replace(core_anchor, core_anchor + '\\n    public static final RegistryObject<Item> MUTAGENKERNKRISTALL = ITEMS.register("mutagenkernkristall", () -> new MutagenCoreCrystalItem(new Item.Properties().stacksTo(16)));', 1)
+    items = items.replace(core_anchor, core_anchor + '\n    public static final RegistryObject<Item> MUTAGENKERNKRISTALL = ITEMS.register("mutagenkernkristall", () -> new MutagenCoreCrystalItem(new Item.Properties().stacksTo(16)));', 1)
 items_path.write_text(items, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/item/MutagenCoreCrystalItem.java", """
@@ -111,7 +111,7 @@ if "output.accept(ModItems.MUTAGENKERNKRISTALL.get());" not in creative:
     anchor = "output.accept(ModItems.MUTAGENE_SPOREN.get());"
     if anchor not in creative:
         raise SystemExit("Cannot locate Mutagen Spores creative entry for the core crystal")
-    creative = creative.replace(anchor, anchor + "\\n                        output.accept(ModItems.MUTAGENKERNKRISTALL.get());", 1)
+    creative = creative.replace(anchor, anchor + "\n                        output.accept(ModItems.MUTAGENKERNKRISTALL.get());", 1)
 creative_path.write_text(creative, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/infection/MutagenBloom.java", """

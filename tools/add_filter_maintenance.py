@@ -393,7 +393,7 @@ core_icon.save(item_texture_dir / "mutagenkernkristall.png", optimize=True)
 write("src/main/resources/assets/sporenwerk/models/item/mutagenkernkristall.json", json.dumps({
     "parent": "minecraft:item/generated",
     "textures": {"layer0": "sporenwerk:item/mutagenkernkristall"}
-}, ensure_ascii=False, indent=2) + "\\n")
+}, ensure_ascii=False, indent=2) + "\n")
 
 stabilizer_top = Image.new("RGBA", (16, 16), (30, 48, 51, 255))
 d = ImageDraw.Draw(stabilizer_top)
@@ -421,17 +421,17 @@ stabilizer_side.save(texture_dir / "mutagenfeld_stabilisator_side.png", optimize
 
 write("src/main/resources/assets/sporenwerk/blockstates/mutagenfeld_stabilisator.json", json.dumps({
     "variants": {"": {"model": "sporenwerk:block/mutagenfeld_stabilisator"}}
-}, ensure_ascii=False, indent=2) + "\\n")
+}, ensure_ascii=False, indent=2) + "\n")
 write("src/main/resources/assets/sporenwerk/models/block/mutagenfeld_stabilisator.json", json.dumps({
     "parent": "minecraft:block/cube_column",
     "textures": {
         "end": "sporenwerk:block/mutagenfeld_stabilisator_top",
         "side": "sporenwerk:block/mutagenfeld_stabilisator_side"
     }
-}, ensure_ascii=False, indent=2) + "\\n")
+}, ensure_ascii=False, indent=2) + "\n")
 write("src/main/resources/assets/sporenwerk/models/item/mutagenfeld_stabilisator.json", json.dumps({
     "parent": "sporenwerk:block/mutagenfeld_stabilisator"
-}, ensure_ascii=False, indent=2) + "\\n")
+}, ensure_ascii=False, indent=2) + "\n")
 
 # Tiered recipes form a real upgrade chain rather than three unrelated free refills.
 write("src/main/resources/data/sporenwerk/recipes/sporenfiltereinsatz_verstaerkt.json", """
