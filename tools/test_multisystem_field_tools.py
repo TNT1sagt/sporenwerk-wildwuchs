@@ -60,6 +60,9 @@ medicine = read("src/main/java/de/sporenwerk/item/WurzelkonzentratItem.java")
 require("player.removeEffect(MobEffects.POISON)" in medicine
         and "player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN)" in medicine,
         "Rotwurzel concentrate must remove poison and resonance slowdown")
+require("&& !player.hasEffect(MobEffects.POISON)" in medicine
+        and "&& !player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)" in medicine,
+        "Rotwurzel concentrate must remove poison and resonance slowdown")
 require("message.sporenwerk.wurzelkonzentrat.cured_both" in medicine
         and "message.sporenwerk.wurzelkonzentrat.healed" in medicine,
         "medicine feedback must describe the outcome that actually occurred")
