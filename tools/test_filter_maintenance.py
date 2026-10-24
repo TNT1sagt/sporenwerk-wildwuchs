@@ -149,8 +149,8 @@ require(research_unlock["criteria"]["discover_mutagen_extract"]["conditions"]["i
         "Mutagen Extract discovery must be the unlock trigger")
 build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.20\.0['\"]", build) is not None,
-        "root Gradle project version must be 1.20.0")
-require("Version 1.20.0" in read("README.md"), "1.20.0 release notes are missing")
+        "root Gradle project version must be 1.21.0")
+require("Version 1.21.0" in read("README.md"), "1.21.0 release notes are missing")
 preview = read("tools/make_art_preview.py")
 require("sporenfilterwartungstisch_top" in preview
         and "sporenfiltereinsatz_mutagen" in preview,

@@ -72,7 +72,10 @@ import de.sporenwerk.registry.ModBlocks;
 import de.sporenwerk.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -136,6 +139,15 @@ public final class MutagenBloom {
         }
     }
 
+    private static void awardBloomDiscovery(Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+        var server = serverPlayer.getServer();
+        if (server == null) return;
+        Advancement discovery = server.getAdvancements().getAdvancement(
+                new ResourceLocation("sporenwerk", "first_mutagen_bloom"));
+        if (discovery != null) serverPlayer.getAdvancements().award(discovery, "witness_bloom");
+    }
+
     private static void exposeNearbyPlayers(ServerLevel level, BlockPos origin) {
         AABB bounds = new AABB(origin).inflate(MutationField.RADIUS, MutationField.INFECTION_HALF_HEIGHT, MutationField.RADIUS);
         long now = level.getGameTime();
@@ -144,6 +156,7 @@ public final class MutagenBloom {
                     || Math.abs(player.getY() - origin.getY()) > MutationField.INFECTION_HALF_HEIGHT
                     || MutationField.hasAnchor(level, player.blockPosition())) continue;
 
+            awardBloomDiscovery(player);
             player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.bloom")
                     .withStyle(ChatFormatting.LIGHT_PURPLE), false);
             ItemStack mask = player.getItemBySlot(EquipmentSlot.HEAD);
@@ -156,6 +169,40 @@ public final class MutagenBloom {
             }
         }
     }
+}
+""")
+
+# Witnessing a dangerous tier-3 bloom becomes a one-time survival milestone with a modest research reward.
+write("src/main/resources/data/sporenwerk/advancements/first_mutagen_bloom.json", """
+{
+  "parent": "sporenwerk:mutagen_laboratory",
+  "display": {
+    "icon": { "item": "sporenwerk:mutagene_sporen" },
+    "title": { "translate": "advancements.sporenwerk.first_mutagen_bloom.title" },
+    "description": { "translate": "advancements.sporenwerk.first_mutagen_bloom.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "witness_bloom": { "trigger": "minecraft:impossible" }
+  },
+  "requirements": [["witness_bloom"]],
+  "rewards": { "loot": ["sporenwerk:quests/first_mutagen_bloom"] }
+}
+""")
+write("src/main/resources/data/sporenwerk/loot_tables/quests/first_mutagen_bloom.json", """
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "sporenwerk:feldwissen", "functions": [{ "function": "minecraft:set_count", "count": 3 }] },
+        { "type": "minecraft:item", "name": "sporenwerk:myzelkompost", "functions": [{ "function": "minecraft:set_count", "count": 2 }] }
+      ]
+    }
+  ]
 }
 """)
 
@@ -308,10 +355,14 @@ entity_path.write_text(entity, encoding="utf-8")
 # Player-facing text is available in both supported languages.
 translations = {
     "de_de.json": {
-        "message.sporenwerk.mutagen.bloom": "MUTAGENBLÜTE! Die Feldspitze beschleunigt Pflanzen, setzt aber einen gefährlichen Expositionsimpuls frei."
+        "message.sporenwerk.mutagen.bloom": "MUTAGENBLÜTE! Die Feldspitze beschleunigt Pflanzen, setzt aber einen gefährlichen Expositionsimpuls frei.",
+        "advancements.sporenwerk.first_mutagen_bloom.title": "Das Feld atmet",
+        "advancements.sporenwerk.first_mutagen_bloom.description": "Erlebe deine erste Mutagenblüte und sichere ein Feldprotokoll."
     },
     "en_us.json": {
-        "message.sporenwerk.mutagen.bloom": "MUTAGEN BLOOM! Peak field intensity accelerates crops but releases a dangerous exposure pulse."
+        "message.sporenwerk.mutagen.bloom": "MUTAGEN BLOOM! Peak field intensity accelerates crops but releases a dangerous exposure pulse.",
+        "advancements.sporenwerk.first_mutagen_bloom.title": "The Field Breathes",
+        "advancements.sporenwerk.first_mutagen_bloom.description": "Witness your first Mutagen Bloom and secure a field report."
     }
 }
 for filename, additions in translations.items():

@@ -22,20 +22,35 @@ for token in ("mutagenStrengthAt(level, origin) < 3", "claimBloom(origin, level.
               "mask.is(ModItems.SPORENFILTERMASKE.get())", "mask.hurtAndBreak(1, player",
               "InfectionState.setLevel(player, InfectionState.level(player) + 1)",
               "SporenwerkControlledExposureAt", "accelerateCrops(level, origin, random)",
-              "exposeNearbyPlayers(level, origin)"):
+              "exposeNearbyPlayers(level, origin)", "awardBloomDiscovery(player)",
+              'new ResourceLocation("sporenwerk", "first_mutagen_bloom")',
+              'award(discovery, "witness_bloom")'):
     require(token in bloom, "bloom behavior is missing " + token)
 node = read("src/main/java/de/sporenwerk/block/MutationNodeBlock.java")
 require("MutagenBloom.tryTrigger(level, pos, random)" in node,
         "scheduled active-node tick must invoke the event")
+advancement = json.loads(read("src/main/resources/data/sporenwerk/advancements/first_mutagen_bloom.json"))
+require(advancement["parent"] == "sporenwerk:mutagen_laboratory"
+        and advancement["criteria"]["witness_bloom"]["trigger"] == "minecraft:impossible"
+        and advancement["rewards"]["loot"] == ["sporenwerk:quests/first_mutagen_bloom"],
+        "first bloom must award one persistent advancement and a field-research reward")
+reward_table = json.loads(read("src/main/resources/data/sporenwerk/loot_tables/quests/first_mutagen_bloom.json"))
+reward_items = {entry["name"]: entry["functions"][0]["count"]
+                for entry in reward_table["pools"][0]["entries"]}
+require(reward_items == {"sporenwerk:feldwissen": 3, "sporenwerk:myzelkompost": 2},
+        "first bloom reward must remain bounded to 3 field knowledge and 2 mycelium compost")
 for locale in ("de_de.json", "en_us.json"):
     data = json.loads((root / "src/main/resources/assets/sporenwerk/lang" / locale).read_text(encoding="utf-8"))
     require(data.get("message.sporenwerk.mutagen.bloom", "").strip(),
             locale + " missing the Mutagen Bloom warning")
+    require(data.get("advancements.sporenwerk.first_mutagen_bloom.title", "").strip()
+            and data.get("advancements.sporenwerk.first_mutagen_bloom.description", "").strip(),
+            locale + " missing the first-bloom advancement texts")
 require("Version 1.15.0" in read("README.md"), "release notes missing 1.15.0")
 build = read("build.gradle")
 version_match = re.search(r"version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)['\"]", build)
-require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 17, 0),
-        "produced artifact must include the 1.17.0 Spore Ward milestone")
+require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 21, 0),
+        "produced artifact must include the 1.21.0 first-bloom milestone")
 
 entity = read("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java")
 for token in ("new BloomScentGoal(this)", "private static final class BloomScentGoal extends Goal",

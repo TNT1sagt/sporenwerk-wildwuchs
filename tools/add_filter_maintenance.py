@@ -449,20 +449,21 @@ preview_path.write_text(preview, encoding="utf-8")
 # This is the final patch in CI, so it owns the current artifact version.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.20.0'", build, count=1)
+build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.21.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.20.0")
+    raise SystemExit("Could not bump build.gradle to version 1.21.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
-heading = "## Version 1.20.0 — Mutagene Filterforschung und Filterwerkstatt"
-section = """## Version 1.20.0 — Mutagene Filterforschung und Filterwerkstatt
+heading = "## Version 1.21.0 — Mutagene Filterforschung und Filterwerkstatt"
+section = """## Version 1.21.0 — Mutagene Filterforschung und Filterwerkstatt
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.
 - **Echte Upgrade-Kette:** Standardeinsatz → verstärkter Einsatz mit Mutagenextrakt und Kupfer → mutagener Einsatz mit weiterem Extrakt und Amethyst. Der Wartungstisch wird aus Eisen, Kupfer, Redstone, Filtermoos, einem resistenten Block und einem Werktisch hergestellt.
 - **Mutagene Forschungsfreigabe:** Der mutagene Einsatz wird erst nach der Mutagenlabor-Entdeckung im Rezeptbuch freigeschaltet. Sowohl die direkte Reparatur als auch die Wartungsstation prüfen serverseitig, ob das Forschungs-Advancement abgeschlossen ist.
+- **Erste Mutagenblüte:** Wer eine gefährliche Blüte erstmals erlebt, erhält das Advancement „Das Feld atmet“ und ein einmaliges Feldprotokoll mit 3 Feldwissen und 2 Myzelkompost. Die Belohnung wird nur einmal pro Spieler vergeben.
 - **Sicherer Betrieb:** Einsatzverbrauch nur bei erfolgreicher Wartung; volle Masken verbrauchen keinen Filter. Kreativspieler verbrauchen keine Einsätze. Handbedienung bleibt als alternative Reparaturmethode verfügbar.
 - **Qualitätssicherung:** Neue Verträge prüfen Registrierungen, Upgrade-Rezepte, Tisch-Blockstates/Modelle/Texturen, alle Übersetzungen und die Haltbarkeitswerte. Die Vorschau zeigt die zusätzlichen Texturen und Item-Icons.
 
@@ -472,4 +473,4 @@ Der automatische Serverstart bestätigt die technische Startfähigkeit, ersetzt 
 if heading not in readme:
     readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed Sporenwerk 1.20.0 Filter Maintenance Bench and three-grade cartridge progression.")
+print("Installed Sporenwerk 1.21.0 Filter Maintenance Bench and three-grade cartridge progression.")
