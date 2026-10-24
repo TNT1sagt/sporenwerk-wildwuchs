@@ -111,7 +111,11 @@ def top_texture():
     d.rectangle((1, 1, 14, 14), fill=(25, 40, 44, 255), outline=(143, 105, 61, 255))
     d.rectangle((3, 3, 12, 12), fill=(12, 27, 34, 255), outline=(50, 117, 119, 255))
     d.rectangle((5, 5, 10, 10), fill=(30, 113, 117, 255), outline=(61, 217, 201, 255))
+    d.rectangle((4, 4, 11, 11), outline=(39, 88, 91, 255))
     d.rectangle((6, 6, 9, 9), fill=(43, 209, 197, 255))
+    d.line([(6, 4), (9, 4)], fill=(78, 167, 156, 255), width=1)
+    d.point((5, 8), fill=(120, 243, 216, 255))
+    d.point((10, 8), fill=(120, 243, 216, 255))
     d.rectangle((7, 7, 8, 8), fill=(224, 255, 218, 255))
     # The four copper terminals make the top readable at Minecraft's native pixel scale.
     for x, y in ((2, 2), (12, 2), (2, 12), (12, 12)):
