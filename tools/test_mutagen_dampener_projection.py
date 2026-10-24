@@ -56,7 +56,7 @@ for filename, expected in {
     "en_us.json": "Protection volume: ±%s horizontal",
 }.items():
     locale = json.loads((ASSETS / "lang" / filename).read_text(encoding="utf-8"))
-    require(expected in locale.get("message.sporenwerk.dampener.protection_volume", ""),
+    require(expected in locale.get("message.sporenwerk.dampener.status", ""),
             filename + " missing protection status text")
 
 build = read("build.gradle")
@@ -64,5 +64,5 @@ require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.38\.0['\"]", build) is not Non
         "artifact must be version 1.38.0")
 readme = read("README.md")
 require("Version 1.38.0" in readme and "Version 1.37.0" in readme,
-        "release notes must preserve the previous 1.36.0 loot/research milestone")
+        "release notes must preserve the previous 1.37.0 protection-volume milestone")
 print("Visible protection volume, shared server range, localized status, no permanent ticker, chunk safety, and 1.38.0 passed.")
