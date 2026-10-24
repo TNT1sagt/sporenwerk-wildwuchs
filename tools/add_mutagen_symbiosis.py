@@ -159,6 +159,12 @@ draw.point((8, 7), fill=pale)
 draw.point((2, 6), fill=magenta)
 draw.point((12, 4), fill=magenta)
 draw.point((5, 13), fill=cyan)
+# Additional high-contrast facets keep the icon readable at inventory scale.
+draw.point((1, 10), fill=deep)
+draw.point((11, 12), fill=deep)
+draw.point((14, 8), fill=bright)
+draw.point((7, 13), fill=(255, 205, 109, 255))
+draw.point((13, 3), fill=(255, 205, 109, 255))
 texture_path = item_texture_dir / "symbiosemyzel.png"
 texture.save(texture_path, optimize=True)
 with Image.open(texture_path) as check:
