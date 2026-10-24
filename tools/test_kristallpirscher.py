@@ -76,6 +76,11 @@ loot = json.loads((RES / "data/sporenwerk/loot_tables/entities/kristallpirscher.
 require(any(entry.get("name") == "sporenwerk:pflanzenreste"
             for pool in loot["pools"] for entry in pool["entries"]),
         "loot should include small organic residue")
+shard_pools = [pool for pool in loot["pools"]
+               if any(entry.get("name") == "sporenwerk:kristallpirscher_resonanzsplitter"
+                      for entry in pool.get("entries", []))]
+require(len(shard_pools) == 1 and not shard_pools[0].get("conditions"),
+        "each Kristallpirscher should yield guaranteed resonance shards")
 require(any(any(cond.get("condition") == "minecraft:random_chance" and cond.get("chance") == 0.25
                 for cond in pool.get("conditions", []))
             and any(entry.get("name") == "sporenwerk:mutagenkernkristall" for entry in pool["entries"])
