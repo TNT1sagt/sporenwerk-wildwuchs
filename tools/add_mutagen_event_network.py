@@ -17,7 +17,7 @@ def require(condition, message):
 
 def insert_once(path, anchor, addition, label):
     content = path.read_text(encoding="utf-8")
-    if addition.strip() in content:
+    if anchor + addition in content:
         return
     require(anchor in content, "could not locate " + label)
     path.write_text(content.replace(anchor, anchor + addition, 1), encoding="utf-8")
