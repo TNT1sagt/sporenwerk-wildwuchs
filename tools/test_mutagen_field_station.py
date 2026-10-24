@@ -85,6 +85,6 @@ require("mutagenfeld_kontrollstation_top" in preview and "mutagenfeld_kontrollst
         "QA preview must include both station textures")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", read("build.gradle")) is not None,
         "artifact must be version 1.36.0")
-require("Version 1.35.0" in read("README.md") and "Version 1.34.0" in read("README.md"),
+require("Version 1.36.0" in read("README.md") and "Version 1.35.0" in read("README.md"),
         "release notes must add 1.36.0 and preserve 1.35.0")
 print("Mutagen Field Control Station scan, network status, research unlock, resources, textures and locales passed.")
