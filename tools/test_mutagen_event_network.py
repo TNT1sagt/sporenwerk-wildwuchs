@@ -26,7 +26,7 @@ for token in (
     "if (level.isClientSide) return;",
     "for (int ring = 0; ring <= radius && refreshed < MAX_REFRESHED_RELAYS_PER_EVENT; ring++)",
     "level.hasChunkAt(cursor)",
-    "refreshed >= MAX_REFRESHED_RELAYS_PER_EVENT",
+    "refreshed < MAX_REFRESHED_RELAYS_PER_EVENT",
     "int signal = evaluate(level, relayPos, candidate.getValue(MODE));",
     "level.setBlock(relayPos, candidate.setValue(SIGNAL, signal), 3)",
 ):
