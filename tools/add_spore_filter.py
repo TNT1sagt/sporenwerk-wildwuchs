@@ -286,6 +286,7 @@ for token in ("implements ArmorMaterial", "getDurabilityForType", "getDefenseFor
               "getRepairIngredient", "getEquipSound", "getKnockbackResistance"):
     require(token in material, "armor material is missing " + token)
 field = read("src/main/java/de/sporenwerk/infection/MutationField.java")
+events = read("src/main/java/de/sporenwerk/infection/InfectionEvents.java")
 require("player.getItemBySlot(EquipmentSlot.HEAD)" in field
         and "mask.is(ModItems.SPORENFILTERMASKE.get())" in field,
         "wearing the mask must be checked in authoritative field exposure")
@@ -293,6 +294,11 @@ require("mask.hurtAndBreak(1, player" in field
         and 'putLong("SporenwerkControlledExposureAt", now + 300)' in field
         and 'putLong("SporenwerkControlledExposureAt", now + 100)' in field,
         "mask must consume durability and preserve the shorter unprotected exposure cadence")
+require("if (fieldExposurePulse)" in events
+        and "mask.is(ModItems.SPORENFILTERMASKE.get())" in events
+        and "mask.hurtAndBreak(1, player" in events
+        and "InfectionState.setLevel(player, infection + 1)" in events,
+        "the mask must intercept continuous tier-based field exposure before infection increases")
 recipe = json.loads((root / "src/main/resources/data/sporenwerk/recipes/sporenfiltermaske.json").read_text(encoding="utf-8"))
 require(recipe["result"]["item"] == "sporenwerk:sporenfiltermaske", "survival recipe must output the mask")
 for ingredient in ("minecraft:leather", "sporenwerk:filtermoos", "minecraft:copper_ingot", "minecraft:charcoal"):
@@ -310,8 +316,10 @@ for locale in ("de_de.json","en_us.json"):
         "item.sporenwerk.sporenfiltermaske",
         "tooltip.sporenwerk.sporenfiltermaske.1",
         "tooltip.sporenwerk.sporenfiltermaske.2")), locale + " missing mask translations")
+    require(bool(data.get("message.sporenwerk.mutagen.mask_absorbs", "").strip()),
+            locale + " missing the field-exposure interception message")
 require("Version 1.14.0" in read("README.md"), "release notes missing version 1.14.0")
-print("Wearable spore-filter helmet, recipe, pixel textures, durability-based field protection and locales passed.")
+print("Wearable spore-filter helmet, recipe, pixel textures, bloom and continuous field interception, durability, and locales passed.")
 ''')
 
 print("Installed Sporenwerk 1.14.0 spore-filter helmet and server-authoritative field protection.")
