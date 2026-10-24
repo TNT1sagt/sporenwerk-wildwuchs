@@ -449,7 +449,7 @@ preview_path.write_text(preview, encoding="utf-8")
 # This is the final patch in CI, so it owns the current artifact version.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.20.0'", build, count=1)
+build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.20.0'", build, count=1)
 if count != 1:
     raise SystemExit("Could not bump build.gradle to version 1.20.0")
 build_path.write_text(build, encoding="utf-8")
@@ -457,7 +457,7 @@ build_path.write_text(build, encoding="utf-8")
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
 heading = "## Version 1.20.0 — Mutagene Filterforschung und Filterwerkstatt"
-section = """## Version 1.20.0 — Filterwerkstatt und dreistufige Filterqualität
+section = """## Version 1.20.0 — Mutagene Filterforschung und Filterwerkstatt
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.

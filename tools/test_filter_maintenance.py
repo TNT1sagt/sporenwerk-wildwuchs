@@ -119,6 +119,9 @@ for locale in ("de_de.json", "en_us.json"):
         "tooltip.sporenwerk.sporenfilterwartungstisch.2",
         "message.sporenwerk.filterbench.hold_cartridge",
         "message.sporenwerk.filterbench.repaired",
+        "message.sporenwerk.filterbench.research_required",
+        "advancements.sporenwerk.filter_mutagen_research.title",
+        "advancements.sporenwerk.filter_mutagen_research.description",
     ):
         require(bool(data.get(key, "").strip()), locale + " missing " + key)
 
@@ -145,8 +148,8 @@ require(research_unlock["criteria"]["discover_mutagen_extract"]["conditions"]["i
         == ["sporenwerk:mutagenextrakt"],
         "Mutagen Extract discovery must be the unlock trigger")
 build = read("build.gradle")
-require(re.search(r"version\s*=\s*['\"]1\.20\.0['\"]", build) is not None,
-        "artifact version must be 1.20.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.20\.0['\"]", build) is not None,
+        "root Gradle project version must be 1.20.0")
 require("Version 1.20.0" in read("README.md"), "1.20.0 release notes are missing")
 preview = read("tools/make_art_preview.py")
 require("sporenfilterwartungstisch_top" in preview
