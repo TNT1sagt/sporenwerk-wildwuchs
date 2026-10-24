@@ -191,7 +191,7 @@ require("hasNearbyStabilizer(level, player.blockPosition())" in bloom
         and "message.sporenwerk.mutagen.stabilized" in bloom,
         "stabilizer must prevent the bloom exposure pulse within the bounded local radius")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.21\.0['\"]", build) is not None,
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.22\.0['\"]", build) is not None,
         "root Gradle project version must be 1.22.0")
 require("Version 1.22.0" in read("README.md"), "1.22.0 release notes are missing")
 preview = read("tools/make_art_preview.py")
