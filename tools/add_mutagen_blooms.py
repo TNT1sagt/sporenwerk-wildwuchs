@@ -79,6 +79,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -98,8 +99,22 @@ public final class MutagenBloom {
         level.sendParticles(ParticleTypes.WARPED_SPORE, x, y, z, 48, 1.3D, 0.45D, 1.3D, 0.035D);
         level.sendParticles(ParticleTypes.PORTAL, x, y, z, 20, 0.8D, 0.7D, 0.8D, 0.09D);
 
+        releaseHarvestableSpores(level, origin, random);
         accelerateCrops(level, origin, random);
         exposeNearbyPlayers(level, origin);
+    }
+
+    /**
+     * A mature bloom deposits a small, collectible sample at its source.
+     * The node cooldown bounds the reward; the exposure pulse remains the cost.
+     */
+    private static void releaseHarvestableSpores(ServerLevel level, BlockPos origin, RandomSource random) {
+        int count = random.nextFloat() < 0.20F ? 2 : 1;
+        ItemStack spores = new ItemStack(ModItems.MUTAGENE_SPOREN.get(), count);
+        double x = origin.getX() + 0.5D;
+        double y = origin.getY() + 0.8D;
+        double z = origin.getZ() + 0.5D;
+        level.addFreshEntity(new ItemEntity(level, x, y, z, spores));
     }
 
     private static void accelerateCrops(ServerLevel level, BlockPos origin, RandomSource random) {

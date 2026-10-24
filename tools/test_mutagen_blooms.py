@@ -14,7 +14,9 @@ for token in ("Map<Long, Long> lastBlooms", 'entry.contains("LastBloom")',
 bloom = read("src/main/java/de/sporenwerk/infection/MutagenBloom.java")
 for token in ("mutagenStrengthAt(level, origin) < 3", "claimBloom(origin, level.getGameTime(), COOLDOWN_TICKS)",
               "COOLDOWN_TICKS = 12000L", "ParticleTypes.WARPED_SPORE", "ParticleTypes.PORTAL",
-              "attempt < 32 && advanced < 6", "MutationField.hasAnchor(level, player.blockPosition())",
+              "attempt < 32 && advanced < 6", "releaseHarvestableSpores(level, origin, random)",
+              "new ItemStack(ModItems.MUTAGENE_SPOREN.get(), count)", "level.addFreshEntity(new ItemEntity(level, x, y, z, spores))",
+              "MutationField.hasAnchor(level, player.blockPosition())",
               "mask.is(ModItems.SPORENFILTERMASKE.get())", "mask.hurtAndBreak(1, player",
               "InfectionState.setLevel(player, InfectionState.level(player) + 1)",
               "SporenwerkControlledExposureAt", "accelerateCrops(level, origin, random)",
@@ -43,4 +45,4 @@ require("nearestRecentBloom(BlockPos center, int radius, long gameTime, long sce
         "saved field registry must expose only bounded recent blooms")
 require("Version 1.16.0" in read("README.md"), "release notes missing 1.16.0")
 
-print("Mutagen Bloom strength gate, saved cooldown, crop boost, mask counterplay, anchor protection and locales passed.")
+print("Mutagen Bloom strength gate, saved cooldown, harvestable spore reward, crop boost, mask counterplay, anchor protection and locales passed.")
