@@ -39,8 +39,10 @@ require("NETWORK_LINK_RADIUS = 8" in stabilizer and "NETWORK_VERTICAL_LINK_RADIU
         "reported network limits must match the existing stabilizer contract")
 
 state = json.loads((assets / "blockstates/mutagenfeld_kontrollstation.json").read_text(encoding="utf-8"))
-require(state["variants"][""]["model"] == "sporenwerk:block/mutagenfeld_kontrollstation",
-        "station blockstate points to the wrong model")
+require(len(state["variants"]) == 16 and all(
+        state["variants"].get(f"power={power}", {}).get("model") == "sporenwerk:block/mutagenfeld_kontrollstation"
+        for power in range(16)),
+        "station blockstate must preserve the model for all comparator power values")
 model = json.loads((assets / "models/block/mutagenfeld_kontrollstation.json").read_text(encoding="utf-8"))
 require(model["parent"] == "minecraft:block/cube_column"
         and model["textures"]["end"] == "sporenwerk:block/mutagenfeld_kontrollstation_top"
