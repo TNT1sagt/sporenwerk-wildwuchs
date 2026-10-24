@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the visible, on-demand Resonance Dampener protection volume (1.37.0)."""
+"""Regression tests for the visible, on-demand Resonance Dampener protection volume (1.38.0)."""
 from pathlib import Path
 import json
 import re
@@ -60,9 +60,9 @@ for filename, expected in {
             filename + " missing protection status text")
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
-        "artifact must be version 1.37.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.38\.0['\"]", build) is not None,
+        "artifact must be version 1.38.0")
 readme = read("README.md")
-require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
+require("Version 1.38.0" in readme and "Version 1.37.0" in readme,
         "release notes must preserve the previous 1.36.0 loot/research milestone")
-print("Visible protection volume, shared server range, localized status, no permanent ticker, chunk safety, and 1.37.0 passed.")
+print("Visible protection volume, shared server range, localized status, no permanent ticker, chunk safety, and 1.38.0 passed.")
