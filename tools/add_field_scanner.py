@@ -61,11 +61,13 @@ import de.sporenwerk.infection.MutationField;
 import de.sporenwerk.infection.MutationAnchorData;
 import de.sporenwerk.infection.MutationNodeData;
 import de.sporenwerk.registry.ModBlocks;
+import de.sporenwerk.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -134,6 +136,26 @@ public final class FeldscannerItem extends Item {
         }
 
         player.displayClientMessage(reading, false);
+
+        // While the player is exposed, the scanner also reports whether the portable
+        // countermeasure is equipped and how much durability remains on its filter mask.
+        int playerStrength = MutationField.mutagenStrengthAt(serverLevel, player.blockPosition());
+        if (playerStrength > 0) {
+            ItemStack mask = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (mask.is(ModItems.SPORENFILTERMASKE.get())) {
+                int maxDurability = mask.getMaxDamage();
+                int remainingDurability = Math.max(0, maxDurability - mask.getDamageValue());
+                int percent = maxDurability <= 0 ? 0 : remainingDurability * 100 / maxDurability;
+                player.displayClientMessage(Component.translatable(
+                        "message.sporenwerk.scanner.mask_condition", playerStrength, percent)
+                        .withStyle(percent <= 20 ? ChatFormatting.RED
+                                : percent <= 50 ? ChatFormatting.GOLD : ChatFormatting.GREEN), false);
+            } else {
+                player.displayClientMessage(Component.translatable(
+                        "message.sporenwerk.scanner.mask_missing", playerStrength)
+                        .withStyle(ChatFormatting.RED), false);
+            }
+        }
         return InteractionResult.SUCCESS;
     }
 
@@ -227,7 +249,9 @@ translations = {
         "message.sporenwerk.scanner.terrain_active": "Infizierter Boden erkannt. Aktive Feldstärke an dieser Position: %1$s/3.",
         "message.sporenwerk.scanner.terrain_cooling": "Rückführungsmarkierter Boden: Aktive Mutagenwirkung ist hier nicht mehr nachweisbar.",
         "message.sporenwerk.scanner.field": "Feldsignal erkannt: Stärke %1$s/3. Feldgebundene Pflanzenboni und Exposition sind aktiv.",
-        "message.sporenwerk.scanner.clean": "Kein aktives Mutagenfeld am Ziel. Keine feldgebundenen Boni erkannt."
+        "message.sporenwerk.scanner.clean": "Kein aktives Mutagenfeld am Ziel. Keine feldgebundenen Boni erkannt.",
+        "message.sporenwerk.scanner.mask_condition": "Du stehst in Mutagenstufe %1$s. Filterzustand der Maske: %2$s Prozent.",
+        "message.sporenwerk.scanner.mask_missing": "Mutagenstufe %s: Keine Sporenfiltermaske getragen. Maske anlegen oder Mutationsanker platzieren."
     },
     "en_us.json": {
         "item.sporenwerk.feldscanner": "Field Scanner",
@@ -240,7 +264,9 @@ translations = {
         "message.sporenwerk.scanner.terrain_active": "Infested terrain detected. Active field strength here: %1$s/3.",
         "message.sporenwerk.scanner.terrain_cooling": "Restoration-marked terrain: no active mutagen effect is detected here.",
         "message.sporenwerk.scanner.field": "Field signal detected: strength %1$s/3. Field crop bonuses and exposure are active.",
-        "message.sporenwerk.scanner.clean": "No active mutagen field at the target. No field-based bonuses detected."
+        "message.sporenwerk.scanner.clean": "No active mutagen field at the target. No field-based bonuses detected.",
+        "message.sporenwerk.scanner.mask_condition": "You are in Mutagen tier %1$s. Mask filter condition: %2$s percent.",
+        "message.sporenwerk.scanner.mask_missing": "Mutagen tier %s: No Spore Filter Mask equipped. Wear one or place a Mutation Anchor."
     }
 }
 for locale, entries in translations.items():
@@ -267,6 +293,7 @@ if heading not in readme:
 
 - **Feldscanner:** Neues craftbares Survival-Werkzeug mit eigener 16×16-Pixeltextur.
 - **Aussagekräftige Messungen:** Rechtsklick auf Blöcke meldet aktive oder inaktive Mutagenherde, Feldstärke, Heilanker, resistente Barrieren sowie frisch befallenen oder bereits abklingenden Boden.
+- **Überlebensdiagnose:** Stehst du selbst in einem aktiven Feld, zeigt der Scanner zusätzlich den aktuellen Maskenzustand oder warnt bei fehlendem Atemschutz. Die Anzeige nutzt dieselbe serverseitige Feldstärke wie die Infektionslogik.
 - **Serverautorität:** Der Scanner liest denselben gespeicherten Quellstatus und dieselbe Feldstärke, die Pflanzenmutation und Terrain-Ausbreitung steuern; er erfindet keine clientseitigen Werte.
 - **Spielintegration:** Rezept aus Kupfer, Redstone, Glasscheibe, Eisen und Mutagenextrakt, Eintrag im Kreativkatalog und vollständige deutsche/englische Texte.
 - **Release-QA:** Eigener Feldscanner-Vertragstest, Prüfung von Modell/Textur/Rezept/Übersetzungen, Forge-Build, JAR-Inhalt und dedizierter Serverstart.
@@ -318,6 +345,13 @@ require("if (level.isClientSide) return InteractionResult.SUCCESS;" in scanner,
         "world reads must not be guessed on the client")
 require("MutationField.mutagenStrengthAt(serverLevel, pos)" in scanner,
         "scan must reuse server-authoritative saved field strength")
+require("MutationField.mutagenStrengthAt(serverLevel, player.blockPosition())" in scanner
+        and "player.getItemBySlot(EquipmentSlot.HEAD)" in scanner
+        and "mask.getDamageValue()" in scanner,
+        "scanner must diagnose the player's real exposure and worn mask condition")
+require("message.sporenwerk.scanner.mask_condition" in scanner
+        and "message.sporenwerk.scanner.mask_missing" in scanner,
+        "scanner must offer condition feedback and countermeasure advice")
 for token in (
     "MutationNodeData.get(serverLevel).isActive(pos)",
     "MutationAnchorData.FIELD_RADIUS, MutationAnchorData.FIELD_HALF_HEIGHT",
@@ -369,6 +403,8 @@ required_keys = {
     "message.sporenwerk.scanner.terrain_cooling",
     "message.sporenwerk.scanner.field",
     "message.sporenwerk.scanner.clean",
+    "message.sporenwerk.scanner.mask_condition",
+    "message.sporenwerk.scanner.mask_missing",
 }
 for locale in ("de_de.json", "en_us.json"):
     path = assets / "lang" / locale
@@ -380,7 +416,7 @@ for locale in ("de_de.json", "en_us.json"):
 build = (root / "build.gradle").read_text(encoding="utf-8")
 version_match = re.search(r"version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)['\"]", build)
 require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 12, 0), "generated build version must include 1.12.0 or newer")
-print("Field scanner registration, server-authoritative readings, recipe, 16x16 pixel art, locales, and version passed.")
+print("Field scanner readings, active-field player diagnostics, mask condition/countermeasure advice, recipe, pixel art, locales, and version passed.")
 ''')
 
 print("Added the server-authoritative Sporenwerk field scanner, recipe, 16x16 sprite, translations, regression test, and version 1.12.0 notes.")
