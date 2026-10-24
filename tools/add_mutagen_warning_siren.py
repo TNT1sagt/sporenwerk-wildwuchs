@@ -97,7 +97,7 @@ public final class MutagenWarningSirenBlock extends Block {
         level.setBlock(pos, state.setValue(POWERED, inputPowered), 3);
         // Rising-edge only: changes to an already active comparator signal do not spam audio.
         if (inputPowered) {
-            level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL,
+            level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(),
                     SoundSource.BLOCKS, 0.9F, 0.62F);
         }
     }
