@@ -42,6 +42,12 @@ if "SPORENFILTERMASKE" not in items:
     if anchor not in items:
         raise SystemExit("Cannot locate field scanner registration for the spore filter helmet")
     items = items.replace(anchor, anchor + "\n" + field, 1)
+if "SPORENFILTEREINSATZ" not in items:
+    anchor = '    public static final RegistryObject<Item> SPORENFILTERMASKE = ITEMS.register("sporenfiltermaske", () -> new de.sporenwerk.item.SporeFilterMaskItem(de.sporenwerk.item.SporeFilterMaterial.MATERIAL, new Item.Properties()));'
+    cartridge = '    public static final RegistryObject<Item> SPORENFILTEREINSATZ = ITEMS.register("sporenfiltereinsatz", () -> new de.sporenwerk.item.SporeFilterCartridgeItem(new Item.Properties().stacksTo(16)));'
+    if anchor not in items:
+        raise SystemExit("Cannot locate spore filter mask registration for its cartridge")
+    items = items.replace(anchor, anchor + "\n" + cartridge, 1)
 items_path.write_text(items, encoding="utf-8")
 
 creative_path = SRC / "registry/ModCreativeTabs.java"
@@ -50,7 +56,13 @@ if "output.accept(ModItems.SPORENFILTERMASKE.get());" not in creative:
     anchor = "output.accept(ModItems.FELDSCANNER.get());"
     if anchor not in creative:
         raise SystemExit("Cannot locate field scanner in creative tab")
-    creative_path.write_text(creative.replace(anchor, anchor + "\n                        output.accept(ModItems.SPORENFILTERMASKE.get());", 1), encoding="utf-8")
+    creative = creative.replace(anchor, anchor + "\n                        output.accept(ModItems.SPORENFILTERMASKE.get());", 1)
+if "output.accept(ModItems.SPORENFILTEREINSATZ.get());" not in creative:
+    anchor = "output.accept(ModItems.SPORENFILTERMASKE.get());"
+    if anchor not in creative:
+        raise SystemExit("Cannot locate spore filter mask in creative tab")
+    creative = creative.replace(anchor, anchor + "\n                        output.accept(ModItems.SPORENFILTEREINSATZ.get());", 1)
+creative_path.write_text(creative, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/item/SporeFilterMaskItem.java", """
 package de.sporenwerk.item;
@@ -76,6 +88,76 @@ public final class SporeFilterMaskItem extends ArmorItem {
         tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltermaske.1")
                 .withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltermaske.2")
+                .withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, level, tooltip, flag);
+    }
+}
+""")
+
+write("src/main/java/de/sporenwerk/item/SporeFilterCartridgeItem.java", """
+package de.sporenwerk.item;
+
+import de.sporenwerk.registry.ModItems;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+
+/** Consumable replacement filter that restores finite durability to the worn spore mask. */
+public final class SporeFilterCartridgeItem extends Item {
+    public static final int REPAIR_AMOUNT = 60;
+
+    public SporeFilterCartridgeItem(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack cartridge = player.getItemInHand(hand);
+        ItemStack mask = player.getItemBySlot(EquipmentSlot.HEAD);
+        if (!mask.is(ModItems.SPORENFILTERMASKE.get())) {
+            if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable(
+                        "message.sporenwerk.sporenfilter.mask_required").withStyle(ChatFormatting.RED), true);
+            }
+            return InteractionResultHolder.fail(cartridge);
+        }
+        if (mask.getDamageValue() <= 0) {
+            if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable(
+                        "message.sporenwerk.sporenfilter.full").withStyle(ChatFormatting.GRAY), true);
+            }
+            return InteractionResultHolder.fail(cartridge);
+        }
+
+        if (!level.isClientSide) {
+            int before = mask.getDamageValue();
+            int restored = Math.min(REPAIR_AMOUNT, before);
+            mask.setDamageValue(Math.max(0, before - REPAIR_AMOUNT));
+            if (!player.getAbilities().instabuild) cartridge.shrink(1);
+            level.playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_LEATHER,
+                    SoundSource.PLAYERS, 0.75F, 1.15F);
+            player.displayClientMessage(Component.translatable(
+                    "message.sporenwerk.sporenfilter.repaired", restored).withStyle(ChatFormatting.AQUA), true);
+        }
+        return InteractionResultHolder.sidedSuccess(cartridge, level.isClientSide);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltereinsatz.1")
+                .withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltereinsatz.2")
                 .withStyle(ChatFormatting.GRAY));
         super.appendHoverText(stack, level, tooltip, flag);
     }
@@ -123,6 +205,30 @@ public enum SporeFilterMaterial implements ArmorMaterial {
 }
 """)
 
+# The replacement cartridge has a distinct violet-green pixel silhouette.
+cartridge_image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+cd = ImageDraw.Draw(cartridge_image)
+c_ink = (24, 31, 29, 255)
+c_shell = (76, 83, 57, 255)
+c_edge = (139, 153, 94, 255)
+c_glow = (141, 232, 184, 255)
+cd.rectangle((4, 1, 11, 14), fill=c_ink)
+cd.rectangle((5, 2, 10, 13), fill=c_shell)
+cd.rectangle((6, 3, 9, 4), fill=c_edge)
+cd.rectangle((6, 6, 9, 10), fill=(92, 46, 115, 255))
+cd.point((7, 7), fill=c_glow)
+cd.point((8, 9), fill=c_glow)
+cd.rectangle((3, 4, 4, 11), fill=c_edge)
+cd.rectangle((11, 4, 12, 11), fill=c_edge)
+cd.rectangle((5, 13, 10, 14), fill=c_ink)
+cartridge_texture = ASSETS / "textures/item/sporenfiltereinsatz.png"
+cartridge_texture.parent.mkdir(parents=True, exist_ok=True)
+cartridge_image.save(cartridge_texture, optimize=True)
+write("src/main/resources/assets/sporenwerk/models/item/sporenfiltereinsatz.json", json.dumps({
+    "parent": "minecraft:item/generated",
+    "textures": {"layer0": "sporenwerk:item/sporenfiltereinsatz"}
+}, ensure_ascii=False, indent=2) + "\\n")
+
 # The mask is protected at the center seam with a glass/metal viewport and distinct filter pads.
 icon_path = ASSETS / "textures/item/sporenfiltermaske.png"
 icon_path.parent.mkdir(parents=True, exist_ok=True)
@@ -164,6 +270,18 @@ ad.point((5,4), fill=glow); ad.point((10,5), fill=glow)
 ad.rectangle((2,6,3,7), fill=metal); ad.rectangle((12,6,13,7), fill=metal)
 ad.rectangle((6,6,9,7), fill=ink)
 armor.save(armor_path, optimize=True)
+
+write("src/main/resources/data/sporenwerk/recipes/sporenfiltereinsatz.json", """
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "sporenwerk:mutagene_sporen" },
+    { "item": "sporenwerk:filtermoos" },
+    { "item": "minecraft:charcoal" }
+  ],
+  "result": { "item": "sporenwerk:sporenfiltereinsatz", "count": 1 }
+}
+""")
 
 write("src/main/resources/data/sporenwerk/recipes/sporenfiltermaske.json", """
 {
@@ -224,12 +342,24 @@ for locale, entries in (
     ("de_de.json", {
         "item.sporenwerk.sporenfiltermaske": "Sporenfiltermaske",
         "tooltip.sporenwerk.sporenfiltermaske.1": "Trage sie im Kopf-Slot, um Mutagen-Exposition abzufangen.",
-        "tooltip.sporenwerk.sporenfiltermaske.2": "Jeder abgefangene Feldimpuls verbraucht Filterhaltbarkeit. Mit Leder reparierbar."
+        "tooltip.sporenwerk.sporenfiltermaske.2": "Jeder abgefangene Feldimpuls verbraucht Filterhaltbarkeit. Mit Leder reparierbar.",
+        "item.sporenwerk.sporenfiltereinsatz": "Sporenfiltereinsatz",
+        "tooltip.sporenwerk.sporenfiltereinsatz.1": "Mit getragener Maske in der Hand rechtsklicken, um sie zu warten.",
+        "tooltip.sporenwerk.sporenfiltereinsatz.2": "Stellt bis zu 60 Haltbarkeit wieder her.",
+        "message.sporenwerk.sporenfilter.mask_required": "Trage zuerst die Sporenfiltermaske im Kopf-Slot.",
+        "message.sporenwerk.sporenfilter.full": "Die Sporenfiltermaske benötigt keinen neuen Filter.",
+        "message.sporenwerk.sporenfilter.repaired": "Filtereinsatz verbraucht: %s Haltbarkeit wiederhergestellt."
     }),
     ("en_us.json", {
         "item.sporenwerk.sporenfiltermaske": "Spore Filter Mask",
         "tooltip.sporenwerk.sporenfiltermaske.1": "Wear in the helmet slot to intercept mutagen exposure.",
-        "tooltip.sporenwerk.sporenfiltermaske.2": "Each intercepted field pulse consumes durability. Repair with leather."
+        "tooltip.sporenwerk.sporenfiltermaske.2": "Each intercepted field pulse consumes durability. Repair with leather.",
+        "item.sporenwerk.sporenfiltereinsatz": "Spore Filter Cartridge",
+        "tooltip.sporenwerk.sporenfiltereinsatz.1": "Use while wearing the mask to replace its filter.",
+        "tooltip.sporenwerk.sporenfiltereinsatz.2": "Restores up to 60 durability.",
+        "message.sporenwerk.sporenfilter.mask_required": "Equip the Spore Filter Mask in your helmet slot first.",
+        "message.sporenwerk.sporenfilter.full": "Your Spore Filter Mask does not need a replacement filter.",
+        "message.sporenwerk.sporenfilter.repaired": "Filter cartridge used: restored %s durability."
     })
 ):
     path = ASSETS / "lang" / locale
@@ -249,7 +379,8 @@ readme = readme_path.read_text(encoding="utf-8")
 heading = "## Version 1.14.0 — Sporenfilter und Expositionsschutz"
 section = """## Version 1.14.0 — Sporenfilter und Expositionsschutz
 
-- **Sporenfiltermaske:** Herstellbarer Helm mit eigener Pixeltextur, passendem Rüstungs-Layer, zwei Sprachen und Reparatur mit Leder.
+- **Sporenfiltermaske:** Herstellbarer Helm mit eigener Pixeltextur, passendem Rüstungs-Layer und zwei Sprachen.
+- **Austauschbarer Filtereinsatz:** Stelle ihn aus mutagenen Sporen, Filtermoos und Holzkohle her. Rechtsklick mit dem Einsatz, während die Maske getragen wird, stellt bis zu 60 Haltbarkeit wieder her; pro Wartung wird ein Einsatz verbraucht. In Kreativ wird kein Einsatz verbraucht.
 - **Echte Feld-Gegenmaßnahme:** Die Maske fängt Feld-Expositionsimpulse ab, statt Infektion nur nachträglich zu heilen. Jeder abgefangene Impuls verbraucht Haltbarkeit; ohne Maske bleibt die bisherige Feldgefahr bestehen.
 - **Balance und Persistenz:** Der Schutz greift direkt in die serverseitige Expositionslogik ein und speichert den verlängerten Expositions-Cooldown im Spieler-NBT. Clienteffekte können die Mechanik nicht vortäuschen.
 - **Release-QA:** Test für Rüstungsregistrierung, Rezept, Texturen, Lokalisierung und die echte Expositionsverzweigung; anschließend Ressourcenprüfung, Forge-Build, JAR-Validierung und dedizierter Serverstart.
@@ -281,6 +412,17 @@ require("appendHoverText" in mask_item and "tooltip.sporenwerk.sporenfiltermaske
 creative = read("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java")
 require("output.accept(ModItems.SPORENFILTERMASKE.get())" in creative,
         "mask must appear in the creative catalogue")
+require("SPORENFILTEREINSATZ" in items and 'register("sporenfiltereinsatz"' in items
+        and "SporeFilterCartridgeItem" in items,
+        "replacement cartridge must be registered as a real item")
+require("output.accept(ModItems.SPORENFILTEREINSATZ.get())" in creative,
+        "cartridge must be available in the creative catalogue")
+cartridge_item = read("src/main/java/de/sporenwerk/item/SporeFilterCartridgeItem.java")
+for token in ("REPAIR_AMOUNT = 60", "EquipmentSlot.HEAD", "mask.getDamageValue() <= 0",
+              "mask.setDamageValue(Math.max(0, before - REPAIR_AMOUNT))",
+              "cartridge.shrink(1)", "player.getAbilities().instabuild",
+              "InteractionResultHolder.sidedSuccess"):
+    require(token in cartridge_item, "cartridge interaction is missing " + token)
 material = read("src/main/java/de/sporenwerk/item/SporeFilterMaterial.java")
 for token in ("implements ArmorMaterial", "getDurabilityForType", "getDefenseForType",
               "getRepairIngredient", "getEquipSound", "getKnockbackResistance"):
@@ -299,6 +441,18 @@ require("if (fieldExposurePulse)" in events
         and "mask.hurtAndBreak(1, player" in events
         and "InfectionState.setLevel(player, infection + 1)" in events,
         "the mask must intercept continuous tier-based field exposure before infection increases")
+cartridge_recipe = json.loads((root / "src/main/resources/data/sporenwerk/recipes/sporenfiltereinsatz.json").read_text(encoding="utf-8"))
+require(cartridge_recipe["result"]["item"] == "sporenwerk:sporenfiltereinsatz",
+        "cartridge recipe must output the replacement cartridge")
+for ingredient in ("sporenwerk:mutagene_sporen", "sporenwerk:filtermoos", "minecraft:charcoal"):
+    require(any(entry.get("item") == ingredient for entry in cartridge_recipe["ingredients"]),
+            "cartridge recipe missing " + ingredient)
+cartridge_model = json.loads((assets / "models/item/sporenfiltereinsatz.json").read_text(encoding="utf-8"))
+require(cartridge_model["textures"]["layer0"] == "sporenwerk:item/sporenfiltereinsatz",
+        "cartridge model texture path is wrong")
+with Image.open(assets / "textures/item/sporenfiltereinsatz.png") as image:
+    require(image.size == (16,16) and image.getbbox() is not None,
+            "cartridge must have a non-empty 16x16 pixel texture")
 recipe = json.loads((root / "src/main/resources/data/sporenwerk/recipes/sporenfiltermaske.json").read_text(encoding="utf-8"))
 require(recipe["result"]["item"] == "sporenwerk:sporenfiltermaske", "survival recipe must output the mask")
 for ingredient in ("minecraft:leather", "sporenwerk:filtermoos", "minecraft:copper_ingot", "minecraft:charcoal"):
@@ -315,11 +469,17 @@ for locale in ("de_de.json","en_us.json"):
     require(all(data.get(key, "").strip() for key in (
         "item.sporenwerk.sporenfiltermaske",
         "tooltip.sporenwerk.sporenfiltermaske.1",
-        "tooltip.sporenwerk.sporenfiltermaske.2")), locale + " missing mask translations")
+        "tooltip.sporenwerk.sporenfiltermaske.2",
+        "item.sporenwerk.sporenfiltereinsatz",
+        "tooltip.sporenwerk.sporenfiltereinsatz.1",
+        "tooltip.sporenwerk.sporenfiltereinsatz.2",
+        "message.sporenwerk.sporenfilter.mask_required",
+        "message.sporenwerk.sporenfilter.full",
+        "message.sporenwerk.sporenfilter.repaired")), locale + " missing mask/cartridge translations")
     require(bool(data.get("message.sporenwerk.mutagen.mask_absorbs", "").strip()),
             locale + " missing the field-exposure interception message")
 require("Version 1.14.0" in read("README.md"), "release notes missing version 1.14.0")
-print("Wearable spore-filter helmet, recipe, pixel textures, bloom and continuous field interception, durability, and locales passed.")
+print("Spore-filter helmet and replaceable cartridge, recipes, pixel textures, guarded durability repair, bloom/field protection, and locales passed.")
 ''')
 
-print("Installed Sporenwerk 1.14.0 spore-filter helmet and server-authoritative field protection.")
+print("Installed Sporenwerk 1.14.0 spore-filter helmet, replaceable cartridge, and server-authoritative field protection.")
