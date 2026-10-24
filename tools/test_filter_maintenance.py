@@ -271,7 +271,7 @@ require("STANDARD_RADIUS = 4" in stabilizer_java
         and "public int protectionRadius()" in stabilizer_java,
         "stabilizer tiers need separate immutable protection radii")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.23\.0['\"]", build) is not None,
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.24\.0['\"]", build) is not None,
         "root Gradle project version must be 1.24.0")
 require("Version 1.24.0" in read("README.md"), "1.24.0 release notes are missing")
 require("Version 1.23.0" in read("README.md"), "previous 1.23.0 release notes must remain in history")
