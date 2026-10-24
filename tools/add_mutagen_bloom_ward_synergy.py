@@ -162,19 +162,21 @@ if "## Version 1.40.0 — Mutagenblüte und Sporenabwehr im Zusammenspiel" not i
     require(idx >= 0, "could not find 1.39.0 release notes")
     readme = readme[:idx] + section + readme[idx:]
 
+target_headline = "**Aktueller Entwicklungsstand: 1.40.0 — Mutagenblüten-Abwehr über den Redstone-Sporenabwehrsender.**"
 headline_lines = [line for line in readme.splitlines() if "Aktueller Entwicklungsstand:" in line]
-require(len(headline_lines) >= 1, "could not locate the current development headline")
-readme = readme.replace(
-    headline_lines[0],
-    "**Aktueller Entwicklungsstand: 1.40.0 — Mutagenblüten-Abwehr über den Redstone-Sporenabwehrsender.**",
-    1,
-)
-readme, focus_count = re.subn(
-    r"(?m)^## Aktueller Schwerpunkt — [0-9]+\.[0-9]+\.[0-9]+$",
-    "## Aktueller Schwerpunkt — 1.40.0",
-    readme,
-    count=1,
-)
-require(focus_count == 1, "could not update the current focus heading")
+if headline_lines:
+    readme = readme.replace(headline_lines[0], target_headline, 1)
+else:
+    readme = target_headline + "\n\n" + readme.lstrip()
+
+focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
+if focus_lines:
+    readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.40.0", 1)
+else:
+    readme = readme.replace(
+        target_headline,
+        target_headline + "\n\n## Aktueller Schwerpunkt — 1.40.0",
+        1,
+    )
 readme_path.write_text(readme, encoding="utf-8")
 print("1.40.0 powered Spore Ward / Mutagen Bloom synergy generated; legacy current-version checks updated.")
