@@ -16,6 +16,8 @@ for token in ("mutagenStrengthAt(level, origin) < 3", "claimBloom(origin, level.
               "COOLDOWN_TICKS = 12000L", "ParticleTypes.WARPED_SPORE", "ParticleTypes.PORTAL",
               "attempt < 32 && advanced < 6", "releaseHarvestableSpores(level, origin, random)",
               "new ItemStack(ModItems.MUTAGENE_SPOREN.get(), count)", "level.addFreshEntity(new ItemEntity(level, x, y, z, spores))",
+              "int count = random.nextFloat() < 0.20F ? 2 : 1",
+              "releaseHarvestableSpores(ServerLevel level, BlockPos origin, RandomSource random)",
               "MutationField.hasAnchor(level, player.blockPosition())",
               "mask.is(ModItems.SPORENFILTERMASKE.get())", "mask.hurtAndBreak(1, player",
               "InfectionState.setLevel(player, InfectionState.level(player) + 1)",
@@ -45,4 +47,12 @@ require("nearestRecentBloom(BlockPos center, int radius, long gameTime, long sce
         "saved field registry must expose only bounded recent blooms")
 require("Version 1.16.0" in read("README.md"), "release notes missing 1.16.0")
 
+# Keep the reward bounded: one spore by default, with a second as a rare 20% outcome.
+reward = bloom[bloom.index("private static void releaseHarvestableSpores"):bloom.index("private static void accelerateCrops")]
+require("random.nextFloat() < 0.20F ? 2 : 1" in reward,
+        "bloom reward must remain one spore with a 20% chance for a second")
+require("new ItemStack(ModItems.MUTAGENE_SPOREN.get(), count)" in reward,
+        "bloom reward must use the registered spore item")
+require("level.addFreshEntity(new ItemEntity(level, x, y, z, spores))" in reward,
+        "bloom reward must be collectible in-world")
 print("Mutagen Bloom strength gate, saved cooldown, harvestable spore reward, crop boost, mask counterplay, anchor protection and locales passed.")
