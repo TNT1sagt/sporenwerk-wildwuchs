@@ -237,6 +237,7 @@ build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.23\.0['\"]", build) is not None,
         "root Gradle project version must be 1.23.0")
 require("Version 1.23.0" in read("README.md"), "1.23.0 release notes are missing")
+require("Version 1.22.0" in read("README.md"), "previous 1.22.0 release notes must remain in history")
 preview = read("tools/make_art_preview.py")
 require("sporenfilterwartungstisch_top" in preview
         and "sporenfiltereinsatz_mutagen" in preview

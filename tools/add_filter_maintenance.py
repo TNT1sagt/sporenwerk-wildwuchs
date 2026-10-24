@@ -768,8 +768,23 @@ build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
+previous_heading = "## Version 1.22.0 — Feldstabilisierung und Mutagenkern"
+previous_section = """## Version 1.22.0 — Feldstabilisierung und Mutagenkern
+
+- **Sporenfilter-Wartungstisch:** Eine platzierbare Station repariert die getragene Maske serverseitig mit Filtereinsätzen.
+- **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143). Die Einsatzqualität steht im Tooltip.
+- **Upgrade-Kette und Forschung:** Kupfer, Mutagenextrakt und Amethyst verbinden die drei Filterstufen. Der mutagene Einsatz wird erst nach der Mutagenlabor-Entdeckung im Rezeptbuch freigegeben.
+- **Kondensierter Mutagenkern:** Eine Stärke-3-Mutagenblüte hat 12 % Chance, einen sammelbaren Kern zu hinterlassen.
+- **Mutagenfeld-Stabilisator:** Der Grundblock aus dem Kern dämpft den Blüten-Expositionsimpuls im horizontalen Radius von 4 Blöcken. Das Rezept wird nach dem Einsammeln eines Kerns freigeschaltet.
+- **Erste Mutagenblüte:** Das Advancement „Das Feld atmet“ vergibt einmalig 3 Feldwissen und 2 Myzelkompost.
+
+Der automatische Serverstart bestätigt die technische Startfähigkeit, ersetzt aber keinen manuellen Sicht- und Funktionstest im Minecraft-Client.
+
+"""
+if previous_heading not in readme:
+    readme = previous_section + readme
 heading = "## Version 1.23.0 — Mehrstufige Feldstabilisierung"
-section = """## Version 1.23.0 — Feldstabilisierung und Mutagenkern
+section = """## Version 1.23.0 — Mehrstufige Feldstabilisierung
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.
