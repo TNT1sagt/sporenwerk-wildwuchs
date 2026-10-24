@@ -10,6 +10,7 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
 - Mutagenfeld-Stufe III: dunkle Kristallplatten mit cyanfarbenen Kanten, hellen Kernen und deutlich stärkerem Leuchten.
 - Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
+- Ein Scan an der Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Gefahrenwert von 0 bis 15, ohne Welt-Scans bei jedem Redstone-Tick auszulösen.
 
 ---
 
