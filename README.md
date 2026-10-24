@@ -1,3 +1,18 @@
+# Sporenwerk: Wildwuchs
+
+**Aktueller Entwicklungsstand: 1.27.0 — klar unterscheidbare Mutagenfelder.**
+
+Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Schwerpunkt — 1.27.0
+
+- Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
+- Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
+- Mutagenfeld-Stufe III: dunkle Kristallplatten mit cyanfarbenen Kanten, hellen Kernen und deutlich stärkerem Leuchten.
+- Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
+
+---
+
 ## Version 1.17.0 — Feldscanner mit Mutagen-Risikoprofil
 
 - Der Luftscan zeigt zusätzlich die Menge aktiven Mutagenbodens, mutierte Pflanzen getrennt nach Stufe I/II/III und Heilanker im erfassten Bereich.
@@ -21,7 +36,7 @@ Automatische CI-Tests ersetzen keinen manuellen Sichttest im Minecraft-Client.
 
 Automatische CI-Tests ersetzen keinen manuellen Sichttest im Minecraft-Client.
 
-# Sporenwerk: Wildwuchs
+## Mod- und Build-Hinweise
 
 Minecraft Forge 1.20.1 mod project (Java 17).
 
