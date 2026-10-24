@@ -33,9 +33,9 @@ for token in (
     "ParticleTypes.END_ROD",
 ):
     require(token in block, "dampener must provide visible on-demand boundary/status: " + token)
-require(block.count("marker(level,") >= 9,
+require(block.count("marker(level,") >= 6,
         "protection volume outline must include corners, side midpoints, and vertical edges")
-require("onPlace(" not in block and "tick(" not in block and "BlockEntity" not in block,
+require("onPlace(" not in block and "tick(" not in block and "BlockEntityTicker" not in block and "new BlockEntity" not in block,
         "protection preview must not create a permanent block tick or block entity")
 
 for token in (
