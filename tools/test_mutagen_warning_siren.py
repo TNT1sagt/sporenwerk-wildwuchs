@@ -113,6 +113,8 @@ for locale in ("de_de.json", "en_us.json"):
     data = json.loads((ASSETS / "lang" / locale).read_text(encoding="utf-8"))
     require(data.get("block.sporenwerk.mutagen_warnsirene", "").strip(), locale + " block name missing")
     require(data.get("item.sporenwerk.mutagen_warnsirene", "").strip(), locale + " item name missing")
+    require(data.get("message.sporenwerk.warnsirene.acknowledged", "").strip(),
+            locale + " acknowledgement message missing")
 
 preview = read("tools/make_art_preview.py")
 for name in ("mutagen_warnsirene", "mutagen_warnsirene_active",
