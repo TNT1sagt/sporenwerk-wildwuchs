@@ -45,12 +45,12 @@ for locale in ("de_de.json", "en_us.json"):
     for key in ("block.sporenwerk.sporenabwehr", "item.sporenwerk.sporenabwehr",
                 "tooltip.sporenwerk.sporenabwehr.1", "tooltip.sporenwerk.sporenabwehr.2"):
         require(bool(data.get(key, "").strip()), locale + " missing " + key)
-require("Version 1.17.0" in read("README.md"), "release notes missing 1.17.0")
+require("Version 1.18.0" in read("README.md"), "release notes missing 1.18.0")
 preview = read("tools/make_art_preview.py")
 require("sporenabwehr_active" in preview and "sporenabwehr" in preview,
         "QA preview must show both inactive and active Spore Ward textures")
 require("release_version" in preview and "1.14.0" not in preview,
         "QA preview title must use the actual version rather than a stale hardcoded release")
 require(re.search(r"version\s*=\s*['\"]1\.17\.0['\"]", read("build.gradle")) is not None,
-        "artifact version must be 1.17.0")
+        "artifact version must be 1.18.0")
 print("Redstone Spore Ward, powered visual state, bounded repel pulse, recipe and Dämmerling AI checks passed.")

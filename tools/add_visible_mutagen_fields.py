@@ -291,6 +291,31 @@ if "public InteractionResultHolder<ItemStack> use(Level level" not in scanner:
                 .withStyle(tier3Plants > 0 ? ChatFormatting.LIGHT_PURPLE
                         : tier2Plants > 0 ? ChatFormatting.GOLD
                         : tier1Plants > 0 ? ChatFormatting.YELLOW : ChatFormatting.AQUA), false);
+
+        // Turn raw counts into a practical next action instead of leaving players to guess.
+        String adviceKey;
+        ChatFormatting adviceColor;
+        if (tier3Plants > 0) {
+            adviceKey = "critical";
+            adviceColor = ChatFormatting.LIGHT_PURPLE;
+        } else if (activeNodes > 0 && anchors == 0) {
+            adviceKey = "uncontained";
+            adviceColor = ChatFormatting.RED;
+        } else if (activeTerrain > 0 && anchors > 0) {
+            adviceKey = "anchored";
+            adviceColor = ChatFormatting.GREEN;
+        } else if (infectedTerrain > 0 && activeNodes == 0) {
+            adviceKey = "residual";
+            adviceColor = ChatFormatting.GOLD;
+        } else if (activeNodes > 0) {
+            adviceKey = "active";
+            adviceColor = ChatFormatting.YELLOW;
+        } else {
+            adviceKey = "stable";
+            adviceColor = ChatFormatting.GRAY;
+        }
+        player.displayClientMessage(Component.translatable(
+                "message.sporenwerk.scanner.advice." + adviceKey).withStyle(adviceColor), false);
         return InteractionResultHolder.sidedSuccess(stack, false);
     }
 
@@ -309,8 +334,24 @@ for locale, message in (
     data["message.sporenwerk.scanner.survey"] = message
     if locale == "de_de.json":
         data["message.sporenwerk.scanner.survey_detail"] = "Risiko-Profil: aktiver Boden %1$s; Pflanzen Stufe I/II/III %2$s/%3$s/%4$s; Heilanker %5$s."
+        data.update({
+            "message.sporenwerk.scanner.advice.critical": "WARNUNG: Mutationsstufe III erkannt. Filtermaske tragen und Feld sofort absichern.",
+            "message.sporenwerk.scanner.advice.uncontained": "WARNUNG: Aktiver Herd ohne Heilanker im Scanbereich. Heilanker setzen oder Feld verlassen.",
+            "message.sporenwerk.scanner.advice.anchored": "EINDÄMMUNG: Aktiver Boden und Heilanker erkannt. Prüfe, ob sich ihre Wirkbereiche überlappen.",
+            "message.sporenwerk.scanner.advice.residual": "RESTBEFALL: Kein aktiver Herd erkannt, aber Boden bleibt befallen. Heilanker zur Wiederherstellung nutzen.",
+            "message.sporenwerk.scanner.advice.active": "AKTIVES FELD: Schutzkleidung nutzen und Mutagenstärke regelmäßig prüfen.",
+            "message.sporenwerk.scanner.advice.stable": "KEINE AKUTE GEFAHR ERKANNT: Im Scanbereich wurde kein aktiver Mutagenherd gefunden."
+        })
     else:
         data["message.sporenwerk.scanner.survey_detail"] = "Risk profile: active terrain %1$s; crops tier I/II/III %2$s/%3$s/%4$s; healing anchors %5$s."
+        data.update({
+            "message.sporenwerk.scanner.advice.critical": "WARNING: Tier III mutation detected. Wear a filter mask and secure the field immediately.",
+            "message.sporenwerk.scanner.advice.uncontained": "WARNING: Active node with no healing anchor in scan range. Place an anchor or leave the field.",
+            "message.sporenwerk.scanner.advice.anchored": "CONTAINMENT: Active terrain and a healing anchor detected. Check that their effective areas overlap.",
+            "message.sporenwerk.scanner.advice.residual": "RESIDUAL INFECTION: No active node detected, but terrain remains infected. Use a healing anchor to restore it.",
+            "message.sporenwerk.scanner.advice.active": "ACTIVE FIELD: Use protective gear and monitor Mutagen strength regularly.",
+            "message.sporenwerk.scanner.advice.stable": "NO IMMEDIATE THREAT DETECTED: No active Mutagen node was found in scan range."
+        })
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 build_path = ROOT / "build.gradle"

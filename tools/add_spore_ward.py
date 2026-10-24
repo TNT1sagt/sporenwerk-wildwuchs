@@ -242,16 +242,17 @@ for filename, additions in translations.items():
 
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.17.0'", build, count=1)
+build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.18.0'", build, count=1)
 if count != 1:
     raise SystemExit("Could not bump build.gradle to version 1.17.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
-heading = "## Version 1.17.0 — Redstone-Sporeabwehr"
+heading = "## Version 1.18.0 — Scanner-Warnungen und Redstone-Sporeabwehr"
 section = """## Version 1.17.0 — Redstone-Sporeabwehr
 
+- **Scanner mit Handlungsempfehlungen:** Nach den Messwerten ordnet der Feldscanner die Lage ein: Mutationsstufe III, aktives Feld ohne Heilanker, Feld mit Anker, Restbefall oder keine akute Gefahr. Jede Meldung nennt einen konkreten nächsten Schritt und ist auf Deutsch und Englisch verfügbar.
 - **Neue Verteidigungsanlage:** Der Sporenabwehrsender ist ein platzierbarer Block mit unterscheidbarer inaktiver/aktiver Pixeltextur und einem sichtbaren powered-Blockzustand.
 - **Redstone-Steuerung:** Ein Redstone-Signal aktiviert den Sender. In 8 Blöcken horizontal und ±3 vertikal erneuert er alle 10 Ticks eine kurze Abwehrmarkierung für vorhandene Dämmerlinge.
 - **Gezielte Gegenmaßnahme:** Während die Abwehr aktiv ist, brechen Dämmerlinge ihre Duftsuche nach Mutagenblüten und ihre Suche nach Sporenwerk-Kulturen ab. Der Sender erzeugt keine neuen Kreaturen und verhindert nicht den Kampf gegen Spieler.
@@ -264,4 +265,4 @@ Der Server-Smoke-Test ersetzt keinen manuellen Test im laufenden Minecraft-Clien
 if heading not in readme:
     readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed Sporenwerk 1.17.0 redstone-powered Dämmerling ward.")
+print("Installed Sporenwerk 1.18.0 redstone-powered Dämmerling ward and actionable field-scanner guidance.")
