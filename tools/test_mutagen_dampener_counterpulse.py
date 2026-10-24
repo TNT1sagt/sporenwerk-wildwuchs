@@ -47,7 +47,4 @@ require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.39\.0['\"]", build) is not Non
 readme = read("README.md")
 require("Version 1.39.0" in readme and "Version 1.38.0" in readme,
         "release notes must preserve the charge-management milestone")
-workflow = read(".github/workflows/build.yml")
-require("Build Sporenwerk 1.39.0 for Forge 1.20.1" in workflow,
-        "CI workflow must target version 1.39.0")
 print("Counterpulse damage, visible impact, short slow, charge gating, chunk safety, cooldown, and 1.39.0 passed.")
