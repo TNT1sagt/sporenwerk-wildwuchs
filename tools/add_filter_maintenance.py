@@ -158,7 +158,7 @@ cartridge_icon("sporenfiltereinsatz_mutagen", (81, 51, 107, 255),
 replace_once(
     "src/main/java/de/sporenwerk/registry/ModBlocks.java",
     "import de.sporenwerk.block.SporeWardBlock;",
-    "import de.sporenwerk.block.SporeWardBlock;\nimport de.sporenwerk.block.SporeFilterMaintenanceBlock;",
+    "import de.sporenwerk.block.SporeWardBlock;\nimport de.sporenwerk.block.SporeFilterMaintenanceBlock;\nimport de.sporenwerk.block.MutagenFieldStabilizerBlock;",
     "maintenance block import"
 )
 ward_registration = """    public static final RegistryObject<Block> SPORENABWEHR = BLOCKS.register("sporenabwehr",
@@ -170,10 +170,19 @@ bench_registration = """    public static final RegistryObject<Block> SPORENFILT
 replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
              ward_registration, ward_registration + "\n\n" + bench_registration,
              "Spore Ward block registration")
+stabilizer_registration = """    public static final RegistryObject<Block> MUTAGENFELD_STABILISATOR = BLOCKS.register("mutagenfeld_stabilisator",
+            () -> new MutagenFieldStabilizerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN)
+                    .strength(4.0f, 9.0f).requiresCorrectToolForDrops().sound(SoundType.GLASS)));"""
+replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
+             bench_registration, bench_registration + "\n\n" + stabilizer_registration,
+             "field stabilizer block registration")
 ward_item = '        ModItems.ITEMS.register("sporenabwehr", () -> new net.minecraft.world.item.BlockItem(SPORENABWEHR.get(), new Item.Properties()));'
 bench_item = '        ModItems.ITEMS.register("sporenfilterwartungstisch", () -> new net.minecraft.world.item.BlockItem(SPORENFILTERWARTUNGSTISCH.get(), new Item.Properties()));'
 replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
              ward_item, ward_item + "\n" + bench_item, "Spore Ward item registration")
+stabilizer_item = '        ModItems.ITEMS.register("mutagenfeld_stabilisator", () -> new net.minecraft.world.item.BlockItem(MUTAGENFELD_STABILISATOR.get(), new Item.Properties()));'
+replace_once("src/main/java/de/sporenwerk/registry/ModBlocks.java",
+             bench_item, bench_item + "\n" + stabilizer_item, "field stabilizer inventory item")
 
 # Add the new consumables and bench to the existing catalogue.
 creative_path = SRC / "registry/ModCreativeTabs.java"
@@ -190,6 +199,11 @@ if "output.accept(ModBlocks.SPORENFILTERWARTUNGSTISCH.get());" not in creative:
     if ward_creative not in creative:
         raise SystemExit("Cannot locate Spore Ward creative tab entry")
     creative = creative.replace(ward_creative, ward_creative + "\n                        output.accept(ModBlocks.SPORENFILTERWARTUNGSTISCH.get());", 1)
+if "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get());" not in creative:
+    stabilizer_creative = "output.accept(ModBlocks.SPORENFILTERWARTUNGSTISCH.get());"
+    if stabilizer_creative not in creative:
+        raise SystemExit("Cannot locate maintenance bench for stabilizer creative entry")
+    creative = creative.replace(stabilizer_creative, stabilizer_creative + "\n                        output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get());", 1)
 creative_path.write_text(creative, encoding="utf-8")
 
 write("src/main/java/de/sporenwerk/block/SporeFilterMaintenanceBlock.java", """
@@ -258,6 +272,57 @@ public final class SporeFilterMaintenanceBlock extends Block {
     }
 }
 """)
+
+write("src/main/java/de/sporenwerk/block/MutagenFieldStabilizerBlock.java", """
+package de.sporenwerk.block;
+
+import net.minecraft.world.level.block.Block;
+
+/** Solid containment component that attenuates high-intensity Mutagen Bloom exposure nearby. */
+public final class MutagenFieldStabilizerBlock extends Block {
+    public MutagenFieldStabilizerBlock(Properties properties) {
+        super(properties);
+    }
+}
+""")
+
+# A placed stabilizer provides bounded, local counterplay to the exposure part of a bloom.
+bloom_path = SRC / "infection/MutagenBloom.java"
+bloom_source = bloom_path.read_text(encoding="utf-8")
+if "private static boolean hasNearbyStabilizer(ServerLevel level, BlockPos center)" not in bloom_source:
+    anchor = "    private static void exposeNearbyPlayers(ServerLevel level, BlockPos origin) {"
+    helper = """    /** Searches a small sphere only; avoid forcing loads at chunk borders. */
+    private static boolean hasNearbyStabilizer(ServerLevel level, BlockPos center) {
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    if (dx * dx + dy * dy + dz * dz > 16) continue;
+                    BlockPos probe = center.offset(dx, dy, dz);
+                    if (!level.hasChunkAt(probe)) continue;
+                    if (level.getBlockState(probe).is(ModBlocks.MUTAGENFELD_STABILISATOR.get())) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+"""
+    if anchor not in bloom_source:
+        raise SystemExit("Cannot locate bloom exposure method for the stabilizer hook")
+    bloom_source = bloom_source.replace(anchor, helper + anchor, 1)
+exposure_anchor = """            player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.bloom")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE), false);"""
+stabilizer_guard = exposure_anchor + """
+            if (hasNearbyStabilizer(level, player.blockPosition())) {
+                player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.stabilized")
+                        .withStyle(ChatFormatting.AQUA), true);
+                continue;
+            }"""
+if "message.sporenwerk.mutagen.stabilized" not in bloom_source:
+    if exposure_anchor not in bloom_source:
+        raise SystemExit("Cannot locate bloom warning for stabilizer protection")
+    bloom_source = bloom_source.replace(exposure_anchor, stabilizer_guard, 1)
+bloom_path.write_text(bloom_source, encoding="utf-8")
 
 # The workstation's top and side are distinct opaque 16x16 block-face textures.
 texture_dir = ASSETS / "textures/block"
