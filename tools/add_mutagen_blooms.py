@@ -65,6 +65,55 @@ nodes_path.write_text(nodes, encoding="utf-8")
 
 # The event is server authoritative. It rewards carefully managed tier-3 farms with crop growth,
 # warns nearby players, and lets the existing filter mask intercept its exposure pulse.
+# A rare condensate is the material bridge from dangerous blooms to deployable containment.
+items_path = SRC / "registry/ModItems.java"
+items = items_path.read_text(encoding="utf-8")
+if "import de.sporenwerk.item.MutagenCoreCrystalItem;" not in items:
+    anchor = "import de.sporenwerk.item.MutageneSporenItem;"
+    if anchor not in items:
+        raise SystemExit("Cannot locate MutageneSporenItem import for the bloom core")
+    items = items.replace(anchor, anchor + "\\nimport de.sporenwerk.item.MutagenCoreCrystalItem;", 1)
+core_anchor = '    public static final RegistryObject<Item> MUTAGENE_SPOREN = ITEMS.register("mutagene_sporen", () -> new MutageneSporenItem(new Item.Properties().stacksTo(64)));'
+if "MUTAGENKERNKRISTALL" not in items:
+    if core_anchor not in items:
+        raise SystemExit("Cannot locate mutagen-spore item registration for core crystal")
+    items = items.replace(core_anchor, core_anchor + '\\n    public static final RegistryObject<Item> MUTAGENKERNKRISTALL = ITEMS.register("mutagenkernkristall", () -> new MutagenCoreCrystalItem(new Item.Properties().stacksTo(16)));', 1)
+items_path.write_text(items, encoding="utf-8")
+
+write("src/main/java/de/sporenwerk/item/MutagenCoreCrystalItem.java", """
+package de.sporenwerk.item;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
+
+/** Rare condensed field residue used to build a local Mutagen Bloom stabilizer. */
+public final class MutagenCoreCrystalItem extends Item {
+    public MutagenCoreCrystalItem(Properties properties) { super(properties); }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("tooltip.sporenwerk.mutagenkernkristall.1").withStyle(ChatFormatting.LIGHT_PURPLE));
+        tooltip.add(Component.translatable("tooltip.sporenwerk.mutagenkernkristall.2").withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, level, tooltip, flag);
+    }
+}
+""")
+
+creative_path = SRC / "registry/ModCreativeTabs.java"
+creative = creative_path.read_text(encoding="utf-8")
+if "output.accept(ModItems.MUTAGENKERNKRISTALL.get());" not in creative:
+    anchor = "output.accept(ModItems.MUTAGENE_SPOREN.get());"
+    if anchor not in creative:
+        raise SystemExit("Cannot locate Mutagen Spores creative entry for the core crystal")
+    creative = creative.replace(anchor, anchor + "\\n                        output.accept(ModItems.MUTAGENKERNKRISTALL.get());", 1)
+creative_path.write_text(creative, encoding="utf-8")
+
 write("src/main/java/de/sporenwerk/infection/MutagenBloom.java", """
 package de.sporenwerk.infection;
 
@@ -103,6 +152,7 @@ public final class MutagenBloom {
         level.sendParticles(ParticleTypes.PORTAL, x, y, z, 20, 0.8D, 0.7D, 0.8D, 0.09D);
 
         releaseHarvestableSpores(level, origin, random);
+        releaseCondensedCore(level, origin, random);
         accelerateCrops(level, origin, random);
         exposeNearbyPlayers(level, origin);
     }
@@ -118,6 +168,16 @@ public final class MutagenBloom {
         double y = origin.getY() + 0.8D;
         double z = origin.getZ() + 0.5D;
         level.addFreshEntity(new ItemEntity(level, x, y, z, spores));
+    }
+
+    /** Rare collectible catalyst, bounded by the per-node bloom cooldown. */
+    private static void releaseCondensedCore(ServerLevel level, BlockPos origin, RandomSource random) {
+        if (random.nextFloat() >= 0.12F) return;
+        ItemStack core = new ItemStack(ModItems.MUTAGENKERNKRISTALL.get());
+        double x = origin.getX() + 0.72D;
+        double y = origin.getY() + 0.82D;
+        double z = origin.getZ() + 0.68D;
+        level.addFreshEntity(new ItemEntity(level, x, y, z, core));
     }
 
     private static void accelerateCrops(ServerLevel level, BlockPos origin, RandomSource random) {
