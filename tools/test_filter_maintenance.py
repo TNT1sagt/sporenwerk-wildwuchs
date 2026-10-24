@@ -279,7 +279,7 @@ require("STANDARD_RADIUS = 4" in stabilizer_java
         "stabilizer tiers and bounded network bonuses must be explicit and immutable")
 build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.29\.0['\"]", build) is not None,
-        "root Gradle project version must be 1.28.0")
+        "root Gradle project version must be 1.29.0")
 require("Version 1.29.0" in read("README.md"), "1.29.0 release notes are missing")
 require("Version 1.28.0" in read("README.md"), "previous 1.28.0 release notes must remain in history")
 require("Version 1.27.0" in read("README.md"), "previous 1.27.0 release notes must remain in history")
