@@ -51,7 +51,7 @@ require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "dampener scan must not force-load chunks")
 
 state = json.loads((ASSETS / "blockstates/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
-require(state["variants"][""]["model"] == "sporenwerk:block/mutagen_resonanzdaempfer",
+require(state["variants"]["charge=0"]["model"] == "sporenwerk:block/mutagen_resonanzdaempfer",
         "blockstate must point to dampener model")
 model = json.loads((ASSETS / "models/block/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
 require(model["parent"] == "minecraft:block/cube_column"
@@ -96,9 +96,9 @@ preview = read("tools/make_art_preview.py")
 require("mutagen_resonanzdaempfer_top" in preview and "mutagen_resonanzdaempfer_side" in preview,
         "both dampener faces must appear in the QA preview")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
-        "artifact must be version 1.37.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.38\.0['\"]", build) is not None,
+        "artifact must be version 1.38.0")
 readme = read("README.md")
-require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
-        "release notes must preserve 1.36.0 history")
+require("Version 1.38.0" in readme and "Version 1.37.0" in readme,
+        "release notes must preserve 1.37.0 history")
 print("Mutagen Resonance Dampener registration, pulse suppression, chunk safety, recipes, loot, pixel art, locales and version passed.")

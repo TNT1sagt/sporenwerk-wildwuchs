@@ -83,8 +83,8 @@ for locale in ("de_de.json", "en_us.json"):
 preview = read("tools/make_art_preview.py")
 require("mutagenfeld_kontrollstation_top" in preview and "mutagenfeld_kontrollstation_side" in preview,
         "QA preview must include both station textures")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", read("build.gradle")) is not None,
-        "artifact must be version 1.37.0")
-require("Version 1.37.0" in read("README.md") and "Version 1.36.0" in read("README.md"),
-        "release notes must add 1.37.0 and preserve 1.36.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.38\.0['\"]", read("build.gradle")) is not None,
+        "artifact must be version 1.38.0")
+require("Version 1.38.0" in read("README.md") and "Version 1.37.0" in read("README.md"),
+        "release notes must add 1.38.0 and preserve 1.37.0")
 print("Mutagen Field Control Station scan, network status, research unlock, resources, textures and locales passed.")

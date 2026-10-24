@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the visible, on-demand Resonance Dampener protection volume (1.37.0)."""
+"""Regression tests for the visible, on-demand Resonance Dampener protection volume (1.38.0)."""
 from pathlib import Path
 import json
 import re
@@ -26,7 +26,7 @@ for token in (
     "public static final int VERTICAL_RADIUS = 2;",
     "InteractionResult use(",
     "Component.translatable(",
-    '"message.sporenwerk.dampener.protection_volume"',
+    '"message.sporenwerk.dampener.status"',
     "revealProtectionVolume(serverLevel, pos)",
     "level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME",
     "private static void revealProtectionVolume(ServerLevel level, BlockPos center)",
@@ -43,7 +43,7 @@ for token in (
     "MutagenResonanceDampenerBlock.HORIZONTAL_RADIUS",
     "MutagenResonanceDampenerBlock.VERTICAL_RADIUS",
     "if (!level().hasChunkAt(pos)) continue;",
-    "if (level().getBlockState(pos).is(ModBlocks.MUTAGEN_RESONANZDAEMPFER.get()))",
+    "if (!dampenerState.is(ModBlocks.MUTAGEN_RESONANZDAEMPFER.get())) continue;",
 ):
     require(token in entity, "server protection scan must share dimensions and stay chunk safe: " + token)
 require("origin.offset(-6, -2, -6)" not in entity and "origin.offset(6, 2, 6)" not in entity,
@@ -52,17 +52,17 @@ require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "protection preview/scan must not force-load chunks")
 
 for filename, expected in {
-    "de_de.json": "Schutzbereich: horizontal",
-    "en_us.json": "Protection volume: ±%s blocks horizontally",
+    "de_de.json": "Schutzbereich horizontal",
+    "en_us.json": "Protection volume: ±%s horizontal",
 }.items():
     locale = json.loads((ASSETS / "lang" / filename).read_text(encoding="utf-8"))
-    require(expected in locale.get("message.sporenwerk.dampener.protection_volume", ""),
+    require(expected in locale.get("message.sporenwerk.dampener.status", ""),
             filename + " missing protection status text")
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
-        "artifact must be version 1.37.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.38\.0['\"]", build) is not None,
+        "artifact must be version 1.38.0")
 readme = read("README.md")
-require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
-        "release notes must preserve the previous 1.36.0 loot/research milestone")
-print("Visible protection volume, shared server range, localized status, no permanent ticker, chunk safety, and 1.37.0 passed.")
+require("Version 1.38.0" in readme and "Version 1.37.0" in readme,
+        "release notes must preserve the previous 1.37.0 protection-volume milestone")
+print("Visible protection volume, shared server range, localized status, no permanent ticker, chunk safety, and 1.38.0 passed.")
