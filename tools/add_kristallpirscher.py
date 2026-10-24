@@ -12,6 +12,12 @@ RES = ROOT / "src/main/resources"
 ASSETS = RES / "assets/sporenwerk"
 
 
+def write(rel, content):
+    path = ROOT / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content.lstrip(), encoding="utf-8")
+
+
 def require_anchor(text, anchor, label):
     if anchor not in text:
         raise SystemExit(f"Cannot add Kristallpirscher: missing {label} anchor")
