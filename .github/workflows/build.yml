@@ -438,7 +438,7 @@ jobs:
       - name: Upload visual QA sheet
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.38.0-art-preview
+          name: sporenwerk-1.39.0-art-preview
           path: source/sporenwerk-wildwuchs/qa-output/sporenwerk-art-preview.png
           if-no-files-found: error
           retention-days: 14
@@ -446,7 +446,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: sporenwerk-1.38.0-forge-1.20.1
+          name: sporenwerk-1.39.0-forge-1.20.1
           path: source/sporenwerk-wildwuchs/build/libs/sporenwerk-1.39.0.jar
           if-no-files-found: error
           retention-days: 14
