@@ -282,6 +282,17 @@ def make_relay(top):
             d.line([(x, 5), (x, 10)], fill=(198, 145, 77, 255), width=1)
         d.line([(3, 2), (12, 2)], fill=(64, 198, 188, 255), width=1)
         d.line([(3, 13), (12, 13)], fill=(64, 198, 188, 255), width=1)
+    # Small calibrated status pixels add material variation without noisy stripes.
+    accents = (
+        ((0, 5), (43, 59, 64, 255)), ((15, 5), (48, 64, 69, 255)),
+        ((0, 10), (39, 57, 61, 255)), ((15, 10), (44, 62, 67, 255)),
+        ((5, 0), (55, 75, 77, 255)), ((10, 15), (47, 67, 70, 255)),
+        ((3, 4), (71, 96, 97, 255)), ((12, 11), (83, 109, 107, 255)),
+        ((4, 12), (118, 91, 56, 255)), ((11, 3), (143, 109, 67, 255)),
+        ((6, 2), (54, 157, 153, 255)), ((9, 13), (62, 178, 167, 255)),
+    )
+    for point, color in accents:
+        d.point(point, fill=color)
     return im
 
 for name, image in (
