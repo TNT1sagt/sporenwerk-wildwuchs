@@ -51,8 +51,9 @@ require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "dampener scan must not force-load chunks")
 
 state = json.loads((ASSETS / "blockstates/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
-require(state["variants"][""]["model"] == "sporenwerk:block/mutagen_resonanzdaempfer",
-        "blockstate must point to dampener model")
+require(state["variants"]["powered=false"]["model"] == "sporenwerk:block/mutagen_resonanzdaempfer"
+        and state["variants"]["powered=true"]["model"] == "sporenwerk:block/mutagen_resonanzdaempfer_active",
+        "blockstate must map both redstone power states to distinct models")
 model = json.loads((ASSETS / "models/block/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
 require(model["parent"] == "minecraft:block/cube_column"
         and model["textures"]["end"] == "sporenwerk:block/mutagen_resonanzdaempfer_top"
