@@ -60,6 +60,29 @@ build, count = re.subn(
 require(count == 1, "could not advance Gradle version to 1.39.0")
 build_path.write_text(build, encoding="utf-8")
 
+# Later releases must update the current-artifact assertion in older regression
+# scripts while preserving historical README/version assertions.
+version_tests_updated = 0
+test_tools = ROOT / "tools"
+for test_path in test_tools.glob("test_*.py"):
+    lines = test_path.read_text(encoding="utf-8").splitlines(keepends=True)
+    changed = False
+    for index, line in enumerate(lines):
+        if r"1\.38\.0" not in line or "version" not in line.lower():
+            continue
+        lines[index] = line.replace(r"1\.38\.0", r"1\.39\.0")
+        changed = changed or lines[index] != line
+        # Keep the nearby failure diagnostic aligned with its current-version contract.
+        for following in range(index, min(index + 3, len(lines))):
+            if "must be version 1.38.0" in lines[following] or "version must be 1.38.0" in lines[following]:
+                lines[following] = lines[following].replace("1.38.0", "1.39.0")
+                changed = True
+    if changed:
+        test_path.write_text("".join(lines), encoding="utf-8")
+        version_tests_updated += 1
+require(version_tests_updated >= 1,
+        "no stale current-version assertions were found in existing regression tests")
+
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
 section = """## Version 1.39.0 — Resonanzrückkopplung gegen den Kristallpirscher
