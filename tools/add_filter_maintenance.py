@@ -313,7 +313,12 @@ public final class MutagenFieldStabilizerBlock extends Block {
     public static final int STANDARD_RADIUS = 4;
     public static final int REINFORCED_RADIUS = 8;
     public static final int ADVANCED_RADIUS = 12;
-    public static final int MAX_RADIUS = ADVANCED_RADIUS;
+    public static final int NETWORK_LINK_RADIUS = 8;
+    public static final int NETWORK_VERTICAL_LINK_RADIUS = 4;
+    public static final int NETWORK_RADIUS_BONUS = 2;
+    public static final int NETWORK_VERTICAL_BONUS = 1;
+    public static final int MAX_RADIUS = ADVANCED_RADIUS + NETWORK_RADIUS_BONUS;
+    public static final int MAX_VERTICAL_RADIUS = MAX_RADIUS / 2 + NETWORK_VERTICAL_BONUS;
     private final int protectionRadius;
 
     public MutagenFieldStabilizerBlock(Properties properties) {
@@ -336,42 +341,76 @@ bloom_path = SRC / "infection/MutagenBloom.java"
 bloom_source = bloom_path.read_text(encoding="utf-8")
 if "import de.sporenwerk.block.MutagenFieldStabilizerBlock;" not in bloom_source:
     bloom_source = bloom_source.replace("import de.sporenwerk.registry.ModBlocks;", "import de.sporenwerk.registry.ModBlocks;\nimport de.sporenwerk.block.MutagenFieldStabilizerBlock;", 1)
-if "private static boolean hasNearbyStabilizer(ServerLevel level, BlockPos center)" not in bloom_source:
+if "private static int stabilizerProtectionLevel(ServerLevel level, BlockPos center)" not in bloom_source:
     anchor = "    private static void exposeNearbyPlayers(ServerLevel level, BlockPos origin) {"
     helper = """    /**
-     * Bounded local scan. Horizontal range follows the placed tier; vertical range is half as tall.
-     * Never asks Minecraft to load a chunk as a side effect of a protection check.
+     * A pair of stabilizers within the link radius forms a local containment network.
+     * Only checks already-loaded chunks and never forces chunk loads at facility edges.
      */
-    private static boolean hasNearbyStabilizer(ServerLevel level, BlockPos center) {
-        for (int dx = -MutagenFieldStabilizerBlock.MAX_RADIUS; dx <= MutagenFieldStabilizerBlock.MAX_RADIUS; dx++) {
-            for (int dy = -MutagenFieldStabilizerBlock.MAX_RADIUS / 2; dy <= MutagenFieldStabilizerBlock.MAX_RADIUS / 2; dy++) {
-                for (int dz = -MutagenFieldStabilizerBlock.MAX_RADIUS; dz <= MutagenFieldStabilizerBlock.MAX_RADIUS; dz++) {
+    private static boolean hasLinkedStabilizer(ServerLevel level, BlockPos center) {
+        int linkRadius = MutagenFieldStabilizerBlock.NETWORK_LINK_RADIUS;
+        int linkRadiusSquared = linkRadius * linkRadius;
+        for (int dx = -linkRadius; dx <= linkRadius; dx++) {
+            for (int dy = -MutagenFieldStabilizerBlock.NETWORK_VERTICAL_LINK_RADIUS;
+                 dy <= MutagenFieldStabilizerBlock.NETWORK_VERTICAL_LINK_RADIUS; dy++) {
+                for (int dz = -linkRadius; dz <= linkRadius; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    if (dx * dx + dz * dz > linkRadiusSquared) continue;
                     BlockPos probe = center.offset(dx, dy, dz);
                     if (!level.hasChunkAt(probe)) continue;
-                    if (!(level.getBlockState(probe).getBlock() instanceof MutagenFieldStabilizerBlock stabilizer)) continue;
-                    int radius = stabilizer.protectionRadius();
-                    if (dx * dx + dz * dz <= radius * radius && Math.abs(dy) <= Math.max(2, radius / 2)) return true;
+                    if (level.getBlockState(probe).getBlock() instanceof MutagenFieldStabilizerBlock) return true;
                 }
             }
         }
         return false;
     }
 
+    /** Returns 0 without protection, 1 for local shielding and 2 for a linked network. */
+    private static int stabilizerProtectionLevel(ServerLevel level, BlockPos center) {
+        for (int dx = -MutagenFieldStabilizerBlock.MAX_RADIUS; dx <= MutagenFieldStabilizerBlock.MAX_RADIUS; dx++) {
+            for (int dy = -MutagenFieldStabilizerBlock.MAX_VERTICAL_RADIUS;
+                 dy <= MutagenFieldStabilizerBlock.MAX_VERTICAL_RADIUS; dy++) {
+                for (int dz = -MutagenFieldStabilizerBlock.MAX_RADIUS; dz <= MutagenFieldStabilizerBlock.MAX_RADIUS; dz++) {
+                    BlockPos probe = center.offset(dx, dy, dz);
+                    if (!level.hasChunkAt(probe)) continue;
+                    if (!(level.getBlockState(probe).getBlock() instanceof MutagenFieldStabilizerBlock stabilizer)) continue;
+                    int radius = stabilizer.protectionRadius();
+                    int verticalRadius = Math.max(2, radius / 2);
+                    int horizontalDistanceSquared = dx * dx + dz * dz;
+                    boolean insideLocalField = horizontalDistanceSquared <= radius * radius
+                            && Math.abs(dy) <= verticalRadius;
+                    boolean insideNetworkBuffer = horizontalDistanceSquared
+                            <= (radius + MutagenFieldStabilizerBlock.NETWORK_RADIUS_BONUS)
+                               * (radius + MutagenFieldStabilizerBlock.NETWORK_RADIUS_BONUS)
+                            && Math.abs(dy) <= verticalRadius + MutagenFieldStabilizerBlock.NETWORK_VERTICAL_BONUS;
+                    if (insideLocalField && hasLinkedStabilizer(level, probe)) return 2;
+                    if (insideLocalField) return 1;
+                    if (insideNetworkBuffer && hasLinkedStabilizer(level, probe)) return 2;
+                }
+            }
+        }
+        return 0;
+    }
+
 """
     if anchor not in bloom_source:
-        raise SystemExit("Cannot locate bloom exposure method for the stabilizer hook")
+        raise SystemExit("Cannot locate bloom exposure method for the stabilizer network")
     bloom_source = bloom_source.replace(anchor, helper + anchor, 1)
 exposure_anchor = """            player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.bloom")
                     .withStyle(ChatFormatting.LIGHT_PURPLE), false);"""
 stabilizer_guard = exposure_anchor + """
-            if (hasNearbyStabilizer(level, player.blockPosition())) {
-                player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.stabilized")
+            int protectionLevel = stabilizerProtectionLevel(level, player.blockPosition());
+            if (protectionLevel > 0) {
+                String protectionMessage = protectionLevel > 1
+                        ? "message.sporenwerk.mutagen.network_stabilized"
+                        : "message.sporenwerk.mutagen.stabilized";
+                player.displayClientMessage(Component.translatable(protectionMessage)
                         .withStyle(ChatFormatting.AQUA), true);
                 continue;
             }"""
-if "message.sporenwerk.mutagen.stabilized" not in bloom_source:
+if "message.sporenwerk.mutagen.network_stabilized" not in bloom_source:
     if exposure_anchor not in bloom_source:
-        raise SystemExit("Cannot locate bloom warning for stabilizer protection")
+        raise SystemExit("Cannot locate bloom warning for stabilizer network")
     bloom_source = bloom_source.replace(exposure_anchor, stabilizer_guard, 1)
 bloom_path.write_text(bloom_source, encoding="utf-8")
 
@@ -772,6 +811,7 @@ locale_additions = {
         "tooltip.sporenwerk.mutagenfeld_stabilisator.1": "Dämpft den Mutagenblüten-Impuls im Umkreis von 4 Blöcken.",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.2": "Passive Stabilisierung nahe deiner Forschungsanlage.",
         "message.sporenwerk.mutagen.stabilized": "Der Feldstabilisator dämpft den Blütenimpuls.",
+        "message.sporenwerk.mutagen.network_stabilized": "Stabilisatornetzwerk aktiv: der Schutzbereich ist erweitert.",
         "advancements.sporenwerk.mutagen_stabilizer.title": "Feldstabilisierung",
         "advancements.sporenwerk.mutagen_stabilizer.description": "Berge einen kondensierten Mutagenkern und schalte den Feldstabilisator frei."
     },
@@ -811,6 +851,7 @@ locale_additions = {
         "tooltip.sporenwerk.mutagenfeld_stabilisator.1": "Dampens the Mutagen Bloom pulse within 4 blocks.",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.2": "Passive stabilization for nearby research facilities.",
         "message.sporenwerk.mutagen.stabilized": "The field stabilizer dampens the bloom pulse.",
+        "message.sporenwerk.mutagen.network_stabilized": "Stabilizer network online: protection range extended.",
         "advancements.sporenwerk.mutagen_stabilizer.title": "Field Stabilization",
         "advancements.sporenwerk.mutagen_stabilizer.description": "Recover a condensed Mutagen Core to unlock the field stabilizer."
     }
@@ -871,9 +912,9 @@ preview_path.write_text(preview, encoding="utf-8")
 # This is the final patch in CI, so it owns the current artifact version.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.24.0'", build, count=1)
+build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]", "version = '1.25.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.24.0")
+    raise SystemExit("Could not bump build.gradle to version 1.25.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
@@ -907,8 +948,21 @@ Die automatischen Tests, der Forge-Build, die JAR-Prüfung und der dedizierte Se
 """
 if previous_heading_123 not in readme:
     readme = previous_section_123 + readme
-heading = "## Version 1.24.0 — Hochleistungs-Feldstabilisierung"
-section = """## Version 1.24.0 — Hochleistungs-Feldstabilisierung
+previous_heading_124 = "## Version 1.24.0 — Hochleistungs-Feldstabilisierung"
+previous_section_124 = """## Version 1.24.0 — Hochleistungs-Feldstabilisierung
+
+- **Stabilisator Stufe III:** Violett-magenta Kristallblock mit 12 Blöcken horizontalem Schutzradius und bis zu 6 Blöcken Höhenunterschied.
+- **Hochentwickelte Forschungsfreigabe:** Die dritte Stufe wird nach Erhalt eines verstärkten Stabilisators freigeschaltet und benötigt Netherite, Enderaugen und Mutagenmaterialien.
+- **Eigene Ressourcen und Tests:** Separate 16×16-Texturen, Blockmodelle, Itemeintrag, Übersetzungen und automatische Prüfungen für Rezept und Fortschrittsfreigabe.
+- **Sichere Schutzsuche:** Der begrenzte Schutzscan lädt keine Chunks nach; die tatsächliche Stabilisatorstufe bestimmt den Radius.
+
+Der Forge-Build, die JAR-Prüfung und der dedizierte Serverstart waren erfolgreich. Ein manueller Sicht- und Funktionstest im Minecraft-Client bleibt separat erforderlich.
+
+"""
+if previous_heading_124 not in readme:
+    readme = previous_section_124 + readme
+heading = "## Version 1.25.0 — Vernetzte Feldstabilisierung"
+section = """## Version 1.25.0 — Vernetzte Feldstabilisierung
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.
@@ -918,8 +972,11 @@ section = """## Version 1.24.0 — Hochleistungs-Feldstabilisierung
 - **Stabilisator Stufe III:** Ein eigener violett-magenta Kristallblock dämpft Blütenimpulse im horizontalen Radius von 12 Blöcken und bis zu 6 Blöcken Höhenunterschied.
 - **Forschung statt Gratis-Upgrade:** Der Hochleistungs-Bauplan wird erst freigegeben, wenn ein verstärkter Stabilisator ins Inventar gelangt. Das Rezept verlangt den Stabilisator der Stufe II, zwei Netherite-Barren, zwei Enderaugen, zwei Mutagenkernkristalle und Mutagenextrakt.
 - **Ressourcen und Darstellung:** Die neue Stufe hat eine eigene Blockregistrierung, 16×16-Texturen für Ober- und Seitenflächen, Blockstate, Modelle, Itemeintrag, zweisprachige Beschreibungen und eine Forschungsfreigabe im Rezeptbuch.
-- **Effizienter begrenzter Scan:** Der Suchbereich reicht nun bis zum maximalen Radius der höchsten Stufe. Er prüft geladene Chunks, erzwingt keine Chunk-Ladevorgänge und übernimmt den Radius der tatsächlich platzierten Stabilisatorstufe.
-- **Bestehende Progression bleibt erhalten:** Die Standard- und verstärkte Stufe, der seltene Mutagenkern, das Sporenfilter-Wartungssystem und ihre Forschungsfreigaben bleiben kompatibel.
+- **Stabilisatornetzwerk:** Zwei oder mehr Stabilisatoren bilden ein lokales Netzwerk, wenn ihre Blöcke höchstens 8 Blöcke horizontal und 4 Blöcke vertikal voneinander entfernt sind.
+- **Erweiterter Schutzbereich:** Ein vernetzter Stabilisator erweitert die horizontale Reichweite um 2 Blöcke und die vertikale Reichweite um 1 Block. Der Bonus funktioniert über alle drei Stufen hinweg.
+- **Erkennbares Feedback:** Beim Abfangen eines Blütenimpulses meldet das Spiel, ob der Schutz von einem einzelnen Stabilisator oder einem aktiven Netzwerk stammt.
+- **Sichere Schutzsuche:** Die begrenzten Scans prüfen nur geladene Chunks und lösen keine Chunk-Ladevorgänge aus. Die tatsächliche Stabilisatorstufe bestimmt den Grundradius.
+- **Bestehende Progression bleibt erhalten:** Alle drei Stufen, der seltene Mutagenkern, die Forschungsfreigaben und das Sporenfilter-Wartungssystem bleiben kompatibel.
 - **Rezeptfreigabe durch Entdeckung:** Das Rezept für den Stabilisator erscheint, sobald der Spieler einen kondensierten Mutagenkern einsammelt. Eigene Pixelgrafiken, Blockmodelle, Übersetzungen und Regressionstests decken die vollständige Kette ab.
 - **Erste Mutagenblüte:** Wer eine gefährliche Blüte erstmals erlebt, erhält das Advancement „Das Feld atmet“ und ein einmaliges Feldprotokoll mit 3 Feldwissen und 2 Myzelkompost. Die Belohnung wird nur einmal pro Spieler vergeben.
 - **Sicherer Betrieb:** Einsatzverbrauch nur bei erfolgreicher Wartung; volle Masken verbrauchen keinen Filter. Kreativspieler verbrauchen keine Einsätze. Handbedienung bleibt als alternative Reparaturmethode verfügbar.
@@ -931,4 +988,4 @@ Der automatische Serverstart bestätigt die technische Startfähigkeit, ersetzt 
 if heading not in readme:
     readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed Sporenwerk 1.24.0 with three-tier Mutagen Field Stabilization.")
+print("Installed Sporenwerk 1.25.0 with linked Mutagen Field Stabilizer networks.")
