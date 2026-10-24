@@ -40,8 +40,8 @@ for token in (
     "private boolean isResonanceDamped()",
     "if (isResonanceDamped()) {",
     "if (isResonanceDamped()) {",
-    "origin.offset(-6, -2, -6)",
-    "origin.offset(6, 2, 6)",
+    "MutagenResonanceDampenerBlock.HORIZONTAL_RADIUS",
+    "MutagenResonanceDampenerBlock.VERTICAL_RADIUS",
     "if (!level().hasChunkAt(pos)) continue;",
     "ModBlocks.MUTAGEN_RESONANZDAEMPFER.get()",
     "resonanceWindup = 0;",
@@ -96,9 +96,9 @@ preview = read("tools/make_art_preview.py")
 require("mutagen_resonanzdaempfer_top" in preview and "mutagen_resonanzdaempfer_side" in preview,
         "both dampener faces must appear in the QA preview")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
-        "artifact must be version 1.36.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
+        "artifact must be version 1.37.0")
 readme = read("README.md")
-require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
-        "release notes must preserve 1.35.0 history")
+require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
+        "release notes must preserve 1.36.0 history")
 print("Mutagen Resonance Dampener registration, pulse suppression, chunk safety, recipes, loot, pixel art, locales and version passed.")
