@@ -227,7 +227,7 @@ cartridge_image.save(cartridge_texture, optimize=True)
 write("src/main/resources/assets/sporenwerk/models/item/sporenfiltereinsatz.json", json.dumps({
     "parent": "minecraft:item/generated",
     "textures": {"layer0": "sporenwerk:item/sporenfiltereinsatz"}
-}, ensure_ascii=False, indent=2) + "\\n")
+}, ensure_ascii=False, indent=2) + "\n")
 
 # The mask is protected at the center seam with a glass/metal viewport and distinct filter pads.
 icon_path = ASSETS / "textures/item/sporenfiltermaske.png"
