@@ -43,7 +43,9 @@ for token in (
     require(token in station, "station is missing comparator behavior: " + token)
 
 # The scan must remain interaction-driven. The output method may only read POWER.
-output_method = station[station.index("public int getAnalogOutputSignal"):station.index("private static int comparatorSignal")]
+output_start = station.index("public int getAnalogOutputSignal")
+output_end = station.index("\n    }", output_start)
+output_method = station[output_start:output_end]
 require("survey(" not in output_method and "getBlockState(" not in output_method,
         "comparator polling must not trigger a world scan")
 
