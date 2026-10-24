@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: sporenwerk-build
+  group: sporenwerk-build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
