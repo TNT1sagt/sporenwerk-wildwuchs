@@ -41,7 +41,7 @@ for token in (
     "MutagenFieldControlStationBlock.POWER",
     "KristallpirscherEntity.class",
     "message.sporenwerk.scanner.survey.guidance.critical",
-    "Device counts do not prove full protection coverage",
+    "message.sporenwerk.scanner.survey.loaded",
 ):
     require(token in scanner, "scanner contract missing: " + token)
 require("getChunk(" not in scanner and "getChunkNow(" not in scanner,
