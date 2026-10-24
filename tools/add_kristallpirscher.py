@@ -439,7 +439,7 @@ readme = readme.replace(
     "**Aktueller Entwicklungsstand: 1.31.0 — gespeicherte Mutagen-Alarme mit Spieler-Quittierung.**",
     "**Aktueller Entwicklungsstand: 1.32.0 — Kristallpirscher und Hochmutagen-Gegnerökologie.**"
 ).replace("## Aktueller Schwerpunkt — 1.31.0", "## Aktueller Schwerpunkt — 1.32.0")
-if "Kristallpirscher" not in readme[:2200]:
+if "- Der Kristallpirscher erscheint nur nachts" not in readme[:2200]:
     readme = readme.replace(
         "- Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.",
         "- Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.\n- Der Kristallpirscher erscheint nur nachts in dunklen Hochmutagenfeldern und kann mit der Sporenfiltermaske bekämpft werden."
