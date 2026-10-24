@@ -66,7 +66,11 @@ for charge in range(4):
     require(image.size == (16, 16) and all(px[3] == 255 for px in image.getdata()),
             f"charge {charge} texture must be an opaque 16×16 block face")
     require(len(set(image.getdata())) >= 12, f"charge {charge} texture must remain readable")
-require(len({(ASSETS / f"textures/block/{'mutagen_resonanzdaempfer_top' if c == 0 else f'mutagen_resonanzdaempfer_charge{c}'}.png").read_bytes() for c in range(4)}) == 4,
+texture_bytes = []
+for charge in range(4):
+    top_name = "mutagen_resonanzdaempfer_top" if charge == 0 else f"mutagen_resonanzdaempfer_charge{charge}"
+    texture_bytes.append((ASSETS / "textures" / "block" / f"{top_name}.png").read_bytes())
+require(len(set(texture_bytes)) == 4,
         "all four charge tops must be visually distinct files")
 
 item_model = json.loads((ASSETS / "models/item/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
