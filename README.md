@@ -1,19 +1,32 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.35.0 — sichtbare und ressourcenschonende Resonanzabwehr.**
+**Aktueller Entwicklungsstand: 1.45.0 — Multi-System-Feldanalyse, Rotwurzel-Gegenmittel und Mutagenblüten-Signal.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.35.0
+## Aktueller Schwerpunkt — 1.45.0
 
-- Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
-- Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
-- Mutagenfeld-Stufe III: dunkle Kristallplatten mit cyanfarbenen Kanten, hellen Kernen und deutlich stärkerem Leuchten.
-- Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
-- Ein Scan an der Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Gefahrenwert von 0 bis 15, ohne Welt-Scans bei jedem Redstone-Tick auszulösen.
-- Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
+- Der Feldscanner analysiert sowohl einzelne Blöcke als auch einen lokalen Bereich über Mutagenboden, mutierte Pflanzen, Sporenabwehr, Dämpferladungen, Sirenen, Relais und nahe Kristallpirscher.
+- Rotwurzel-Konzentrat heilt zwei Herzen und entfernt Gift sowie Resonanzverlangsamung; eine eigene Rückmeldung nennt die tatsächlich entfernten Effekte.
+- Mutagenblüten haben zusätzlich zu den bestehenden Partikeln und Belohnungen ein akustisches Ereignissignal.
+- Der Bereichsscan bleibt serverseitig, einmalig pro Interaktion, auf 17×9×17 Blöcke begrenzt und überspringt ungeladene Chunks.
+- Die Release-Pipeline prüft Regressionen, übersetzte Texte, Forge-Build, installierbare JAR und den dedizierten Serverstart.
 
 ---
+
+## Version 1.45.0 — Multi-System-Feldanalyse, Gegenmittel und Ereignisfeedback
+
+- **Feldscanner als Diagnosewerkzeug:** Rechtsklick auf Luft führt einen Einmalscan mit Radius 8 und Höhe ±4 aus. Er zählt Mutagenboden der Stufen I–III, mutierte Pflanzen, aktivierte Sporenabwehrsender, Dämpfer samt gespeicherten Ladungen, Sirenenalarme und Containment-Relais; nahe Kristallpirscher werden ebenfalls gemeldet.
+- **Einzelmessung von Geräten:** Rechtsklick auf Sporenabwehr, Dämpfer, Warnsirene, Relais oder Kontrollstation zeigt gespeicherte Zustände und Signalwerte.
+- **Bessere Überlebensoption:** Rotwurzel-Konzentrat heilt zwei Herzen und entfernt Gift und/oder Verlangsamung. Auch bei vollen Herzen lässt es sich verwenden, wenn ein solcher Effekt aktiv ist.
+- **Ereignisfeedback:** Die Mutagenblüte erhält ein akustisches Signal zusätzlich zu bestehenden Partikeln, Belohnungen und Abklingzeit.
+- **Sicherheits- und QA-Grenzen:** Der Scanner arbeitet nur auf dem Server, überspringt ungeladene Chunks und läuft nicht im Tick-Loop. Die Tests prüfen außerdem DE/EN-Texte, Forge-Build, JAR und Server-Smoke-Test.
+
+## Version 1.44.0 — Ereignisgesteuerte Containment-Signalverteilung
+
+- Zustandsänderungen an Kontrollstation, Warnsirene, Sporenabwehr oder Resonanzdämpfer aktualisieren nahe Relais.
+- Die Verteilung verarbeitet höchstens 32 Relais pro Ereignis, priorisiert nähere Relais und lädt keine Chunks nach.
+- Die Station und die Sirenen bleiben die Quelle ihrer gespeicherten Signalwerte; Relais aktualisieren nur ihren eigenen Ausgang.
 
 ## Version 1.35.0 — Rückmeldung und Abklingzeit für den Resonanzdämpfer
 
