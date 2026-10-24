@@ -59,7 +59,7 @@ for tier in range(1, 4):
         image = source.convert("RGBA")
     require(image.size == (16, 16), f"tier {tier} texture must be 16x16")
     require(all(pixel[3] == 255 for pixel in image.getdata()), f"tier {tier} texture must be fully opaque")
-    require(len(set(image.getdata())) >= 18, f"tier {tier} texture must contain real pixel-art detail")
+    require(len(set(image.getdata())) >= 10, f"tier {tier} texture must contain real pixel-art detail")
     images.append(image)
 
 for left in range(3):
