@@ -30,14 +30,43 @@ visual = read("src/main/java/de/sporenwerk/client/MutagenFieldVisuals.java")
 for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.SOUL_FIRE_FLAME", "ParticleTypes.PORTAL", "ParticleTypes.END_ROD", "mutagenLevel >= 2", "mutagenLevel >= 3", "sporeChance", "0.30F", "0.24F", "fieldTier >= 2", "fieldTier >= 3", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 10L", "int particleBudget = 24", "particleBudget--", "dy = -2; dy <= 2 && particleBudget > 0"):
     require(token in visual, "client visuals missing " + token)
 scanner = read("src/main/java/de/sporenwerk/item/FeldscannerItem.java")
-for token in ("public InteractionResultHolder<ItemStack> use(Level level", "MutationNodeData.get(serverLevel)", "MutationField.mutagenStrengthAt(serverLevel, target)", "infectedTerrain++", "activeTerrain++", "tier1Plants++", "tier2Plants++", "tier3Plants++", "anchors++", "message.sporenwerk.scanner.survey", "message.sporenwerk.scanner.survey_detail", "message.sporenwerk.scanner.advice."):
-    require(token in scanner, "area survey missing " + token)
+for token in (
+    "public InteractionResultHolder<ItemStack> use(Level level",
+    "private static final int AREA_SCAN_RADIUS = 8",
+    "private static final int AREA_SCAN_VERTICAL_RADIUS = 4",
+    "MutationNodeData.get(level)",
+    "nodeData.isActive(cursor)",
+    "MutationField.mutagenStrengthAt(level, cursor)",
+    "activeNodes++", "inactiveNodes++", "strongestField =", "anchors++",
+    "tierOneSoil++", "tierTwoSoil++", "tierThreeSoil++",
+    "mutatedCrops++", "poweredWards++", "availableChargeUnits +=",
+    "activeAlarms++", "criticalAlarms++", "activeRelays++",
+    "level.hasChunkAt(cursor)",
+    "message.sporenwerk.scanner.survey.nodes",
+    "message.sporenwerk.scanner.survey.fields",
+    "message.sporenwerk.scanner.survey.devices",
+    "message.sporenwerk.scanner.survey.threats",
+    "message.sporenwerk.scanner.survey.guidance.",
+):
+    require(token in scanner, "multi-system area survey missing " + token)
+require(scanner.count("public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)") == 1,
+        "the existing air-use action must be extended without duplicate overrides")
 for locale in ("de_de.json", "en_us.json"):
     data = json.loads((root / "src/main/resources/assets/sporenwerk/lang" / locale).read_text(encoding="utf-8"))
-    require(bool(data.get("message.sporenwerk.scanner.survey", "").strip()), locale + " missing area-survey text")
-    require(bool(data.get("message.sporenwerk.scanner.survey_detail", "").strip()), locale + " missing risk-profile text")
-    for advice in ("critical", "uncontained", "anchored", "residual", "active", "stable"):
-        require(bool(data.get("message.sporenwerk.scanner.advice." + advice, "").strip()), locale + " missing scanner advice " + advice)
+    for key in (
+        "message.sporenwerk.scanner.survey.header", "message.sporenwerk.scanner.survey.nodes",
+        "message.sporenwerk.scanner.survey.fields", "message.sporenwerk.scanner.survey.crops",
+        "message.sporenwerk.scanner.survey.devices", "message.sporenwerk.scanner.survey.threats",
+        "message.sporenwerk.scanner.survey.loaded",
+        "message.sporenwerk.scanner.survey.guidance.pirscher",
+        "message.sporenwerk.scanner.survey.guidance.uncontained",
+        "message.sporenwerk.scanner.survey.guidance.critical",
+        "message.sporenwerk.scanner.survey.guidance.elevated",
+        "message.sporenwerk.scanner.survey.guidance.active",
+        "message.sporenwerk.scanner.survey.guidance.clear",
+    ):
+        require(bool(data.get(key, "").strip()), locale + " missing " + key)
 require("Version 1.13.0" in read("README.md"), "release notes missing 1.13.0")
-require("String adviceKey" in scanner and "message.sporenwerk.scanner.advice." in scanner, "scanner must convert readings into actionable hazard advice")
-print("Visible field glow/particles and bounded scanner area survey passed.")
+require("String guidanceKey" in scanner and "message.sporenwerk.scanner.survey.guidance." in scanner,
+        "scanner must convert readings into actionable cross-system hazard advice")
+print("Visible field glow/particles and chunk-safe multi-system scanner survey passed.")
