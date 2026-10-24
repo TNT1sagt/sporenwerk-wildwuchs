@@ -38,7 +38,7 @@ require("extends Block" in dampener and "MutagenResonanceDampenerBlock(Propertie
 
 for token in (
     "private boolean isResonanceDamped()",
-    "if (isResonanceDamped()) return;",
+    "if (isResonanceDamped()) {",
     "if (isResonanceDamped()) {",
     "origin.offset(-6, -2, -6)",
     "origin.offset(6, 2, 6)",
