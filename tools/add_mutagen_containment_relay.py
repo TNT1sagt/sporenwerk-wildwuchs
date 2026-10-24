@@ -70,7 +70,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComparatorBlock;
-import net.minecraft.world.level.block.RedStoneRepeaterBlock;
+import net.minecraft.world.level.block.RepeaterBlock;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -122,7 +122,7 @@ public final class MutagenContainmentRelayBlock extends Block {
     private static boolean isRelevantInput(Block block) {
         return block instanceof RedStoneWireBlock
                 || block instanceof ComparatorBlock
-                || block instanceof RedStoneRepeaterBlock
+                || block instanceof RepeaterBlock
                 || block instanceof MutagenFieldControlStationBlock
                 || block instanceof MutagenWarningSirenBlock
                 || block instanceof SporeWardBlock
