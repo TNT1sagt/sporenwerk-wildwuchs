@@ -111,9 +111,9 @@ for name, values in {
 preview = read("tools/make_art_preview.py")
 require("kristallpirscher.png" in preview, "art preview must include the custom entity skin")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
-        "artifact must be version 1.36.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
+        "artifact must be version 1.37.0")
 readme = read("README.md")
-require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
-        "release notes must preserve the 1.35.0 history")
+require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
+        "release notes must preserve the 1.36.0 history")
 print("Kristallpirscher registration, hotspot-only spawning, mask counterplay, loot, advancement, texture, locales, and version passed.")
