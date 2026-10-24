@@ -244,13 +244,13 @@ build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
 build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.18.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.17.0")
+    raise SystemExit("Could not bump build.gradle to version 1.18.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
 heading = "## Version 1.18.0 — Scanner-Warnungen und Redstone-Sporeabwehr"
-section = """## Version 1.17.0 — Redstone-Sporeabwehr
+section = """## Version 1.18.0 — Scanner-Warnungen und Redstone-Sporeabwehr
 
 - **Scanner mit Handlungsempfehlungen:** Nach den Messwerten ordnet der Feldscanner die Lage ein: Mutationsstufe III, aktives Feld ohne Heilanker, Feld mit Anker, Restbefall oder keine akute Gefahr. Jede Meldung nennt einen konkreten nächsten Schritt und ist auf Deutsch und Englisch verfügbar.
 - **Neue Verteidigungsanlage:** Der Sporenabwehrsender ist ein platzierbarer Block mit unterscheidbarer inaktiver/aktiver Pixeltextur und einem sichtbaren powered-Blockzustand.
