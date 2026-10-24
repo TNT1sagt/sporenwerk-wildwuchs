@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the redstone-driven Mutagen warning siren."""
+"""Regression tests for the tiered redstone-driven Mutagen warning siren."""
 from pathlib import Path
 import json
 import re
@@ -34,45 +34,68 @@ require("output.accept(ModBlocks.MUTAGEN_WARNSIRENE.get())" in creative,
         "warning siren must appear in the creative tab")
 
 for token in (
-    'BooleanProperty.create("powered")',
-    "registerDefaultState(defaultBlockState().setValue(POWERED, false))",
-    "builder.add(POWERED)",
+    'IntegerProperty.create("signal", 0, 15)',
+    "registerDefaultState(defaultBlockState().setValue(SIGNAL, 0))",
+    "builder.add(SIGNAL)",
     "void neighborChanged(",
     "if (level.isClientSide) return;",
-    "boolean inputPowered = level.hasNeighborSignal(pos)",
-    "boolean wasPowered = state.getValue(POWERED)",
-    "if (inputPowered == wasPowered) return;",
-    "level.setBlock(pos, state.setValue(POWERED, inputPowered), 3)",
-    "if (inputPowered)",
+    "int previousSignal = state.getValue(SIGNAL)",
+    "int nextSignal = level.getBestNeighborSignal(pos)",
+    "if (previousSignal == nextSignal) return;",
+    "level.setBlock(pos, state.setValue(SIGNAL, nextSignal), 3)",
+    "int previousBand = riskBand(previousSignal)",
+    "int nextBand = riskBand(nextSignal)",
+    "if (nextBand > previousBand)",
+    "public static int riskBand(int signal)",
+    "if (signal >= 11) return 3",
+    "if (signal >= 5) return 2",
+    "return signal > 0 ? 1 : 0",
     "SoundEvents.NOTE_BLOCK_BELL.value()",
     "SoundSource.BLOCKS",
+    "case 3 -> 0.55F",
+    "case 2 -> 0.82F",
+    "default -> 1.18F",
 ):
-    require(token in siren, "missing edge-triggered siren behavior: " + token)
+    require(token in siren, "missing severity/edge behavior: " + token)
 require(siren.count("level.playSound(") == 1,
-        "one bell sound call is sufficient; avoid repetitive alarm loops")
+        "a single sound call should be guarded by severity escalation")
 
 states = json.loads((ASSETS / "blockstates/mutagen_warnsirene.json").read_text(encoding="utf-8"))
-require(states["variants"]["powered=false"]["model"] == "sporenwerk:block/mutagen_warnsirene",
-        "idle state must use its own model")
-require(states["variants"]["powered=true"]["model"] == "sporenwerk:block/mutagen_warnsirene_active",
-        "powered state must use its active model")
-for name in ("mutagen_warnsirene", "mutagen_warnsirene_active"):
+require(len(states["variants"]) == 16, "all 16 comparator values need a blockstate")
+for signal in range(16):
+    expected = (
+        "sporenwerk:block/mutagen_warnsirene" if signal == 0 else
+        "sporenwerk:block/mutagen_warnsirene_active" if signal <= 4 else
+        "sporenwerk:block/mutagen_warnsirene_elevated" if signal <= 10 else
+        "sporenwerk:block/mutagen_warnsirene_critical"
+    )
+    actual = states["variants"].get(f"signal={signal}", {}).get("model")
+    require(actual == expected, f"signal {signal} maps to {actual}, expected {expected}")
+
+names = (
+    "mutagen_warnsirene",
+    "mutagen_warnsirene_active",
+    "mutagen_warnsirene_elevated",
+    "mutagen_warnsirene_critical",
+)
+images = []
+for name in names:
     model = json.loads((ASSETS / f"models/block/{name}.json").read_text(encoding="utf-8"))
     require(model["parent"] == "minecraft:block/cube_all"
             and model["textures"]["all"] == f"sporenwerk:block/{name}",
-            name + " model points to the correct opaque texture")
+            name + " model must point to its own full-cube texture")
     with Image.open(ASSETS / f"textures/block/{name}.png") as source:
         image = source.convert("RGBA")
     require(image.size == (16, 16), name + " must be 16x16")
     require(all(px[3] == 255 for px in image.getdata()), name + " must be fully opaque")
-    require(len(set(image.getdata())) >= 8, name + " must have readable pixel details")
+    require(len(set(image.getdata())) >= 8, name + " must have readable pixel detail")
+    images.append(image)
 
-with Image.open(ASSETS / "textures/block/mutagen_warnsirene.png") as im:
-    idle = list(im.convert("RGBA").getdata())
-with Image.open(ASSETS / "textures/block/mutagen_warnsirene_active.png") as im:
-    active = list(im.convert("RGBA").getdata())
-require(sum(a[:3] != b[:3] for a, b in zip(idle, active)) >= 12,
-        "active and idle siren art must be visibly distinct")
+for left in range(len(images)):
+    for right in range(left + 1, len(images)):
+        a, b = list(images[left].getdata()), list(images[right].getdata())
+        difference = sum(x[:3] != y[:3] for x, y in zip(a, b))
+        require(difference >= 10, f"{names[left]} and {names[right]} look too similar")
 
 recipe = json.loads((RES / "data/sporenwerk/recipes/mutagen_warnsirene.json").read_text(encoding="utf-8"))
 require(recipe["result"]["item"] == "sporenwerk:mutagen_warnsirene",
@@ -84,7 +107,7 @@ advancement = json.loads((RES / "data/sporenwerk/advancements/recipes/misc/mutag
 require(advancement["parent"] == "minecraft:recipes/root"
         and advancement["rewards"]["recipes"] == ["sporenwerk:mutagen_warnsirene"]
         and len(advancement["requirements"]) == 3,
-        "recipe discovery advancement must unlock after all three ingredients are held")
+        "recipe discovery advancement must require all three ingredients")
 
 for locale in ("de_de.json", "en_us.json"):
     data = json.loads((ASSETS / "lang" / locale).read_text(encoding="utf-8"))
@@ -92,12 +115,13 @@ for locale in ("de_de.json", "en_us.json"):
     require(data.get("item.sporenwerk.mutagen_warnsirene", "").strip(), locale + " item name missing")
 
 preview = read("tools/make_art_preview.py")
-require("mutagen_warnsirene" in preview and "mutagen_warnsirene_active" in preview,
-        "art preview must show both siren states")
+for name in ("mutagen_warnsirene", "mutagen_warnsirene_active",
+             "mutagen_warnsirene_elevated", "mutagen_warnsirene_critical"):
+    require(name in preview, "art preview missing " + name)
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.29\.0['\"]", build) is not None,
-        "artifact must be version 1.29.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.30\.0['\"]", build) is not None,
+        "artifact must be version 1.30.0")
 readme = read("README.md")
-require("Version 1.29.0" in readme and "Version 1.28.0" in readme,
-        "release notes must preserve the 1.28.0 version history")
-print("Mutagen warning siren registration, redstone edge behavior, sound, textures, recipe, locales, and version passed.")
+require("Version 1.30.0" in readme and "Version 1.29.0" in readme,
+        "release notes must preserve the 1.29.0 version history")
+print("Mutagen warning siren registration, all 16 input values, severity bands, escalation tones, textures, recipe, locales, and version passed.")
