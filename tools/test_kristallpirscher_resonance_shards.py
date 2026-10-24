@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for Kristallpirscher resonance shard progression (1.36.0)."""
+"""Regression tests for Kristallpirscher resonance shard progression (1.37.0)."""
 from pathlib import Path
 import json
 import re
@@ -86,9 +86,9 @@ for filename, expected in {
     require(any(value in locale.values() for value in expected), filename + " missing shard/research text")
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
-        "artifact must be version 1.36.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
+        "artifact must be version 1.37.0")
 readme = read("README.md")
-require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
-        "release notes must preserve the previous 1.35.0 dampener-feedback milestone")
-print("Kristallpirscher guaranteed shard drop, rare core crystal, dampener recipe chain, advancement, icon, locales and 1.36.0 passed.")
+require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
+        "release notes must preserve the previous 1.36.0 loot/research milestone")
+print("Kristallpirscher guaranteed shard drop, rare core crystal, dampener recipe chain, advancement, icon, locales and 1.37.0 passed.")
