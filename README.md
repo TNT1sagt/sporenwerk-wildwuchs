@@ -1,10 +1,10 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.35.0 — sichtbare und ressourcenschonende Resonanzabwehr.**
+**Aktueller Entwicklungsstand: 1.36.0 — Resonanzsplitter-Fortschritt und redstone-gesteuerter Dämpfer.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.35.0
+## Aktueller Schwerpunkt — 1.36.0
 
 - Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
@@ -12,8 +12,17 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
 - Ein Scan an der Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Gefahrenwert von 0 bis 15, ohne Welt-Scans bei jedem Redstone-Tick auszulösen.
 - Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
+- Der Kristallpirscher liefert 1–3 garantierte Resonanzsplitter, die zum Bau des Dämpfers benötigt werden. Der Resonanzdämpfer schützt nur bei Redstoneversorgung und zeigt AUS/AN mit eigenen Texturen.
 
 ---
+
+## Version 1.36.0 — Resonanzsplitter und redstone-gesteuerter Dämpfer
+
+- **Beute als Fortschrittsmaterial:** Jeder besiegte Kristallpirscher hinterlässt 1–3 Resonanzsplitter. Der Mutagenkernkristall bleibt ein seltener, zusätzlicher Drop. Zwei Splitter werden für das Dampfer-Rezept gebraucht.
+- **Redstone-Schaltung:** Der Mutagen-Resonanzdämpfer unterdrückt Kristallpirscher-Impulse nur, wenn Redstone anliegt. Ohne Signal bleibt er dunkel und inaktiv.
+- **AUS/AN visuell unterscheidbar:** Eigene Modell-/Texturkombinationen zeigen den Zustand; der aktive Dämpfer leuchtet stärker und hebt den Resonanzkern deutlich hervor. Beim Platzieren direkt neben bestehendem Redstone wird der Zustand synchronisiert.
+- **Chunk-sichere Gegenwehr:** Die Schutzfläche wird nur beim Start und Ende der Warnphase geprüft. Eingeschaltete Dämpfer brechen Impulse ab, senden sichtbares Feedback und setzen die Abklingzeit gegen wiederholte Scans.
+- **Forschung und QA:** Ein Advancement dokumentiert den ersten Resonanzsplitter; Rezeptfreigabe, Loot, Texturen, DE/EN-Namen und JAR-Inhalt sind durch Regressionstests abgesichert.
 
 ## Version 1.35.0 — Rückmeldung und Abklingzeit für den Resonanzdämpfer
 
