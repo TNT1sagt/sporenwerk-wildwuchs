@@ -123,9 +123,9 @@ for name in ("mutagen_warnsirene", "mutagen_warnsirene_active",
              "mutagen_warnsirene_elevated", "mutagen_warnsirene_critical"):
     require(name in preview, "art preview missing " + name)
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.33\.0['\"]", build) is not None,
-        "artifact must be version 1.33.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.34\.0['\"]", build) is not None,
+        "artifact must be version 1.34.0")
 readme = read("README.md")
-require("Version 1.33.0" in readme and "Version 1.32.0" in readme,
-        "release notes must preserve the 1.32.0 version history")
+require("Version 1.34.0" in readme and "Version 1.33.0" in readme,
+        "release notes must preserve the 1.33.0 version history")
 print("Mutagen warning siren registration, all 16 input values, severity bands, escalation tones, textures, recipe, locales, and version passed.")
