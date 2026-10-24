@@ -27,6 +27,8 @@ for token in (
     'BooleanProperty.create("powered")',
     "registerDefaultState(defaultBlockState().setValue(POWERED, false))",
     "builder.add(POWERED)",
+    "void onPlace(",
+    "updatePower(state, level, pos)",
     "void neighborChanged(",
     "boolean powered = level.hasNeighborSignal(pos)",
     "state.setValue(POWERED, powered)",
