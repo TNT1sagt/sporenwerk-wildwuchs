@@ -63,6 +63,6 @@ build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.37\.0['\"]", build) is not None,
         "artifact must be version 1.37.0")
 readme = read("README.md")
-require("Version 1.37.0" in readme and "Version 1.37.0" in readme,
-        "release notes must preserve the previous 1.37.0 loot/research milestone")
+require("Version 1.37.0" in readme and "Version 1.36.0" in readme,
+        "release notes must preserve the previous 1.36.0 loot/research milestone")
 print("Visible protection volume, shared server range, localized status, no permanent ticker, chunk safety, and 1.37.0 passed.")
