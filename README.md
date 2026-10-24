@@ -1,10 +1,10 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.35.0 — sichtbare und ressourcenschonende Resonanzabwehr.**
+**Aktueller Entwicklungsstand: 1.36.0 — Redstone-gesteuerte Resonanzdämpfung.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.35.0
+## Aktueller Schwerpunkt — 1.36.0
 
 - Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
@@ -12,8 +12,16 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Beleuchtung und Partikel folgen der server-synchronisierten Feldstärke; die Partikel bleiben durch ein festes Budget begrenzt.
 - Ein Scan an der Mutagenfeld-Kontrollstation aktualisiert einen Comparator-Gefahrenwert von 0 bis 15, ohne Welt-Scans bei jedem Redstone-Tick auszulösen.
 - Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
+- Der Resonanzdämpfer braucht jetzt ein Redstone-Signal: AUS bleibt dunkel und schützt nicht, AN leuchtet und unterdrückt Resonanzimpulse.
 
 ---
+
+## Version 1.36.0 — Redstone-gesteuerter Resonanzdämpfer
+
+- **Schutz nur bei Aktivierung:** Der Resonanzdämpfer unterdrückt Kristallpirscher-Impulse erst, wenn er mit Redstone versorgt wird. Ohne Signal bleibt er inaktiv und verbraucht keine unnötige Helligkeit.
+- **Klar lesbarer Zustand:** AUS und AN besitzen eigene Modell-/Texturkombinationen. Der aktive Dämpfer leuchtet stärker; die Oberseite zeigt einen deutlich helleren Resonanzkern.
+- **Technische Gegenwehr mit Kosten:** Spieler müssen Redstone bis zum Dämpfer führen und können Schutzbereiche gezielt zuschalten. Die bestehende chunk-sichere, cooldown-begrenzte Suche bleibt unverändert.
+- **Regressionen:** Tests prüfen Redstone-Eingang bei Platzierung und Signalwechsel, beide Blockstates, aktive Texturen, JAR-Einträge und dass nur eingeschaltete Dämpfer den Impuls verhindern.
 
 ## Version 1.35.0 — Rückmeldung und Abklingzeit für den Resonanzdämpfer
 
