@@ -215,7 +215,15 @@ client_path.write_text(client, encoding="utf-8")
 items_path = SRC / "registry/ModItems.java"
 items = items_path.read_text(encoding="utf-8")
 if "KRISTALLPIRSCHER_SPAWN_EGG" not in items:
-    pattern = r'(?m)^(\s*public static final RegistryObject<Item> DAEMMERLING_SPAWN_EGG\s*=.*?;)\s*
+    lines = items.splitlines()
+    for index, line in enumerate(lines):
+        if "DAEMMERLING_SPAWN_EGG" in line and "public static final RegistryObject<Item>" in line:
+            lines.insert(index + 1, '    public static final RegistryObject<Item> KRISTALLPIRSCHER_SPAWN_EGG = ITEMS.register("kristallpirscher_spawn_egg", () -> new SpawnEggItem(ModEntities.KRISTALLPIRSCHER.get(), 0x142D38, 0x36E0D1, new Item.Properties()));')
+            break
+    else:
+        raise SystemExit("Cannot add Kristallpirscher: Dämmerling spawn egg declaration was not found")
+    items_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
 replace_once(SRC / "registry/ModCreativeTabs.java",
              "output.accept(ModItems.DAEMMERLING_SPAWN_EGG.get());",
              "output.accept(ModItems.DAEMMERLING_SPAWN_EGG.get());\n                        output.accept(ModItems.KRISTALLPIRSCHER_SPAWN_EGG.get());",
