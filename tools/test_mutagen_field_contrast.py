@@ -102,6 +102,6 @@ for tier in range(1, 4):
     require(f"mutagen_boden_strength{tier}" in preview,
             f"art QA preview is missing Mutagen field tier {tier}")
 readme = read("README.md")
-require("Version 1.35.0" in readme and "Version 1.34.0" in readme,
+require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
         "new release notes must preserve the 1.35.0 history")
 print("Distinct Mutagen field textures, lighting, particles, model mapping, preview, and release history passed.")
