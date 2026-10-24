@@ -116,12 +116,6 @@ for import_line in imports:
         scanner = scanner.replace(anchor, anchor + "\n" + import_line, 1)
 scanner_path.write_text(scanner, encoding="utf-8")
 
-replace_once(
-    scanner_path,
-    "int cropSpecies, boolean symbiosisCluster) {}",
-    "int cropSpecies, boolean symbiosisCluster) {}",
-    "AreaSurvey record",
-)
 # If this is the 1.47 schema, append the local-cluster boolean; otherwise fail closed.
 scanner = scanner_path.read_text(encoding="utf-8")
 old_record = "int nearbyPirscher, int cropSpecies) {}"
@@ -159,7 +153,9 @@ crop_probe_addition = """                    int cropKind = state.is(ModBlocks.F
                             : state.is(ModBlocks.FILTERMOOS.get()) ? 4 : 0;
                     if (cropKind > 0) {
                         cropKindsByPosition.put(cursor.asLong(), cropKind);
-                        if (state.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)
+                        if (state.getBlock() instanceof AbstractSporeCropBlock crop
+                                && crop.isMaxAge(state)
+                                && state.hasProperty(AbstractSporeCropBlock.MUTAGEN_LEVEL)
                                 && state.getValue(AbstractSporeCropBlock.MUTAGEN_LEVEL) >= 2
                                 && Math.abs(cursor.getX() - origin.getX())
                                         <= AREA_SCAN_RADIUS - MutagenSymbiosis.HORIZONTAL_RADIUS
@@ -246,11 +242,11 @@ replace_once(scanner_path, report_anchor, report_addition, "local symbiosis clus
 for locale, entries in {
     "de_de.json": {
         "message.sporenwerk.scanner.survey.symbiosis_found": "Lokaler Symbiose-Cluster bestätigt: Mindestens drei Arten wachsen dicht beieinander auf Mutagenboden der Stufe II/III.",
-        "message.sporenwerk.scanner.survey.symbiosis_not_confirmed": "Kein passender Symbiose-Cluster im vollständig erfassten Innenbereich bestätigt."
+        "message.sporenwerk.scanner.survey.symbiosis_not_confirmed": "Kein passender Symbiose-Cluster im gescannten, geladenen Innenbereich bestätigt."
     },
     "en_us.json": {
         "message.sporenwerk.scanner.survey.symbiosis_found": "Local symbiosis cluster confirmed: at least three species grow close together on tier-II/III Mutagen soil.",
-        "message.sporenwerk.scanner.survey.symbiosis_not_confirmed": "No qualifying symbiosis cluster confirmed within the fully sampled interior."
+        "message.sporenwerk.scanner.survey.symbiosis_not_confirmed": "No qualifying symbiosis cluster confirmed in the scanned, loaded interior."
     }
 }.items():
     path = ASSETS / "lang" / locale
@@ -293,7 +289,7 @@ section = """## Version 1.48.0 — Bioreaktor-Kreislauf und reaktive Sporenabweh
 
 - **Neue Produktionsoption:** Ein Symbiosemyzel wird im Biomasse-Bioreaktor für 180 FE in ein Mutagenextrakt umgewandelt. Pufferplatz und Energie werden vor dem Verbrauch des Eingangs gesichert; das Item wird erst nach erfolgreicher Ausgabe entfernt.
 - **Gegnerabwehr mit sichtbarer Rückmeldung:** Ein powered Sporenabwehrsender markiert einen erstmals abgewehrten Dämmerling mit einem einzelnen Sporenpartikelausbruch. Der zehn-Tick-Refresh verlängert den Schutzzeitraum, ohne Partikel in jedem Tick erneut zu spammen.
-- **Lokaler Cluster statt bloßer Gesamtzahl:** Der Feldscanner bestätigt einen passenden Dreier-Cluster nur dann, wenn drei Arten in der gemeinsamen begrenzten Nachbarschaft eines mindestens auf Stufe II mutierten Erntepunkts gefunden werden. Er wertet dafür die bereits geladenen Scan-Daten aus, ohne weitere Weltblöcke anzufragen.
+- **Lokaler Cluster statt bloßer Gesamtzahl:** Der Feldscanner bestätigt einen passenden Dreier-Cluster nur dann, wenn drei Arten in der gemeinsamen begrenzten Nachbarschaft einer ausgereiften Nutzpflanze der Mutagenstufe II/III gefunden werden. Er wertet dafür die bereits geladenen Scan-Daten aus, ohne weitere Weltblöcke anzufragen.
 - **Spielleistung und Sicherheit:** Die Clusterzentren liegen vollständig innerhalb des gescannten Innenbereichs; ungeladene Chunks werden weiter übersprungen. Keine neue Tick-Schleife und keine erzwungene Chunk-Ladung.
 - **Qualitätssicherung:** Regressionen prüfen die Bioreaktor-Transaktion, einmaliges Ward-Feedback, lokale Clusterzählung, Texte sowie Forge-Build, installierbare JAR und Server-Smoke-Test.
 
