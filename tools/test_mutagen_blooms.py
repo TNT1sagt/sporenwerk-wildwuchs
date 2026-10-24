@@ -18,6 +18,9 @@ for token in ("mutagenStrengthAt(level, origin) < 3", "claimBloom(origin, level.
               "new ItemStack(ModItems.MUTAGENE_SPOREN.get(), count)", "level.addFreshEntity(new ItemEntity(level, x, y, z, spores))",
               "int count = random.nextFloat() < 0.20F ? 2 : 1",
               "releaseHarvestableSpores(ServerLevel level, BlockPos origin, RandomSource random)",
+              "releaseCondensedCore(level, origin, random)", "random.nextFloat() >= 0.12F",
+              "new ItemStack(ModItems.MUTAGENKERNKRISTALL.get())",
+              "releaseCondensedCore(ServerLevel level, BlockPos origin, RandomSource random)",
               "MutationField.hasAnchor(level, player.blockPosition())",
               "mask.is(ModItems.SPORENFILTERMASKE.get())", "mask.hurtAndBreak(1, player",
               "InfectionState.setLevel(player, InfectionState.level(player) + 1)",
@@ -29,6 +32,13 @@ for token in ("mutagenStrengthAt(level, origin) < 3", "claimBloom(origin, level.
 node = read("src/main/java/de/sporenwerk/block/MutationNodeBlock.java")
 require("MutagenBloom.tryTrigger(level, pos, random)" in node,
         "scheduled active-node tick must invoke the event")
+items = read("src/main/java/de/sporenwerk/registry/ModItems.java")
+creative = read("src/main/java/de/sporenwerk/registry/ModCreativeTabs.java")
+require("MUTAGENKERNKRISTALL" in items and 'register("mutagenkernkristall"' in items
+        and "MutagenCoreCrystalItem" in items,
+        "rare bloom core must be registered as a dedicated item")
+require("output.accept(ModItems.MUTAGENKERNKRISTALL.get())" in creative,
+        "rare bloom core must be visible in the creative catalogue")
 advancement = json.loads(read("src/main/resources/data/sporenwerk/advancements/first_mutagen_bloom.json"))
 require(advancement["parent"] == "sporenwerk:mutagen_laboratory"
         and advancement["criteria"]["witness_bloom"]["trigger"] == "minecraft:impossible"
@@ -49,7 +59,7 @@ for locale in ("de_de.json", "en_us.json"):
 require("Version 1.15.0" in read("README.md"), "release notes missing 1.15.0")
 build = read("build.gradle")
 version_match = re.search(r"version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)['\"]", build)
-require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 21, 0),
+require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 22, 0),
         "produced artifact must include the 1.21.0 first-bloom milestone")
 
 entity = read("src/main/java/de/sporenwerk/entity/DaemmerlingEntity.java")
