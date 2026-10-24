@@ -1,10 +1,10 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.34.0 — baubare Resonanzdämpfung für Hochmutagen-Anlagen.**
+**Aktueller Entwicklungsstand: 1.35.0 — sichtbare und ressourcenschonende Resonanzabwehr.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.34.0
+## Aktueller Schwerpunkt — 1.35.0
 
 - Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
@@ -14,6 +14,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
 
 ---
+
+## Version 1.35.0 — Rückmeldung und Abklingzeit für den Resonanzdämpfer
+
+- **Sichtbar abgewehrt:** Blockiert ein Dämpfer einen Resonanzimpuls, steigen sichtbare Partikel am Gerät auf und ein kurzer Amethystton bestätigt die Abwehr.
+- **Keine Scan-Schleife:** Ein bereits gedämpfter Angriffsversuch verbraucht sofort die normale 200-Tick-Abklingzeit. Damit wird der Schutzbereich nicht in jedem Tick erneut vollständig durchsucht.
+- **Reaktiv platzierbar:** Wird ein Dämpfer während der 30-Tick-Aufladung platziert, bricht er den Impuls beim Auslösen ab, gibt Feedback und startet die Abklingzeit.
+- **Chunk-sicher:** Nur geladene Blöcke werden abgefragt. Die Suche läuft ausschließlich beim Beginn/Ende eines Impulses und nie als kontinuierliche Block-Tick-Schleife.
 
 ## Version 1.34.0 — Mutagen-Resonanzdämpfer: technische Gegenwehr
 
