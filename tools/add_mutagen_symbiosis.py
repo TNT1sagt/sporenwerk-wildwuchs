@@ -365,12 +365,26 @@ if headlines:
     readme = readme.replace(headlines[0], headline, 1)
 else:
     readme = headline + "\n\n" + readme.lstrip()
-focus = "## Aktueller Schwerpunkt — 1.46.0"
-focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
-if focus_lines:
-    readme = readme.replace(focus_lines[0], focus, 1)
+old_focus = """## Aktueller Schwerpunkt — 1.45.0
+
+- Der Feldscanner analysiert sowohl einzelne Blöcke als auch einen lokalen Bereich über Mutagenboden, mutierte Pflanzen, Sporenabwehr, Dämpferladungen, Sirenen, Relais und nahe Kristallpirscher.
+- Rotwurzel-Konzentrat heilt zwei Herzen und entfernt Gift sowie Resonanzverlangsamung; eine eigene Rückmeldung nennt die tatsächlich entfernten Effekte.
+- Mutagenblüten haben zusätzlich zu den bestehenden Partikeln und Belohnungen ein akustisches Ereignissignal.
+- Der Bereichsscan bleibt serverseitig, einmalig pro Interaktion, auf 17×9×17 Blöcke begrenzt und überspringt ungeladene Chunks.
+- Die Release-Pipeline prüft Regressionen, übersetzte Texte, Forge-Build, installierbare JAR und den dedizierten Serverstart."""
+new_focus = """## Aktueller Schwerpunkt — 1.46.0
+
+- Artenvielfalt wird zur Spielmechanik: Drei verschiedene Sporenwerk-Pflanzen in einem begrenzten Cluster können unter Mutagenstufe II/III Symbiosemyzel erzeugen.
+- Manuelle Ernte und Feldsammler verwenden dieselbe Regel; der Maschinenpuffer reserviert den Bonusfund, bevor Energie oder Pflanzenzustand verändert werden.
+- Symbiosemyzel verbindet Landwirtschaft und Abwehrtechnik, indem es bei Resonanzdämpfern eine einzelne Ladung wiederherstellt und gespeicherte Relais-Signale aktualisieren lässt.
+- Forschungsfortschritt, Tooltipps, Item-Textur, DE/EN-Texte und Vorschau machen die neue Schleife auffindbar und verständlich.
+- Die Release-Pipeline prüft Artenzählung, Feldstärkeschwellen, atomare Ausgabe, Dämpfer- und Relaisverhalten, Forge-Build, JAR und dedizierten Serverstart."""
+if old_focus in readme:
+    readme = readme.replace(old_focus, new_focus, 1)
 else:
-    readme = readme.replace(headline, headline + "\n\n" + focus, 1)
+    focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
+    if focus_lines:
+        readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.46.0", 1)
 readme_path.write_text(readme, encoding="utf-8")
 
 print("Sporenwerk 1.46.0 generated: biodiversity-based symbiosis resource, shared manual/automated harvest, and one-charge dampener refill.")
