@@ -69,10 +69,10 @@ for locale in ("de_de.json", "en_us.json"):
             locale + " must explain the hazard output")
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.30\.0['\"]", build) is not None,
-        "artifact must be version 1.30.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.31\.0['\"]", build) is not None,
+        "artifact must be version 1.31.0")
 readme = read("README.md")
-require("Version 1.30.0" in readme and "Version 1.29.0" in readme,
-        "release notes must add 1.30.0 and preserve 1.29.0")
+require("Version 1.31.0" in readme and "Version 1.30.0" in readme,
+        "release notes must add 1.31.0 and preserve 1.30.0")
 
 print("Mutagen station comparator output, cached scan behavior, all blockstate values, locales, and version passed.")
