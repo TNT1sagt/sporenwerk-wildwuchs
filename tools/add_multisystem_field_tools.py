@@ -266,6 +266,17 @@ medicine = medicine_path.read_text(encoding="utf-8")
 add_import(medicine_path, "import net.minecraft.world.item.Item;", 
            "import net.minecraft.world.effect.MobEffects;", "root concentrate effects import")
 medicine = medicine_path.read_text(encoding="utf-8")
+old_full_health = """        if (player.getHealth() >= player.getMaxHealth()) {
+            return InteractionResultHolder.fail(stack);
+        }"""
+new_full_health = """        if (player.getHealth() >= player.getMaxHealth()
+                && !player.hasEffect(MobEffects.POISON)
+                && !player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+            return InteractionResultHolder.fail(stack);
+        }"""
+if "&& !player.hasEffect(MobEffects.POISON)" not in medicine:
+    require(old_full_health in medicine, "could not locate Rotwurzel full-health gate")
+    medicine = medicine.replace(old_full_health, new_full_health, 1)
 old_heal = "        player.heal(4.0F);"
 new_heal = """        boolean curedPoison = player.removeEffect(MobEffects.POISON);
         boolean curedSlowdown = player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
