@@ -70,13 +70,10 @@ if "private static boolean isProtectedByPoweredWard(" not in bloom:
     require(anchor in bloom, "could not locate bloom exposure handler")
     bloom = bloom.replace(anchor, helper + anchor, 1)
 
-old_exposure = """            awardBloomDiscovery(player);
-            player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.bloom")
-                    .withStyle(ChatFormatting.LIGHT_PURPLE), false);
-            ItemStack mask = player.getItemBySlot(EquipmentSlot.HEAD);"""
-new_exposure = """            // The discovery still counts: containment prevents infection, not observation.
-            awardBloomDiscovery(player);
-            if (isProtectedByPoweredWard(level, player.blockPosition())) {
+# Inject the ward interception immediately after the discovery award. This anchor is
+# intentionally smaller than the surrounding UI/mask block, which older patch revisions
+# may format differently.
+ward_interception = """            if (isProtectedByPoweredWard(level, player.blockPosition())) {
                 player.displayClientMessage(
                         Component.translatable("message.sporenwerk.mutagen.bloom_warded")
                                 .withStyle(ChatFormatting.AQUA), false);
@@ -86,12 +83,13 @@ new_exposure = """            // The discovery still counts: containment prevent
                 continue;
             }
 
-            player.displayClientMessage(Component.translatable("message.sporenwerk.mutagen.bloom")
-                    .withStyle(ChatFormatting.LIGHT_PURPLE), false);
-            ItemStack mask = player.getItemBySlot(EquipmentSlot.HEAD);"""
-if new_exposure not in bloom:
-    require(old_exposure in bloom, "could not locate exact bloom exposure sequence")
-    bloom = bloom.replace(old_exposure, new_exposure, 1)
+"""
+if ward_interception not in bloom:
+    award_anchor = "            awardBloomDiscovery(player);\n"
+    require(award_anchor in bloom, "could not locate bloom discovery award")
+    bloom = bloom.replace(award_anchor, award_anchor + ward_interception, 1)
+
+
 
 # Keep the protection query constrained and the original mask/anchor systems intact.
 for token in (
