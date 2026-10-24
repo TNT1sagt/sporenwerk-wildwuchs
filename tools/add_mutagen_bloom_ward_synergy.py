@@ -162,13 +162,13 @@ if "## Version 1.40.0 — Mutagenblüte und Sporenabwehr im Zusammenspiel" not i
     require(idx >= 0, "could not find 1.39.0 release notes")
     readme = readme[:idx] + section + readme[idx:]
 
-readme, headline_count = re.subn(
-    r"(?m)^\*\*Aktueller Entwicklungsstand:.*\*\*$",
+headline_lines = [line for line in readme.splitlines() if "Aktueller Entwicklungsstand:" in line]
+require(len(headline_lines) >= 1, "could not locate the current development headline")
+readme = readme.replace(
+    headline_lines[0],
     "**Aktueller Entwicklungsstand: 1.40.0 — Mutagenblüten-Abwehr über den Redstone-Sporenabwehrsender.**",
-    readme,
-    count=1,
+    1,
 )
-require(headline_count == 1, "could not update the current development headline")
 readme, focus_count = re.subn(
     r"(?m)^## Aktueller Schwerpunkt — [0-9]+\.[0-9]+\.[0-9]+$",
     "## Aktueller Schwerpunkt — 1.40.0",
