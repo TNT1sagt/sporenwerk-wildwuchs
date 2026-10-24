@@ -1,10 +1,10 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.30.0 — gestufte Mutagen-Warnsirene mit Alarm-Eskalation.**
+**Aktueller Entwicklungsstand: 1.31.0 — gespeicherte Mutagen-Alarme mit Spieler-Quittierung.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.30.0
+## Aktueller Schwerpunkt — 1.31.0
 
 - Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
@@ -14,6 +14,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
 
 ---
+
+## Version 1.31.0 — Quittierbare, gespeicherte Sirenenalarme
+
+- **Spitzenwert bleibt sichtbar:** Die Sirene speichert den höchsten empfangenen Redstone-Wert. Fällt das Signal von kritisch auf einen niedrigeren Wert oder verschwindet es ganz, verschwindet der Alarm nicht unbemerkt.
+- **Spieler-Quittierung:** Rechtsklick quittiert den gespeicherten Spitzenwert und synchronisiert die Anzeige mit der aktuell anliegenden Redstone-Stärke. Liegt weiterhin Gefahr an, bleibt sie sichtbar; liegt kein Signal an, wird die Sirene zurückgesetzt.
+- **Keine zusätzliche Audio-Last:** Glockentöne werden nur beim Wechsel in eine höhere Gefahrenstufe abgespielt. Das Fallen des Signals und normale Updates bleiben stumm.
+- **Qualitätssicherung:** Regressionstests prüfen Latch-Verhalten, manuelle Quittierung, alle 16 Blockstates, Texturen, Übersetzungen und den vollständigen Forge-Build samt Server-Smoke-Test.
 
 ## Version 1.30.0 — Eskalierende Mutagen-Warnsirene
 
