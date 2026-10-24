@@ -10,7 +10,9 @@ version_match = re.search(r"version\s*=\s*['\"](\d+)\.(\d+)\.(\d+)['\"]", versio
 require(version_match is not None and tuple(int(part) for part in version_match.groups()) >= (1, 13, 0),
         "build must remain on the visible-field milestone or newer")
 blocks = read("src/main/java/de/sporenwerk/registry/ModBlocks.java")
-require("MUTAGEN_BODEN" in blocks and ".lightLevel(state -> 4)" in blocks, "infected terrain must have a low glow")
+require("MUTAGEN_BODEN" in blocks and ".lightLevel(state -> switch (state.getValue(de.sporenwerk.block.InfestedTerrainBlock.MUTAGEN_LEVEL))" in blocks, "infected terrain light must follow its synchronized tier")
+for token in ("case 1 -> 5", "case 2 -> 9", "case 3 -> 13", "default -> 0"):
+    require(token in blocks, "dynamic terrain lighting missing " + token)
 terrain = read("src/main/java/de/sporenwerk/block/InfestedTerrainBlock.java")
 for token in ("IntegerProperty MUTAGEN_LEVEL", "IntegerProperty.create(\"mutagen_level\", 0, 3)", "registerDefaultState(defaultBlockState().setValue(MUTAGEN_LEVEL, 0))", "MutationField.mutagenStrengthAt(level, pos)", "state.setValue(MUTAGEN_LEVEL, strength)"):
     require(token in terrain, "terrain strength state missing " + token)
@@ -25,7 +27,7 @@ for tier in range(4):
         require((root / f"src/main/resources/assets/sporenwerk/textures/block/mutagen_boden_strength{tier}.png").is_file(),
                 f"terrain visual tier {tier} texture is missing")
 visual = read("src/main/java/de/sporenwerk/client/MutagenFieldVisuals.java")
-for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.SOUL_FIRE_FLAME", "ParticleTypes.PORTAL", "ParticleTypes.END_ROD", "mutagenLevel >= 2", "mutagenLevel >= 3", "0.42F", "0.16F", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 10L", "int particleBudget = 24", "particleBudget--", "dy = -2; dy <= 2 && particleBudget > 0"):
+for token in ("@Mod.EventBusSubscriber", "TickEvent.LevelTickEvent", "ModBlocks.MUTAGEN_BODEN.get()", "ParticleTypes.WARPED_SPORE", "ParticleTypes.SOUL_FIRE_FLAME", "ParticleTypes.PORTAL", "ParticleTypes.END_ROD", "mutagenLevel >= 2", "mutagenLevel >= 3", "sporeChance", "0.30F", "0.24F", "fieldTier >= 2", "fieldTier >= 3", "AbstractSporeCropBlock.MUTAGEN_LEVEL", "level.getGameTime() % 10L", "int particleBudget = 24", "particleBudget--", "dy = -2; dy <= 2 && particleBudget > 0"):
     require(token in visual, "client visuals missing " + token)
 scanner = read("src/main/java/de/sporenwerk/item/FeldscannerItem.java")
 for token in ("public InteractionResultHolder<ItemStack> use(Level level", "MutationNodeData.get(serverLevel)", "MutationField.mutagenStrengthAt(serverLevel, target)", "infectedTerrain++", "activeTerrain++", "tier1Plants++", "tier2Plants++", "tier3Plants++", "anchors++", "message.sporenwerk.scanner.survey", "message.sporenwerk.scanner.survey_detail", "message.sporenwerk.scanner.advice."):
