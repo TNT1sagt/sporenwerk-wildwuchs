@@ -44,7 +44,7 @@ for token in (
     "if (inputPowered == wasPowered) return;",
     "level.setBlock(pos, state.setValue(POWERED, inputPowered), 3)",
     "if (inputPowered)",
-    "SoundEvents.NOTE_BLOCK_BELL",
+    "SoundEvents.NOTE_BLOCK_BELL.value()",
     "SoundSource.BLOCKS",
 ):
     require(token in siren, "missing edge-triggered siren behavior: " + token)
