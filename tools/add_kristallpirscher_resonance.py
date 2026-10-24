@@ -83,7 +83,7 @@ public final class KristallpirscherEntity extends Zombie {
 
         if (resonanceWindup <= 0) {
             resonanceWindup = RESONANCE_WINDUP_TICKS;
-            level().playSound(null, blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME.value(),
+            level().playSound(null, blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME,
                     SoundSource.HOSTILE, 0.75F, 0.68F);
         }
 
@@ -99,7 +99,7 @@ public final class KristallpirscherEntity extends Zombie {
 
         serverLevel.sendParticles(ParticleTypes.CRIT,
                 getX(), getY() + 0.65D, getZ(), 24, 0.7D, 0.25D, 0.7D, 0.07D);
-        level().playSound(null, blockPosition(), SoundEvents.BEACON_ACTIVATE.value(),
+        level().playSound(null, blockPosition(), SoundEvents.BEACON_ACTIVATE,
                 SoundSource.HOSTILE, 0.9F, 0.72F);
 
         // Recheck proximity and equipment at release: dodging or equipping a mask works.
