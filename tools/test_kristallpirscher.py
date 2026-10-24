@@ -62,6 +62,8 @@ require("textures/entity/kristallpirscher.png" in renderer
 require('register("kristallpirscher_spawn_egg"' in items
         and "output.accept(ModItems.KRISTALLPIRSCHER_SPAWN_EGG.get())" in creative,
         "spawn egg must be registered and reachable in the creative tab")
+require("DeferredSpawnEggItem(ModEntities.KRISTALLPIRSCHER" in items,
+        "spawn egg must lazily resolve the entity type after registries are bound")
 
 biome = json.loads((RES / "data/sporenwerk/forge/biome_modifier/kristallpirscher.json").read_text(encoding="utf-8"))
 require(biome["type"] == "forge:add_spawns"
