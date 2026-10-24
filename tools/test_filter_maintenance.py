@@ -155,6 +155,7 @@ for locale in ("de_de.json", "en_us.json"):
         "tooltip.sporenwerk.mutagenfeld_stabilisator.1",
         "tooltip.sporenwerk.mutagenfeld_stabilisator.2",
         "message.sporenwerk.mutagen.stabilized",
+        "message.sporenwerk.mutagen.network_stabilized",
         "advancements.sporenwerk.mutagen_stabilizer.title",
         "advancements.sporenwerk.mutagen_stabilizer.description",
         "block.sporenwerk.mutagenfeld_stabilisator_verstaerkt",
@@ -255,25 +256,32 @@ require(advanced_item_model["parent"] == "sporenwerk:block/mutagenfeld_stabilisa
         "high-capacity stabilizer item model must use its block model")
 bloom = read("src/main/java/de/sporenwerk/infection/MutagenBloom.java")
 stabilizer_java = read("src/main/java/de/sporenwerk/block/MutagenFieldStabilizerBlock.java")
-require("hasNearbyStabilizer(level, player.blockPosition())" in bloom
-        and "instanceof MutagenFieldStabilizerBlock stabilizer" in bloom
-        and "stabilizer.protectionRadius()" in bloom
-        and "MAX_RADIUS / 2" in bloom
-        and "MAX_RADIUS; dx <= MutagenFieldStabilizerBlock.MAX_RADIUS" in bloom
+require("stabilizerProtectionLevel(level, player.blockPosition())" in bloom
+        and "hasLinkedStabilizer(level, probe)" in bloom
+        and "NETWORK_LINK_RADIUS" in bloom
+        and "NETWORK_RADIUS_BONUS" in bloom
+        and "MAX_VERTICAL_RADIUS" in bloom
         and "level.hasChunkAt(probe)" in bloom
-        and "message.sporenwerk.mutagen.stabilized" in bloom,
-        "stabilizer scan must apply the actual placed tier radius without loading chunks")
+        and "message.sporenwerk.mutagen.network_stabilized" in bloom
+        and "protectionLevel > 1" in bloom,
+        "linked stabilizer networks must extend protection and report network status without loading chunks")
 require("STANDARD_RADIUS = 4" in stabilizer_java
         and "REINFORCED_RADIUS = 8" in stabilizer_java
         and "ADVANCED_RADIUS = 12" in stabilizer_java
-        and "MAX_RADIUS = ADVANCED_RADIUS" in stabilizer_java
+        and "NETWORK_LINK_RADIUS = 8" in stabilizer_java
+        and "NETWORK_VERTICAL_LINK_RADIUS = 4" in stabilizer_java
+        and "NETWORK_RADIUS_BONUS = 2" in stabilizer_java
+        and "NETWORK_VERTICAL_BONUS = 1" in stabilizer_java
+        and "MAX_RADIUS = ADVANCED_RADIUS + NETWORK_RADIUS_BONUS" in stabilizer_java
+        and "MAX_VERTICAL_RADIUS = MAX_RADIUS / 2 + NETWORK_VERTICAL_BONUS" in stabilizer_java
         and "private final int protectionRadius" in stabilizer_java
         and "public int protectionRadius()" in stabilizer_java,
-        "stabilizer tiers need separate immutable protection radii")
+        "stabilizer tiers and bounded network bonuses must be explicit and immutable")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.24\.0['\"]", build) is not None,
-        "root Gradle project version must be 1.24.0")
-require("Version 1.24.0" in read("README.md"), "1.24.0 release notes are missing")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.25\.0['\"]", build) is not None,
+        "root Gradle project version must be 1.25.0")
+require("Version 1.25.0" in read("README.md"), "1.25.0 release notes are missing")
+require("Version 1.24.0" in read("README.md"), "previous 1.24.0 release notes must remain in history")
 require("Version 1.23.0" in read("README.md"), "previous 1.23.0 release notes must remain in history")
 require("Version 1.22.0" in read("README.md"), "previous 1.22.0 release notes must remain in history")
 preview = read("tools/make_art_preview.py")
@@ -282,4 +290,4 @@ require("sporenfilterwartungstisch_top" in preview
         and "mutagenfeld_stabilisator_verstaerkt_top" in preview
         and "mutagenfeld_stabilisator_hochentwickelt_top" in preview,
         "art preview must show the new maintenance assets")
-print("Filter bench, three cartridge qualities, upgrade recipes, block models/textures, tooltips and locales passed.")
+print("Filter bench, three stabilizer tiers, linked network shielding, upgrade recipes, block models/textures, tooltips and locales passed.")
