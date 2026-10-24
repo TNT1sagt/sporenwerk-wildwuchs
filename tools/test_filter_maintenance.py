@@ -49,6 +49,13 @@ require("MUTAGENFELD_STABILISATOR_VERSTAERKT" in blocks
 require('ModItems.ITEMS.register("mutagenfeld_stabilisator_verstaerkt"' in blocks
         and "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR_VERSTAERKT.get())" in creative,
         "reinforced stabilizer needs a placeable item and creative entry")
+require("MUTAGENFELD_STABILISATOR_HOCHENTWICKELT" in blocks
+        and 'register("mutagenfeld_stabilisator_hochentwickelt"' in blocks
+        and "MutagenFieldStabilizerBlock.ADVANCED_RADIUS" in blocks,
+        "high-capacity field stabilizer must be registered as a third tier")
+require('ModItems.ITEMS.register("mutagenfeld_stabilisator_hochentwickelt"' in blocks
+        and "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR_HOCHENTWICKELT.get())" in creative,
+        "high-capacity stabilizer needs a placeable item and creative entry")
 require('ModItems.ITEMS.register("mutagenfeld_stabilisator"' in blocks
         and "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get())" in creative,
         "field stabilizer needs a placeable BlockItem and creative catalogue entry")
@@ -95,6 +102,9 @@ recipes = {
     "mutagenfeld_stabilisator_verstaerkt.json": ("sporenwerk:mutagenfeld_stabilisator_verstaerkt",
                                                   ("sporenwerk:mutagenfeld_stabilisator", "sporenwerk:mutagenkernkristall",
                                                    "minecraft:amethyst_shard", "minecraft:copper_ingot", "minecraft:redstone")),
+    "mutagenfeld_stabilisator_hochentwickelt.json": ("sporenwerk:mutagenfeld_stabilisator_hochentwickelt",
+                                                      ("sporenwerk:mutagenfeld_stabilisator_verstaerkt", "minecraft:netherite_ingot",
+                                                       "minecraft:ender_eye", "sporenwerk:mutagenkernkristall", "sporenwerk:mutagenextrakt")),
 }
 for filename, (output, ingredients) in recipes.items():
     recipe = json.loads((res / "data/sporenwerk/recipes" / filename).read_text(encoding="utf-8"))
@@ -116,7 +126,8 @@ require(bench_item_model["parent"] == "sporenwerk:block/sporenfilterwartungstisc
         "bench item model must use the block model")
 for name in ("sporenfilterwartungstisch_top", "sporenfilterwartungstisch_side",
              "mutagenfeld_stabilisator_top", "mutagenfeld_stabilisator_side",
-             "mutagenfeld_stabilisator_verstaerkt_top", "mutagenfeld_stabilisator_verstaerkt_side"):
+             "mutagenfeld_stabilisator_verstaerkt_top", "mutagenfeld_stabilisator_verstaerkt_side",
+             "mutagenfeld_stabilisator_hochentwickelt_top", "mutagenfeld_stabilisator_hochentwickelt_side"):
     with Image.open(assets / f"textures/block/{name}.png") as image:
         rgba = image.convert("RGBA")
         require(rgba.size == (16, 16), name + " must be 16x16")
@@ -152,6 +163,12 @@ for locale in ("de_de.json", "en_us.json"):
         "tooltip.sporenwerk.mutagenfeld_stabilisator_verstaerkt.2",
         "advancements.sporenwerk.reinforced_mutagen_stabilizer.title",
         "advancements.sporenwerk.reinforced_mutagen_stabilizer.description",
+        "block.sporenwerk.mutagenfeld_stabilisator_hochentwickelt",
+        "item.sporenwerk.mutagenfeld_stabilisator_hochentwickelt",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator_hochentwickelt.1",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator_hochentwickelt.2",
+        "advancements.sporenwerk.advanced_mutagen_stabilizer.title",
+        "advancements.sporenwerk.advanced_mutagen_stabilizer.description",
         "tooltip.sporenwerk.sporenfiltereinsatz.quality.basic",
         "tooltip.sporenwerk.sporenfiltereinsatz.quality.reinforced",
         "tooltip.sporenwerk.sporenfiltereinsatz.quality.mutagen",
@@ -200,6 +217,12 @@ require(reinforced_unlock["parent"] == "sporenwerk:recipes/misc/mutagenfeld_stab
         and reinforced_unlock["criteria"]["acquire_stabilizer"]["conditions"]["items"][0]["items"] == ["sporenwerk:mutagenfeld_stabilisator"]
         and reinforced_unlock["rewards"]["recipes"] == ["sporenwerk:mutagenfeld_stabilisator_verstaerkt"],
         "reinforced recipe must unlock after obtaining the base stabilizer")
+advanced_unlock = json.loads(read("src/main/resources/data/sporenwerk/advancements/recipes/misc/mutagenfeld_stabilisator_hochentwickelt.json"))
+require(advanced_unlock["parent"] == "sporenwerk:recipes/misc/mutagenfeld_stabilisator_verstaerkt"
+        and advanced_unlock["criteria"]["acquire_reinforced_stabilizer"]["trigger"] == "minecraft:inventory_changed"
+        and advanced_unlock["criteria"]["acquire_reinforced_stabilizer"]["conditions"]["items"][0]["items"] == ["sporenwerk:mutagenfeld_stabilisator_verstaerkt"]
+        and advanced_unlock["rewards"]["recipes"] == ["sporenwerk:mutagenfeld_stabilisator_hochentwickelt"],
+        "advanced recipe must unlock only after obtaining the reinforced stabilizer")
 stabilizer_state = json.loads((assets / "blockstates/mutagenfeld_stabilisator.json").read_text(encoding="utf-8"))
 require(stabilizer_state["variants"][""]["model"] == "sporenwerk:block/mutagenfeld_stabilisator",
         "stabilizer blockstate must point to the registered model")
@@ -219,28 +242,44 @@ require(reinforced_model["parent"] == "minecraft:block/cube_column"
 reinforced_item_model = json.loads((assets / "models/item/mutagenfeld_stabilisator_verstaerkt.json").read_text(encoding="utf-8"))
 require(reinforced_item_model["parent"] == "sporenwerk:block/mutagenfeld_stabilisator_verstaerkt",
         "reinforced stabilizer item model must use its block model")
+advanced_state = json.loads((assets / "blockstates/mutagenfeld_stabilisator_hochentwickelt.json").read_text(encoding="utf-8"))
+require(advanced_state["variants"][""]["model"] == "sporenwerk:block/mutagenfeld_stabilisator_hochentwickelt",
+        "high-capacity stabilizer blockstate must point to its model")
+advanced_model = json.loads((assets / "models/block/mutagenfeld_stabilisator_hochentwickelt.json").read_text(encoding="utf-8"))
+require(advanced_model["parent"] == "minecraft:block/cube_column"
+        and advanced_model["textures"]["end"] == "sporenwerk:block/mutagenfeld_stabilisator_hochentwickelt_top"
+        and advanced_model["textures"]["side"] == "sporenwerk:block/mutagenfeld_stabilisator_hochentwickelt_side",
+        "high-capacity stabilizer needs its own valid top and side textures")
+advanced_item_model = json.loads((assets / "models/item/mutagenfeld_stabilisator_hochentwickelt.json").read_text(encoding="utf-8"))
+require(advanced_item_model["parent"] == "sporenwerk:block/mutagenfeld_stabilisator_hochentwickelt",
+        "high-capacity stabilizer item model must use its block model")
 bloom = read("src/main/java/de/sporenwerk/infection/MutagenBloom.java")
 stabilizer_java = read("src/main/java/de/sporenwerk/block/MutagenFieldStabilizerBlock.java")
 require("hasNearbyStabilizer(level, player.blockPosition())" in bloom
         and "instanceof MutagenFieldStabilizerBlock stabilizer" in bloom
         and "stabilizer.protectionRadius()" in bloom
-        and "REINFORCED_RADIUS / 2" in bloom
+        and "MAX_RADIUS / 2" in bloom
+        and "MAX_RADIUS; dx <= MutagenFieldStabilizerBlock.MAX_RADIUS" in bloom
         and "level.hasChunkAt(probe)" in bloom
         and "message.sporenwerk.mutagen.stabilized" in bloom,
         "stabilizer scan must apply the actual placed tier radius without loading chunks")
 require("STANDARD_RADIUS = 4" in stabilizer_java
         and "REINFORCED_RADIUS = 8" in stabilizer_java
+        and "ADVANCED_RADIUS = 12" in stabilizer_java
+        and "MAX_RADIUS = ADVANCED_RADIUS" in stabilizer_java
         and "private final int protectionRadius" in stabilizer_java
         and "public int protectionRadius()" in stabilizer_java,
         "stabilizer tiers need separate immutable protection radii")
 build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.23\.0['\"]", build) is not None,
-        "root Gradle project version must be 1.23.0")
-require("Version 1.23.0" in read("README.md"), "1.23.0 release notes are missing")
+        "root Gradle project version must be 1.24.0")
+require("Version 1.24.0" in read("README.md"), "1.24.0 release notes are missing")
+require("Version 1.23.0" in read("README.md"), "previous 1.23.0 release notes must remain in history")
 require("Version 1.22.0" in read("README.md"), "previous 1.22.0 release notes must remain in history")
 preview = read("tools/make_art_preview.py")
 require("sporenfilterwartungstisch_top" in preview
         and "sporenfiltereinsatz_mutagen" in preview
-        and "mutagenfeld_stabilisator_verstaerkt_top" in preview,
+        and "mutagenfeld_stabilisator_verstaerkt_top" in preview
+        and "mutagenfeld_stabilisator_hochentwickelt_top" in preview,
         "art preview must show the new maintenance assets")
 print("Filter bench, three cartridge qualities, upgrade recipes, block models/textures, tooltips and locales passed.")
