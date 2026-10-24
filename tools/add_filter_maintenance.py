@@ -47,6 +47,11 @@ items_path.write_text(items, encoding="utf-8")
 # Upgrade the cartridge implementation without changing the already-tested hand-use fallback.
 cartridge_path = "src/main/java/de/sporenwerk/item/SporeFilterCartridgeItem.java"
 cartridge = read(cartridge_path)
+if "import net.minecraft.advancements.Advancement;" not in cartridge:
+    cartridge = cartridge.replace(
+        "import de.sporenwerk.registry.ModItems;",
+        "import de.sporenwerk.registry.ModItems;\nimport net.minecraft.advancements.Advancement;\nimport net.minecraft.resources.ResourceLocation;\nimport net.minecraft.server.level.ServerPlayer;"
+    )
 filter_test_path = ROOT / "tools/test_spore_filter.py"
 filter_test = filter_test_path.read_text(encoding="utf-8")
 old_test_token = '"mask.setDamageValue(Math.max(0, before - REPAIR_AMOUNT))"'
@@ -62,6 +67,7 @@ old_ctor = """    public static final int REPAIR_AMOUNT = 60;
         super(properties);
     }"""
 new_ctor = """    public static final int REPAIR_AMOUNT = 60;
+    public static final int MUTAGENIC_REPAIR_AMOUNT = 143;
     private final int repairAmount;
 
     public SporeFilterCartridgeItem(int repairAmount, Properties properties) {
@@ -71,6 +77,19 @@ new_ctor = """    public static final int REPAIR_AMOUNT = 60;
 
     public int repairAmount() {
         return repairAmount;
+    }
+
+    public boolean requiresMutagenResearch() {
+        return repairAmount >= MUTAGENIC_REPAIR_AMOUNT;
+    }
+
+    public static boolean hasMutagenResearch(Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer)) return false;
+        var server = serverPlayer.getServer();
+        if (server == null) return false;
+        Advancement research = server.getAdvancements().getAdvancement(
+                new ResourceLocation("sporenwerk", "mutagen_laboratory"));
+        return research != null && serverPlayer.getAdvancements().getOrStartProgress(research).isDone();
     }"""
 if old_ctor in cartridge:
     cartridge = cartridge.replace(old_ctor, new_ctor, 1)
@@ -78,6 +97,20 @@ elif "private final int repairAmount;" not in cartridge:
     raise SystemExit("Cannot update the cartridge tier constructor")
 cartridge = cartridge.replace("Math.min(REPAIR_AMOUNT, before)", "Math.min(repairAmount, before)")
 cartridge = cartridge.replace("Math.max(0, before - REPAIR_AMOUNT)", "Math.max(0, before - repairAmount)")
+
+# A mutagenic cartridge must not provide its repair before laboratory research.
+if "message.sporenwerk.filterbench.research_required" not in cartridge:
+    cartridge_gate_anchor = "        if (mask.getDamageValue() <= 0) {"
+    cartridge_gate = """        if (requiresMutagenResearch() && !level.isClientSide && !hasMutagenResearch(player)) {
+            player.displayClientMessage(Component.translatable(
+                    "message.sporenwerk.filterbench.research_required").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+            return InteractionResultHolder.fail(cartridge);
+        }
+
+"""
+    if cartridge_gate_anchor not in cartridge:
+        raise SystemExit("Cannot locate cartridge durability guard for research gating")
+    cartridge = cartridge.replace(cartridge_gate_anchor, cartridge_gate + cartridge_gate_anchor, 1)
 old_tooltip = """        tooltip.add(Component.translatable("tooltip.sporenwerk.sporenfiltereinsatz.2")
                 .withStyle(ChatFormatting.GRAY));"""
 new_tooltip = """        String quality = repairAmount >= 143 ? "mutagen"
@@ -196,6 +229,12 @@ public final class SporeFilterMaintenanceBlock extends Block {
             return InteractionResult.SUCCESS;
         }
 
+        if (cartridge.requiresMutagenResearch() && !SporeFilterCartridgeItem.hasMutagenResearch(player)) {
+            player.displayClientMessage(Component.translatable(
+                    "message.sporenwerk.filterbench.research_required").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+            return InteractionResult.SUCCESS;
+        }
+
         ItemStack mask = player.getItemBySlot(EquipmentSlot.HEAD);
         if (!mask.is(ModItems.SPORENFILTERMASKE.get())) {
             player.displayClientMessage(Component.translatable(
@@ -311,6 +350,30 @@ write("src/main/resources/data/sporenwerk/recipes/sporenfilterwartungstisch.json
 }
 """)
 
+# The mutagenic cartridge is a research-gated recipe, not just another material upgrade.
+write("src/main/resources/data/sporenwerk/advancements/recipes/misc/sporenfiltereinsatz_mutagen.json", """
+{
+  "parent": "sporenwerk:mutagen_laboratory",
+  "display": {
+    "icon": { "item": "sporenwerk:sporenfiltereinsatz_mutagen" },
+    "title": { "translate": "advancements.sporenwerk.filter_mutagen_research.title" },
+    "description": { "translate": "advancements.sporenwerk.filter_mutagen_research.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "discover_mutagen_extract": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["sporenwerk:mutagenextrakt"] }] }
+    }
+  },
+  "requirements": [["discover_mutagen_extract"]],
+  "rewards": { "recipes": ["sporenwerk:sporenfiltereinsatz_mutagen"] }
+}
+""")
+
 # Extend both locales without deleting existing field/scanner/filter strings.
 locale_additions = {
     "de_de.json": {
@@ -325,7 +388,10 @@ locale_additions = {
         "tooltip.sporenwerk.sporenfilterwartungstisch.1": "Rechtsklick mit einem Filtereinsatz, während die Maske getragen wird.",
         "tooltip.sporenwerk.sporenfilterwartungstisch.2": "Verstärkte und mutagene Einsätze stellen mehr Haltbarkeit wieder her.",
         "message.sporenwerk.filterbench.hold_cartridge": "Halte einen Sporenfiltereinsatz in der Hand.",
-        "message.sporenwerk.filterbench.repaired": "Wartung abgeschlossen: %s Haltbarkeit wiederhergestellt."
+        "message.sporenwerk.filterbench.repaired": "Wartung abgeschlossen: %s Haltbarkeit wiederhergestellt.",
+        "message.sporenwerk.filterbench.research_required": "Schließe zuerst die Mutagenlabor-Forschung ab.",
+        "advancements.sporenwerk.filter_mutagen_research.title": "Mutagenfilter-Protokoll",
+        "advancements.sporenwerk.filter_mutagen_research.description": "Entdecke Mutagenextrakt, um den mutagenen Filtereinsatz freizuschalten."
     },
     "en_us.json": {
         "item.sporenwerk.sporenfiltereinsatz_verstaerkt": "Reinforced Spore Filter Cartridge",
@@ -339,7 +405,10 @@ locale_additions = {
         "tooltip.sporenwerk.sporenfilterwartungstisch.1": "Right-click with a filter cartridge while wearing the mask.",
         "tooltip.sporenwerk.sporenfilterwartungstisch.2": "Reinforced and Mutagen cartridges restore more durability.",
         "message.sporenwerk.filterbench.hold_cartridge": "Hold a Spore Filter Cartridge in your hand.",
-        "message.sporenwerk.filterbench.repaired": "Maintenance complete: restored %s durability."
+        "message.sporenwerk.filterbench.repaired": "Maintenance complete: restored %s durability.",
+        "message.sporenwerk.filterbench.research_required": "Complete the Mutagen Laboratory research first.",
+        "advancements.sporenwerk.filter_mutagen_research.title": "Mutagen Filter Protocol",
+        "advancements.sporenwerk.filter_mutagen_research.description": "Discover Mutagen Extract to unlock the Mutagenic Filter Cartridge."
     }
 }
 for filename, additions in locale_additions.items():
@@ -380,19 +449,20 @@ preview_path.write_text(preview, encoding="utf-8")
 # This is the final patch in CI, so it owns the current artifact version.
 build_path = ROOT / "build.gradle"
 build = build_path.read_text(encoding="utf-8")
-build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.19.0'", build, count=1)
+build, count = re.subn(r"version\s*=\s*['\"][^'\"]+['\"]", "version = '1.20.0'", build, count=1)
 if count != 1:
-    raise SystemExit("Could not bump build.gradle to version 1.19.0")
+    raise SystemExit("Could not bump build.gradle to version 1.20.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
-heading = "## Version 1.19.0 — Filterwerkstatt und dreistufige Filterqualität"
-section = """## Version 1.19.0 — Filterwerkstatt und dreistufige Filterqualität
+heading = "## Version 1.20.0 — Mutagene Filterforschung und Filterwerkstatt"
+section = """## Version 1.20.0 — Filterwerkstatt und dreistufige Filterqualität
 
 - **Sporenfilter-Wartungstisch:** Neue platzierbare Station mit eigener 16×16-Pixeltextur für Ober- und Seitenflächen. Rechtsklick mit einem Filtereinsatz wartet die getragene Maske direkt serverseitig.
 - **Drei Filterqualitäten:** Standard (60 Haltbarkeit), verstärkt (100) und mutagen (143, eine vollständige Maskenreparatur). Die Qualität steht im Tooltip; die Haltbarkeitsanzeige der Maske bleibt grün/gelb/rot.
 - **Echte Upgrade-Kette:** Standardeinsatz → verstärkter Einsatz mit Mutagenextrakt und Kupfer → mutagener Einsatz mit weiterem Extrakt und Amethyst. Der Wartungstisch wird aus Eisen, Kupfer, Redstone, Filtermoos, einem resistenten Block und einem Werktisch hergestellt.
+- **Mutagene Forschungsfreigabe:** Der mutagene Einsatz wird erst nach der Mutagenlabor-Entdeckung im Rezeptbuch freigeschaltet. Sowohl die direkte Reparatur als auch die Wartungsstation prüfen serverseitig, ob das Forschungs-Advancement abgeschlossen ist.
 - **Sicherer Betrieb:** Einsatzverbrauch nur bei erfolgreicher Wartung; volle Masken verbrauchen keinen Filter. Kreativspieler verbrauchen keine Einsätze. Handbedienung bleibt als alternative Reparaturmethode verfügbar.
 - **Qualitätssicherung:** Neue Verträge prüfen Registrierungen, Upgrade-Rezepte, Tisch-Blockstates/Modelle/Texturen, alle Übersetzungen und die Haltbarkeitswerte. Die Vorschau zeigt die zusätzlichen Texturen und Item-Icons.
 
@@ -402,4 +472,4 @@ Der automatische Serverstart bestätigt die technische Startfähigkeit, ersetzt 
 if heading not in readme:
     readme = section + readme
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed Sporenwerk 1.19.0 Filter Maintenance Bench and three-grade cartridge progression.")
+print("Installed Sporenwerk 1.20.0 Filter Maintenance Bench and three-grade cartridge progression.")

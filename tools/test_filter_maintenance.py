@@ -122,10 +122,32 @@ for locale in ("de_de.json", "en_us.json"):
     ):
         require(bool(data.get(key, "").strip()), locale + " missing " + key)
 
+# Mutagenic tier is both recipe-book locked and server-side effect locked until research.
+cartridge = read("src/main/java/de/sporenwerk/item/SporeFilterCartridgeItem.java")
+require("MUTAGENIC_REPAIR_AMOUNT = 143" in cartridge
+        and "requiresMutagenResearch()" in cartridge
+        and 'new ResourceLocation("sporenwerk", "mutagen_laboratory")' in cartridge
+        and "getOrStartProgress(research).isDone()" in cartridge
+        and "!hasMutagenResearch(player)" in cartridge
+        and "message.sporenwerk.filterbench.research_required" in cartridge,
+        "mutagen cartridge must require the completed server-side Mutagen Laboratory advancement")
+bench = read("src/main/java/de/sporenwerk/block/SporeFilterMaintenanceBlock.java")
+require("cartridge.requiresMutagenResearch()" in bench
+        and "SporeFilterCartridgeItem.hasMutagenResearch(player)" in bench
+        and "message.sporenwerk.filterbench.research_required" in bench,
+        "maintenance bench must enforce the same research gate")
+research_unlock = json.loads(read("src/main/resources/data/sporenwerk/advancements/recipes/misc/sporenfiltereinsatz_mutagen.json"))
+require(research_unlock["parent"] == "sporenwerk:mutagen_laboratory"
+        and research_unlock["criteria"]["discover_mutagen_extract"]["trigger"] == "minecraft:inventory_changed"
+        and research_unlock["rewards"]["recipes"] == ["sporenwerk:sporenfiltereinsatz_mutagen"],
+        "mutagenic cartridge recipe must unlock from Mutagen Laboratory research")
+require(research_unlock["criteria"]["discover_mutagen_extract"]["conditions"]["items"][0]["items"]
+        == ["sporenwerk:mutagenextrakt"],
+        "Mutagen Extract discovery must be the unlock trigger")
 build = read("build.gradle")
-require(re.search(r"version\s*=\s*['\"]1\.19\.0['\"]", build) is not None,
-        "artifact version must be 1.19.0")
-require("Version 1.19.0" in read("README.md"), "1.19.0 release notes are missing")
+require(re.search(r"version\s*=\s*['\"]1\.20\.0['\"]", build) is not None,
+        "artifact version must be 1.20.0")
+require("Version 1.20.0" in read("README.md"), "1.20.0 release notes are missing")
 preview = read("tools/make_art_preview.py")
 require("sporenfilterwartungstisch_top" in preview
         and "sporenfiltereinsatz_mutagen" in preview,
