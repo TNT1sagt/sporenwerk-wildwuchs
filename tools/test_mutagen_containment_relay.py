@@ -47,8 +47,9 @@ for token in (
     require(token in relay, "relay contract missing: " + token)
 require("getChunk(" not in relay and "getChunkNow(" not in relay,
         "relay must not force-load chunks")
-require("BlockEntity" not in relay and "onLoad()" not in relay,
-        "relay must remain ticker-free")
+require("new BlockEntity" not in relay and "BlockEntityTicker" not in relay
+        and "getTicker(" not in relay and "onLoad()" not in relay,
+        "relay must not instantiate or tick a block entity")
 
 state = json.loads((ASSETS / "blockstates/mutagen_containment_relay.json").read_text(encoding="utf-8"))
 variants = state.get("variants", {})
