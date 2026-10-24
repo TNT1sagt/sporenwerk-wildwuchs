@@ -10,7 +10,7 @@ assets = root / "src/main/resources/assets/sporenwerk"
 out = root / "qa-output/sporenwerk-art-preview.png"
 out.parent.mkdir(parents=True, exist_ok=True)
 
-W, H = 1400, 1320
+W, H = 1400, 1360
 canvas = Image.new("RGB", (W, H), (17, 25, 21))
 draw = ImageDraw.Draw(canvas)
 font = ImageFont.load_default()
@@ -47,7 +47,7 @@ for i, name in enumerate(machine_names):
     paste_scaled(assets/"textures/block"/f"{name}_panel.png", 735+i*210, 105, 160, 130, name.upper())
     paste_scaled(assets/"models/block"/f"{name}.json", 735+i*210, 250, 1, 1, None) if False else None
 
-panel(24, 365, 1352, 210, "OPAQUE MINECRAFT BLOCK FACES (16x16)")
+panel(24, 365, 1352, 245, "OPAQUE MINECRAFT BLOCK FACES (16x16)")
 block_faces = [
     ("infektionsherd_top", "Mutagenherd"),
     ("mutagen_boden_top", "Infizierter Boden"),
@@ -56,6 +56,8 @@ block_faces = [
     ("sporenresistenter_block_top", "Resistenter Block"),
     ("sporenabwehr", "Sporenabwehr AUS"),
     ("sporenabwehr_active", "Sporenabwehr AN"),
+    ("sporenfilterwartungstisch_top", "Filtertisch oben"),
+    ("sporenfilterwartungstisch_side", "Filtertisch Seite"),
     ("feldsammler", "Feldsammler vorne"),
     ("feldsammler_side", "Feldsammler Seite"),
     ("feldsammler_top", "Feldsammler oben"),
@@ -63,40 +65,41 @@ block_faces = [
 for idx, (name, label) in enumerate(block_faces):
     row, col = divmod(idx, 5)
     x = 37 + col*260
-    y = 392 + row*82
+    y = 392 + row*78
     paste_scaled(assets/"textures/block"/f"{name}.png", x, y, 88, 55, label)
 
-panel(24, 580, 1352, 200, "CROP GROWTH STAGES / CUTOUT")
+panel(24, 620, 1352, 200, "CROP GROWTH STAGES / CUTOUT")
 crop_names = ["faserrohr", "bernsteinkappe", "rotwurzel", "filtermoos"]
 for row, name in enumerate(crop_names):
     x = 45 + row*332
-    draw.text((x, 606), name.upper(), fill=(221, 197, 127), font=font)
+    draw.text((x, 646), name.upper(), fill=(221, 197, 127), font=font)
     for stage in range(3):
         path = assets/"textures/block"/f"{name}_stage{stage}.png"
-        paste_scaled(path, x+stage*96, 625, 86, 92, f"stage {stage+1}")
+        paste_scaled(path, x+stage*96, 665, 86, 92, f"stage {stage+1}")
 
-panel(24, 795, 1352, 185, "LIVE MUTAGEN PHENOTYPES — MATURE PLANTS")
+panel(24, 835, 1352, 185, "LIVE MUTAGEN PHENOTYPES — MATURE PLANTS")
 crop_names = ["faserrohr", "bernsteinkappe", "rotwurzel", "filtermoos"]
 for crop_idx, name in enumerate(crop_names):
     x = 45 + crop_idx*332
-    draw.text((x, 817), name.upper(), fill=(221, 197, 127), font=font)
+    draw.text((x, 857), name.upper(), fill=(221, 197, 127), font=font)
     for strength in range(4):
         suffix = "" if strength == 0 else f"_mutagen{strength}"
         path = assets/"textures/block"/f"{name}_stage2{suffix}.png"
         label = "normal" if strength == 0 else f"Feld {strength}"
-        paste_scaled(path, x + strength*67, 838, 57, 70, label)
+        paste_scaled(path, x + strength*67, 878, 57, 70, label)
 
-panel(24, 995, 1352, 295, "ITEM ICONS AND MUTAGEN RESEARCH")
+panel(24, 1035, 1352, 295, "ITEM ICONS AND MUTAGEN RESEARCH")
 items = [
     "faser", "bernsteinkappe", "rotwurzel", "filtermoos", "faserrohr_samen",
     "bernsteinkappe_sporen", "rotwurzel_samen", "filtermoos_sporen",
     "pflanzenreste", "biomasse", "feldwissen", "maschinenteil", "filter",
     "feldhandbuch", "wurzelkonzentrat", "myzelkompost", "verwitterte_notiz", "sporenfiltermaske",
-    "mutagenprobe", "mutagenextrakt", "mutagene_sporen", "feldscanner"
+    "mutagenprobe", "mutagenextrakt", "mutagene_sporen", "feldscanner",
+    "sporenfiltereinsatz", "sporenfiltereinsatz_verstaerkt", "sporenfiltereinsatz_mutagen"
 ]
 for idx, name in enumerate(items):
     col, row = idx % 9, idx // 9
-    x, y = 35 + col*150, 1022 + row*84
+    x, y = 35 + col*150, 1062 + row*84
     paste_scaled(assets/"textures/item"/f"{name}.png", x, y, 78, 57, name)
 canvas.save(out, optimize=True)
 print(f"Wrote art preview: {out}")
