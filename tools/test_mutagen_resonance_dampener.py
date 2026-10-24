@@ -74,12 +74,12 @@ require(recipe["result"]["item"] == "sporenwerk:mutagen_resonanzdaempfer",
         "recipe must produce the dampener")
 ingredients = {entry["item"] for entry in recipe["key"].values()}
 require({"minecraft:iron_ingot", "minecraft:redstone", "minecraft:amethyst_block",
-         "sporenwerk:mutagenkernkristall"}.issubset(ingredients),
-        "recipe must cost iron, redstone, amethyst and a Mutagen core crystal")
+         "sporenwerk:mutagenkernkristall", "sporenwerk:kristallpirscher_resonanzsplitter"}.issubset(ingredients),
+        "recipe must cost iron, redstone, amethyst, a Mutagen core crystal and resonance shards")
 advancement = json.loads((RES / "data/sporenwerk/advancements/recipes/misc/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
 require(advancement["rewards"]["recipes"] == ["sporenwerk:mutagen_resonanzdaempfer"]
-        and len(advancement["requirements"]) == 4,
-        "recipe unlock should require all four ingredients")
+        and len(advancement["requirements"]) == 5,
+        "recipe unlock should require all five ingredients")
 loot = json.loads((RES / "data/sporenwerk/loot_tables/blocks/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
 require(any(entry.get("name") == "sporenwerk:mutagen_resonanzdaempfer"
             for pool in loot["pools"] for entry in pool["entries"]),
