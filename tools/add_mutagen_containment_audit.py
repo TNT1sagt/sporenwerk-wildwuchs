@@ -77,6 +77,10 @@ for test_path in (ROOT / "tools").glob("test_*.py"):
     lines = test_path.read_text(encoding="utf-8").splitlines(keepends=True)
     changed = False
     for index, line in enumerate(lines):
+        if "Aktueller Entwicklungsstand: 1.40.0" in line:
+            lines[index] = line.replace("Aktueller Entwicklungsstand: 1.40.0", "Aktueller Entwicklungsstand: 1.41.0")
+            line = lines[index]
+            changed = True
         if r"1\.40\.0" not in line or "version" not in line.lower(): continue
         newer = line.replace(r"1\.40\.0", r"1\.41\.0")
         if newer != line:
