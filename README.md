@@ -1,10 +1,10 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.31.0 — gespeicherte Mutagen-Alarme mit Spieler-Quittierung.**
+**Aktueller Entwicklungsstand: 1.34.0 — baubare Resonanzdämpfung für Hochmutagen-Anlagen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.31.0
+## Aktueller Schwerpunkt — 1.34.0
 
 - Mutagenfeld-Stufe I: dunkler Moosboden mit grünen, verzweigten Myzeladern.
 - Mutagenfeld-Stufe II: violett-schwarzer Untergrund mit magenta-orangen Bruchrissen.
@@ -14,6 +14,26 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - Die Mutagen-Warnsirene unterscheidet Warnung, erhöhte Gefahr und kritische Belastung visuell; Warntöne eskalieren nur bei einem Wechsel in eine höhere Stufe.
 
 ---
+
+## Version 1.34.0 — Mutagen-Resonanzdämpfer: technische Gegenwehr
+
+- **Baubare Schutzzone:** Der herstellbare Resonanzdämpfer erzeugt Licht und markiert einen Bereich, in dem der Kristallpirscher seinen Resonanzimpuls nicht beginnen oder freisetzen kann.
+- **Knappe, sichere Abfragen:** Der Gegner prüft den kleinen Schutzbereich nur beim Start und am Ende der Warnphase. Nicht geladene Chunks werden übersprungen; das Gerät erzwingt keine Chunk-Ladung und benötigt keinen tickenden Block-Entity-Prozess.
+- **Reaktive Gegenwehr:** Wird der Dämpfer während der 30-Tick-Aufladung aufgestellt, bricht er den Impuls beim Auslösen ab. Spieler können also auf die Warnung reagieren, statt schon beim Windup festgelegt zu sein.
+- **Survival-Fortschritt:** Das Rezept verlangt Eisen, Redstone, einen Amethystblock und einen Mutagenkernkristall. Eigene Blocktexturen, Modell, Loot-Tabelle, Fortschrittsfreigabe, DE/EN-Namen und Regressionstests sind enthalten.
+
+## Version 1.33.0 — Kristallpirscher: Resonanzimpuls mit Gegenwehr
+
+- Auf Stufe-III-Mutagenboden lädt der Kristallpirscher einen Resonanzimpuls 30 Ticks lang auf. Amethystklang und sichtbare Partikel kündigen die Attacke an.
+- Erst nach der Aufladephase löst der Impuls aus; ungeschützte Spieler erhalten in begrenzter Reichweite kurz Verlangsamung. Maske, Ausweichen und ein Dämpfer bieten Gegenwehr.
+- Die Fähigkeit hat eine Abklingzeit von 200 Ticks und wird serverseitig mit erneut geprüfter Reichweite und Ausrüstung verarbeitet.
+
+## Version 1.32.0 — Kristallpirscher, Jäger der Hochmutagenfelder
+
+- Eigenständiger Gegner mit eigener Registrierung, 64×64-Pixeltextur, Renderer, Attributen, Spawn-Ei, Loot-Tabelle und Fortschrittsziel.
+- Natürliches Spawnen ist auf dunkle Positionen direkt über Mutagenboden der Stufe III begrenzt.
+- Ungefilterte Treffer verursachen kurz Gift; die Sporenfiltermaske blockt den Effekt und nutzt dabei Filterhaltbarkeit ab.
+- Langsame Regeneration auf Hochmutagenboden, seltene Mutagenkernkristalle und kleine Mengen Pflanzenreste.
 
 ## Version 1.31.0 — Quittierbare, gespeicherte Sirenenalarme
 
