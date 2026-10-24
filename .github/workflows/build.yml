@@ -138,6 +138,10 @@ jobs:
       - name: Validate redstone Spore Ward and Dämmerling protection
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_spore_ward.py .
+
+      - name: Validate filter maintenance bench and cartridge quality progression
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_filter_maintenance.py .
       - name: Validate Minecraft block textures and crop cutout rendering
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_minecraft_texture_contract.py .

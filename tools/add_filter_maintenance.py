@@ -47,6 +47,15 @@ items_path.write_text(items, encoding="utf-8")
 # Upgrade the cartridge implementation without changing the already-tested hand-use fallback.
 cartridge_path = "src/main/java/de/sporenwerk/item/SporeFilterCartridgeItem.java"
 cartridge = read(cartridge_path)
+filter_test_path = ROOT / "tools/test_spore_filter.py"
+filter_test = filter_test_path.read_text(encoding="utf-8")
+old_test_token = '"mask.setDamageValue(Math.max(0, before - REPAIR_AMOUNT))"'
+new_test_token = '"mask.setDamageValue(Math.max(0, before - repairAmount))"'
+if old_test_token in filter_test:
+    filter_test = filter_test.replace(old_test_token, new_test_token, 1)
+elif new_test_token not in filter_test:
+    raise SystemExit("Cannot update the filter regression test for tiered repair amounts")
+filter_test_path.write_text(filter_test, encoding="utf-8")
 old_ctor = """    public static final int REPAIR_AMOUNT = 60;
 
     public SporeFilterCartridgeItem(Properties properties) {
@@ -83,6 +92,34 @@ if old_tooltip in cartridge:
 elif "tooltip.sporenwerk.sporenfiltereinsatz.quality." not in cartridge:
     raise SystemExit("Cannot find cartridge tooltip for tier descriptions")
 (ROOT / cartridge_path).write_text(cartridge, encoding="utf-8")
+
+# Give higher filter qualities their own icons rather than reusing the basic sprite.
+item_texture_dir = ASSETS / "textures/item"
+item_texture_dir.mkdir(parents=True, exist_ok=True)
+
+def cartridge_icon(filename, casing, core, accents):
+    image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    outline = (23, 30, 28, 255)
+    draw.rectangle((4, 1, 11, 14), fill=outline)
+    draw.rectangle((5, 2, 10, 13), fill=casing)
+    draw.rectangle((6, 3, 9, 4), fill=accents[0])
+    draw.rectangle((6, 5, 9, 10), fill=core)
+    draw.rectangle((6, 11, 9, 12), fill=accents[1])
+    draw.rectangle((3, 4, 4, 11), fill=accents[0])
+    draw.rectangle((11, 4, 12, 11), fill=accents[0])
+    draw.point((7, 6), fill=accents[1])
+    draw.point((8, 8), fill=accents[1])
+    image.save(item_texture_dir / f"{filename}.png", optimize=True)
+    write(f"src/main/resources/assets/sporenwerk/models/item/{filename}.json", json.dumps({
+        "parent": "minecraft:item/generated",
+        "textures": {"layer0": f"sporenwerk:item/{filename}"}
+    }, ensure_ascii=False, indent=2) + "\n")
+
+cartridge_icon("sporenfiltereinsatz_verstaerkt", (122, 103, 48, 255),
+               (46, 87, 67, 255), ((224, 178, 72, 255), (137, 234, 179, 255)))
+cartridge_icon("sporenfiltereinsatz_mutagen", (81, 51, 107, 255),
+               (118, 49, 145, 255), ((171, 109, 228, 255), (130, 255, 219, 255)))
 
 # Add the workstation as an ordinary solid block; the station handles repair server-side and has no client-only state.
 replace_once(

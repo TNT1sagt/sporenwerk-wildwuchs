@@ -51,6 +51,6 @@ require("sporenabwehr_active" in preview and "sporenabwehr" in preview,
         "QA preview must show both inactive and active Spore Ward textures")
 require("release_version" in preview and "1.14.0" not in preview,
         "QA preview title must use the actual version rather than a stale hardcoded release")
-require(re.search(r"version\s*=\s*['\"]1\.18\.0['\"]", read("build.gradle")) is not None,
+require(re.search(r"version\s*=\s*['\"]1\.19\.0['\"]", read("build.gradle")) is not None,
         "artifact version must be 1.19.0")
 print("Redstone Spore Ward, powered visual state, bounded repel pulse, recipe and Dämmerling AI checks passed.")
