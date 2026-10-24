@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contracts for Sporenwerk's maintenance bench and three-grade cartridge progression."""
+"""Contracts for filter cartridges, Mutagen Bloom stabilization, resources and research progression."""
 from pathlib import Path
 import json
 import re
@@ -38,6 +38,15 @@ require('ModItems.ITEMS.register("sporenfilterwartungstisch"' in blocks,
         "maintenance bench must have a placeable block item")
 require("output.accept(ModBlocks.SPORENFILTERWARTUNGSTISCH.get())" in creative,
         "maintenance bench is missing from creative tab")
+require("MUTAGENFELD_STABILISATOR" in blocks
+        and 'register("mutagenfeld_stabilisator"' in blocks
+        and "MutagenFieldStabilizerBlock" in blocks,
+        "Mutagen Field Stabilizer must be registered as a block")
+require('ModItems.ITEMS.register("mutagenfeld_stabilisator"' in blocks
+        and "output.accept(ModBlocks.MUTAGENFELD_STABILISATOR.get())" in creative,
+        "field stabilizer needs a placeable BlockItem and creative catalogue entry")
+require("MUTAGENKERNKRISTALL" in items and 'register("mutagenkernkristall"' in items,
+        "rare bloom core must be registered")
 
 cartridge = read("src/main/java/de/sporenwerk/item/SporeFilterCartridgeItem.java")
 for token in (
@@ -73,6 +82,9 @@ recipes = {
     "sporenfilterwartungstisch.json": ("sporenwerk:sporenfilterwartungstisch",
                                         ("minecraft:iron_ingot", "minecraft:crafting_table", "minecraft:copper_ingot",
                                          "sporenwerk:sporenresistenter_block", "sporenwerk:filtermoos", "minecraft:redstone")),
+    "mutagenfeld_stabilisator.json": ("sporenwerk:mutagenfeld_stabilisator",
+                                       ("minecraft:iron_ingot", "minecraft:redstone", "sporenwerk:sporenresistenter_block",
+                                        "sporenwerk:mutagenkernkristall", "sporenwerk:mutagenextrakt")),
 }
 for filename, (output, ingredients) in recipes.items():
     recipe = json.loads((res / "data/sporenwerk/recipes" / filename).read_text(encoding="utf-8"))
@@ -92,13 +104,14 @@ require(model["parent"] == "minecraft:block/cube_column"
 bench_item_model = json.loads((assets / "models/item/sporenfilterwartungstisch.json").read_text(encoding="utf-8"))
 require(bench_item_model["parent"] == "sporenwerk:block/sporenfilterwartungstisch",
         "bench item model must use the block model")
-for name in ("sporenfilterwartungstisch_top", "sporenfilterwartungstisch_side"):
+for name in ("sporenfilterwartungstisch_top", "sporenfilterwartungstisch_side",
+             "mutagenfeld_stabilisator_top", "mutagenfeld_stabilisator_side"):
     with Image.open(assets / f"textures/block/{name}.png") as image:
         rgba = image.convert("RGBA")
         require(rgba.size == (16, 16), name + " must be 16x16")
         require(all(px[3] == 255 for px in rgba.getdata()), name + " must be opaque")
 
-for name in ("sporenfiltereinsatz_verstaerkt", "sporenfiltereinsatz_mutagen"):
+for name in ("sporenfiltereinsatz_verstaerkt", "sporenfiltereinsatz_mutagen", "mutagenkernkristall"):
     model = json.loads((assets / f"models/item/{name}.json").read_text(encoding="utf-8"))
     require(model["textures"]["layer0"] == f"sporenwerk:item/{name}", name + " model texture mismatch")
     with Image.open(assets / f"textures/item/{name}.png") as image:
@@ -112,6 +125,16 @@ for locale in ("de_de.json", "en_us.json"):
         "item.sporenwerk.sporenfiltereinsatz_mutagen",
         "block.sporenwerk.sporenfilterwartungstisch",
         "item.sporenwerk.sporenfilterwartungstisch",
+        "item.sporenwerk.mutagenkernkristall",
+        "tooltip.sporenwerk.mutagenkernkristall.1",
+        "tooltip.sporenwerk.mutagenkernkristall.2",
+        "block.sporenwerk.mutagenfeld_stabilisator",
+        "item.sporenwerk.mutagenfeld_stabilisator",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator.1",
+        "tooltip.sporenwerk.mutagenfeld_stabilisator.2",
+        "message.sporenwerk.mutagen.stabilized",
+        "advancements.sporenwerk.mutagen_stabilizer.title",
+        "advancements.sporenwerk.mutagen_stabilizer.description",
         "tooltip.sporenwerk.sporenfiltereinsatz.quality.basic",
         "tooltip.sporenwerk.sporenfiltereinsatz.quality.reinforced",
         "tooltip.sporenwerk.sporenfiltereinsatz.quality.mutagen",
@@ -147,10 +170,30 @@ require(research_unlock["parent"] == "sporenwerk:mutagen_laboratory"
 require(research_unlock["criteria"]["discover_mutagen_extract"]["conditions"]["items"][0]["items"]
         == ["sporenwerk:mutagenextrakt"],
         "Mutagen Extract discovery must be the unlock trigger")
+# The rare core unlocks the stabilizer recipe and the placed block protects nearby workers.
+advancement = json.loads(read("src/main/resources/data/sporenwerk/advancements/recipes/misc/mutagenfeld_stabilisator.json"))
+require(advancement["parent"] == "sporenwerk:first_mutagen_bloom"
+        and advancement["criteria"]["find_condensed_core"]["trigger"] == "minecraft:inventory_changed"
+        and advancement["criteria"]["find_condensed_core"]["conditions"]["items"][0]["items"] == ["sporenwerk:mutagenkernkristall"]
+        and advancement["rewards"]["recipes"] == ["sporenwerk:mutagenfeld_stabilisator"],
+        "collecting the rare bloom core must unlock the stabilizer recipe")
+stabilizer_state = json.loads((assets / "blockstates/mutagenfeld_stabilisator.json").read_text(encoding="utf-8"))
+require(stabilizer_state["variants"][""]["model"] == "sporenwerk:block/mutagenfeld_stabilisator",
+        "stabilizer blockstate must point to the registered model")
+stabilizer_model = json.loads((assets / "models/block/mutagenfeld_stabilisator.json").read_text(encoding="utf-8"))
+require(stabilizer_model["parent"] == "minecraft:block/cube_column"
+        and stabilizer_model["textures"]["end"] == "sporenwerk:block/mutagenfeld_stabilisator_top"
+        and stabilizer_model["textures"]["side"] == "sporenwerk:block/mutagenfeld_stabilisator_side",
+        "stabilizer must use its own top and side textures")
+bloom = read("src/main/java/de/sporenwerk/infection/MutagenBloom.java")
+require("hasNearbyStabilizer(level, player.blockPosition())" in bloom
+        and "level.getBlockState(probe).is(ModBlocks.MUTAGENFELD_STABILISATOR.get())" in bloom
+        and "message.sporenwerk.mutagen.stabilized" in bloom,
+        "stabilizer must prevent the bloom exposure pulse within the bounded local radius")
 build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.21\.0['\"]", build) is not None,
-        "root Gradle project version must be 1.21.0")
-require("Version 1.21.0" in read("README.md"), "1.21.0 release notes are missing")
+        "root Gradle project version must be 1.22.0")
+require("Version 1.22.0" in read("README.md"), "1.22.0 release notes are missing")
 preview = read("tools/make_art_preview.py")
 require("sporenfilterwartungstisch_top" in preview
         and "sporenfiltereinsatz_mutagen" in preview,

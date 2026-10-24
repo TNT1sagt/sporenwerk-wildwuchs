@@ -52,5 +52,5 @@ require("sporenabwehr_active" in preview and "sporenabwehr" in preview,
 require("release_version" in preview and "1.14.0" not in preview,
         "QA preview title must use the actual version rather than a stale hardcoded release")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.21\.0['\"]", read("build.gradle")) is not None,
-        "root Gradle project version must be 1.21.0")
+        "root Gradle project version must be 1.22.0")
 print("Redstone Spore Ward, powered visual state, bounded repel pulse, recipe and Dämmerling AI checks passed.")
