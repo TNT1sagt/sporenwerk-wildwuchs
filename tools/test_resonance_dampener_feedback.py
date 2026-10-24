@@ -42,8 +42,8 @@ require("resonanceCooldown = RESONANCE_COOLDOWN_TICKS;" in release_block,
         "mid-windup dampener must rate-limit cancelled release")
 require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "feedback must not force-load chunks")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.35\.0['\"]", build) is not None,
-        "artifact must be version 1.35.0")
-require("Version 1.35.0" in readme and "Version 1.34.0" in readme,
-        "release notes must preserve 1.34.0 history")
-print("Dampener feedback, one-shot audio, cooldown on both cancel paths, chunk safety, and 1.35.0 passed.")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
+        "artifact must be version 1.36.0")
+require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
+        "release notes must preserve 1.35.0 history")
+print("Dampener feedback, one-shot audio, cooldown on both cancel paths, chunk safety, and 1.36.0 passed.")

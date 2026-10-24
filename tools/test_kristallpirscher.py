@@ -76,6 +76,11 @@ loot = json.loads((RES / "data/sporenwerk/loot_tables/entities/kristallpirscher.
 require(any(entry.get("name") == "sporenwerk:pflanzenreste"
             for pool in loot["pools"] for entry in pool["entries"]),
         "loot should include small organic residue")
+shard_pools = [pool for pool in loot["pools"]
+               if any(entry.get("name") == "sporenwerk:kristallpirscher_resonanzsplitter"
+                      for entry in pool.get("entries", []))]
+require(len(shard_pools) == 1 and not shard_pools[0].get("conditions"),
+        "each Kristallpirscher should yield guaranteed resonance shards")
 require(any(any(cond.get("condition") == "minecraft:random_chance" and cond.get("chance") == 0.25
                 for cond in pool.get("conditions", []))
             and any(entry.get("name") == "sporenwerk:mutagenkernkristall" for entry in pool["entries"])
@@ -106,9 +111,9 @@ for name, values in {
 preview = read("tools/make_art_preview.py")
 require("kristallpirscher.png" in preview, "art preview must include the custom entity skin")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.35\.0['\"]", build) is not None,
-        "artifact must be version 1.35.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
+        "artifact must be version 1.36.0")
 readme = read("README.md")
-require("Version 1.35.0" in readme and "Version 1.34.0" in readme,
-        "release notes must preserve the 1.34.0 history")
+require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
+        "release notes must preserve the 1.35.0 history")
 print("Kristallpirscher registration, hotspot-only spawning, mask counterplay, loot, advancement, texture, locales, and version passed.")

@@ -74,12 +74,12 @@ require(recipe["result"]["item"] == "sporenwerk:mutagen_resonanzdaempfer",
         "recipe must produce the dampener")
 ingredients = {entry["item"] for entry in recipe["key"].values()}
 require({"minecraft:iron_ingot", "minecraft:redstone", "minecraft:amethyst_block",
-         "sporenwerk:mutagenkernkristall"}.issubset(ingredients),
-        "recipe must cost iron, redstone, amethyst and a Mutagen core crystal")
+         "sporenwerk:mutagenkernkristall", "sporenwerk:kristallpirscher_resonanzsplitter"}.issubset(ingredients),
+        "recipe must cost iron, redstone, amethyst, a Mutagen core crystal and resonance shards")
 advancement = json.loads((RES / "data/sporenwerk/advancements/recipes/misc/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
 require(advancement["rewards"]["recipes"] == ["sporenwerk:mutagen_resonanzdaempfer"]
-        and len(advancement["requirements"]) == 4,
-        "recipe unlock should require all four ingredients")
+        and len(advancement["requirements"]) == 5,
+        "recipe unlock should require all five ingredients")
 loot = json.loads((RES / "data/sporenwerk/loot_tables/blocks/mutagen_resonanzdaempfer.json").read_text(encoding="utf-8"))
 require(any(entry.get("name") == "sporenwerk:mutagen_resonanzdaempfer"
             for pool in loot["pools"] for entry in pool["entries"]),
@@ -96,9 +96,9 @@ preview = read("tools/make_art_preview.py")
 require("mutagen_resonanzdaempfer_top" in preview and "mutagen_resonanzdaempfer_side" in preview,
         "both dampener faces must appear in the QA preview")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.35\.0['\"]", build) is not None,
-        "artifact must be version 1.35.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
+        "artifact must be version 1.36.0")
 readme = read("README.md")
-require("Version 1.35.0" in readme and "Version 1.34.0" in readme,
-        "release notes must preserve 1.34.0 history")
+require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
+        "release notes must preserve 1.35.0 history")
 print("Mutagen Resonance Dampener registration, pulse suppression, chunk safety, recipes, loot, pixel art, locales and version passed.")

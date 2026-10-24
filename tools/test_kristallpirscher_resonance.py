@@ -47,8 +47,8 @@ require("if (resonanceCooldown > 0)" in entity and "resonanceCooldown = RESONANC
         "pulse cooldown must rate-limit successful and dampened attempts")
 require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "pulse logic must never force-load chunks")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.35\.0['\"]", build) is not None,
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.36\.0['\"]", build) is not None,
         "artifact version must be 1.33.0")
-require("Version 1.35.0" in readme and "Version 1.34.0" in readme,
-        "release notes must preserve 1.34.0 history")
+require("Version 1.36.0" in readme and "Version 1.35.0" in readme,
+        "release notes must preserve 1.35.0 history")
 print("Kristallpirscher resonance pulse, warning window, cooldown, mask protection, range recheck, and version passed.")
