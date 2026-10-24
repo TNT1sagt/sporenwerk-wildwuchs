@@ -26,7 +26,7 @@ for token in (
     "public static final int VERTICAL_RADIUS = 2;",
     "InteractionResult use(",
     "Component.translatable(",
-    '"message.sporenwerk.dampener.protection_volume"',
+    '"message.sporenwerk.dampener.status"',
     "revealProtectionVolume(serverLevel, pos)",
     "level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME",
     "private static void revealProtectionVolume(ServerLevel level, BlockPos center)",
@@ -43,7 +43,7 @@ for token in (
     "MutagenResonanceDampenerBlock.HORIZONTAL_RADIUS",
     "MutagenResonanceDampenerBlock.VERTICAL_RADIUS",
     "if (!level().hasChunkAt(pos)) continue;",
-    "if (level().getBlockState(pos).is(ModBlocks.MUTAGEN_RESONANZDAEMPFER.get()))",
+    "if (!dampenerState.is(ModBlocks.MUTAGEN_RESONANZDAEMPFER.get())) continue;",
 ):
     require(token in entity, "server protection scan must share dimensions and stay chunk safe: " + token)
 require("origin.offset(-6, -2, -6)" not in entity and "origin.offset(6, 2, 6)" not in entity,
@@ -52,8 +52,8 @@ require("getChunk(" not in entity and "getChunkNow(" not in entity,
         "protection preview/scan must not force-load chunks")
 
 for filename, expected in {
-    "de_de.json": "Schutzbereich: horizontal",
-    "en_us.json": "Protection volume: ±%s blocks horizontally",
+    "de_de.json": "Schutzbereich horizontal",
+    "en_us.json": "Protection volume: ±%s horizontal",
 }.items():
     locale = json.loads((ASSETS / "lang" / filename).read_text(encoding="utf-8"))
     require(expected in locale.get("message.sporenwerk.dampener.protection_volume", ""),
