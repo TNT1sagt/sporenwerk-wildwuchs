@@ -218,7 +218,7 @@ if "KRISTALLPIRSCHER_SPAWN_EGG" not in items:
     lines = items.splitlines()
     for index, line in enumerate(lines):
         if "DAEMMERLING_SPAWN_EGG" in line and "public static final RegistryObject<Item>" in line:
-            lines.insert(index + 1, '    public static final RegistryObject<Item> KRISTALLPIRSCHER_SPAWN_EGG = ITEMS.register("kristallpirscher_spawn_egg", () -> new net.minecraftforge.common.util.DeferredSpawnEggItem(ModEntities.KRISTALLPIRSCHER, 0x142D38, 0x36E0D1, new Item.Properties()));')
+            lines.insert(index + 1, '    public static final RegistryObject<Item> KRISTALLPIRSCHER_SPAWN_EGG = ITEMS.register("kristallpirscher_spawn_egg", () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.KRISTALLPIRSCHER, 0x142D38, 0x36E0D1, new Item.Properties()));')
             break
     else:
         raise SystemExit("Cannot add Kristallpirscher: Dämmerling spawn egg declaration was not found")
