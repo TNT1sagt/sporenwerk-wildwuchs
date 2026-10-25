@@ -162,9 +162,11 @@ entity_path = SRC / "entity/MutagenkolossEntity.java"
 entity = entity_path.read_text(encoding="utf-8")
 entity = patch(
     entity,
-    "            this.entityData.set(CORE_EXPOSED, false);\n"
+    "            if (this.coreExposureTicks == 0) {\n"
+    "                this.entityData.set(CORE_EXPOSED, false);\n"
     "            } else if (this.coreExposureTicks % 6 == 0",
-    "            this.entityData.set(CORE_EXPOSED, false);\n"
+    "            if (this.coreExposureTicks == 0) {\n"
+    "                this.entityData.set(CORE_EXPOSED, false);\n"
     "                MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());\n"
     "            } else if (this.coreExposureTicks % 6 == 0",
     "MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());",
@@ -172,10 +174,9 @@ entity = patch(
 )
 entity = patch(
     entity,
-    "    private void emitWindupParticles() {\n",
+    "    }\n\n    private void emitWindupParticles() {\n",
     "        MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());\n"
-    "    }\n\n"
-    "    private void emitWindupParticles() {\n",
+    "    }\n\n    private void emitWindupParticles() {\n",
     "private void emitWindupParticles()",
     "attack-start relay refresh",
 )
