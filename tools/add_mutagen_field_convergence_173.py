@@ -90,10 +90,15 @@ if ecology_test.exists():
     require("level.getBlockState(" not in body and "getChunk(" not in body
             and "getChunkNow(" not in body,
             "saved bloom scent queries must use persistent timestamps only: " + signature)'''
-    if new_check not in text:
-        require(old_check in text, "could not locate the overbroad historical bloom-query assertion")
+    if old_check in text:
         text = text.replace(old_check, new_check, 1)
         ecology_test.write_text(text, encoding="utf-8")
+    else:
+        # The root test file may already have been narrowed before the workflow copied it.
+        require("saved bloom source queries must use persistent timestamps only" in text
+                and "public BlockPos nearestRecentBloom(" in text
+                and "public int countRecentBlooms(" in text,
+                "historical bloom-query test is neither old nor safely scoped")
 
 new_test = "test_mutagen_field_convergence_173.py"
 for test_path in (ROOT / "tools").glob("test_*.py"):
