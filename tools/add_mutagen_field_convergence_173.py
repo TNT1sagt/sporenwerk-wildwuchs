@@ -95,9 +95,10 @@ if ecology_test.exists():
         ecology_test.write_text(text, encoding="utf-8")
     else:
         # The root test file may already have been narrowed before the workflow copied it.
-        require("saved bloom source queries must use persistent timestamps only" in text
-                and "public BlockPos nearestRecentBloom(" in text
-                and "public int countRecentBlooms(" in text,
+        require("public BlockPos nearestRecentBloom(" in text
+                and "public int countRecentBlooms(" in text
+                and "getChunkNow(" in text
+                and "saved bloom" in text,
                 "historical bloom-query test is neither old nor safely scoped")
 
 new_test = "test_mutagen_field_convergence_173.py"
