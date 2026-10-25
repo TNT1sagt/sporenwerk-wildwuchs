@@ -1,8 +1,15 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.75.0 — Resonanzsporen-Kapsel für Kultur und Containment.**
+**Aktueller Entwicklungsstand: 1.76.0 — Biodiversitätsdiagnose der Mutagen-Kontrollstation.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.76.0
+
+- **Bessere Feldkontrolle:** Die Kontrollstation meldet jetzt Kulturvielfalt und reife Pflanzen, nicht nur die Zahl mutagenaktiver Pflanzen.
+- **Symbiose-Diagnose:** Reife Erntezentren werden gegen die echte lokale Artenvielfalt und aktuelle Feldstärke II/III geprüft.
+- **Direkte Lernhilfe:** Die Station erklärt, wie aus einer passenden Kultur Symbiosemyzel und danach Resonanzsporen-Kapseln gewonnen werden können.
+- **Containment bleibt bounded:** Bestehender Scanradius, geladene Chunks, Stabilisatornetz, Sporenabwehr und Dämpferbericht bleiben erhalten.
 
 ## Aktueller Entwicklungsschritt — 1.75.0
 
@@ -108,6 +115,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.76.0 — Biodiversitätsdiagnose der Mutagen-Kontrollstation
+
+- **Artenzahl statt bloßer Pflanzenmenge:** Die manuelle Stationserhebung zählt die vier Sporenwerk-Kulturarten sowie reife Pflanzen innerhalb des bestehenden Scanbereichs.
+- **Tatsächliche Symbiose-Gelegenheit:** Der Bericht prüft das bekannte 7×3×7-Nachbarschaftsmuster, mindestens drei verschiedene Arten, eine reife Erntepflanze und ein aktuell wirksames Mutagenfeld der Stärke II/III. Er schätzt nicht anhand bloßer Bodenzahlen.
+- **Konkrete Handlungsempfehlung:** Bei geeigneten Erntezentren erklärt die Station, wie durch Ernte Symbiosemyzel für Resonanzsporen-Kapseln gewonnen werden kann. Andernfalls nennt sie die fehlenden Voraussetzungen.
+- **Einmaliger, sicherer Scan:** Biodiversitätsnachbarschaften werden aus dem bereits erfassten Speicherbild gezählt; nur passende reife Kandidaten erhalten eine aktuelle Feldstärkeabfrage. Nicht geladene Chunks werden übersprungen und kein Ticker wird ergänzt.
+- **Qualitätssicherung:** Tests decken Arten-Bitmaske, lokale Nachbarschaft, Reifegrad, live Feldstärke, DE/EN-Empfehlungen, Versionsmetadaten und die unveränderte Containment-Erhebung ab.
 
 ## Version 1.75.0 — Resonanzsporen-Kapsel für Kultur und Containment
 
