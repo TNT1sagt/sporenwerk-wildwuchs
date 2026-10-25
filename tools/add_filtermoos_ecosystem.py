@@ -314,7 +314,10 @@ if old_focus in readme:
 else:
     focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
     if focus_lines:
-        readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.49.0", 1)
+        focus_start = readme.find(focus_lines[0])
+        focus_end = readme.find("\\n---", focus_start)
+        require(focus_end >= 0, "could not locate separator after current focus section")
+        readme = readme[:focus_start] + new_focus + readme[focus_end:]
 readme_path.write_text(readme, encoding="utf-8")
 
 print("Sporenwerk 1.49.0 generated: Filtermoos companion defense, player exposure buffering, scanner diagnostics, and research reward.")
