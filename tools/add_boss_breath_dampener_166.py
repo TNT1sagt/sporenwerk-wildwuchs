@@ -66,7 +66,7 @@ helper = """    /**
     private boolean interceptCrystalBreath(ServerLevel level, Vec3 origin, Vec3 direction) {
         for (int step = 1; step <= 16; step++) {
             BlockPos center = BlockPos.containing(origin.add(direction.scale(step)));
-            for (BlockPos.MutableBlockPos candidate : BlockPos.betweenClosed(
+            for (BlockPos candidate : BlockPos.betweenClosed(
                     center.offset(-1, -1, -1), center.offset(1, 1, 1))) {
                 if (!level.hasChunkAt(candidate)) continue;
                 BlockState state = level.getBlockState(candidate);
