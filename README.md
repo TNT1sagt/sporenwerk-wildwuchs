@@ -1,17 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.50.0 — Lebendes Filtermoos, natürliche Pflanzenabwehr und Expositionsschutz.**
+**Aktueller Entwicklungsstand: 1.51.0 — Resonanzparade, lebender Schutz und Feldforschung.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.50.0
+## Aktueller Schwerpunkt — 1.51.0
 
-- **Lebende Feldabwehr:** Ausgewachsenes Filtermoos der Mutagenstufe II/III schützt reife Nutzpflanzen vor dem Dämmerling und kann einen fälligen Mutagen-Expositionsimpuls eines nahen Spielers abfangen.
-- **Einheitliche Schutzregel:** Kreaturen-KI und Spielerüberleben verwenden denselben begrenzten Schutzradius von drei Blöcken horizontal und einem vertikal; Maskenhaltbarkeit bleibt bei abgefangener Exposition erhalten.
-- **Diagnose und Fortschritt:** Der Feldscanner zählt reife Filtermoos-Pflanzen der Stufe II/III im Messgebiet. Die erste tatsächliche Schutzwirkung schaltet „Ein lebender Filter“ frei und belohnt zwei Filtereinsätze.
-- **Aktive Gegenwehr bleibt erhalten:** Der Resonanzfokus verbraucht genau einen Resonanzsplitter pro erfolgreichem Impuls, trifft höchstens drei Gegner in 5,5 Blöcken Sichtweite und startet bei Fehlversuchen keine Abklingzeit.
-- **Qualität und Leistung:** Chunk-sichere Prüfungen, DE/EN-Rückmeldungen, Regressionstests, Forge-Build, JAR-Inhalt und dedizierter Serverstart sind Teil der Release-QA.
+- **Reaktionskampf:** Der Resonanzfokus kann einen laufenden Kristallpirscher-Resonanzimpuls unterbrechen. Das Zeitfenster wird über das vorhandene Klang-/Partikel-Telegraphing angekündigt.
+- **Lebende Schutzökologie:** Reifes Filtermoos der Mutagenstufe II/III puffert den tatsächlichen Resonanztreffer im kleinen Schutzradius. Die Prüfung findet nur beim Puls-Auslösen statt, nicht als zusätzliche Tick-Schleife.
+- **Forschungsfortschritt:** Der erste echte Gegenimpuls schaltet eine einmalige Forschungsstufe frei und liefert Mutagenextrakt plus zwei Filtereinsätze.
+- **Klares Kampf-Feedback:** Eine gelungene Parade verursacht stärkeren Schaden und längere Verlangsamung am Kristallpirscher und verleiht dem Spieler kurzzeitig Resistenz.
+- **Release-QA:** Separate Regressionen prüfen Windup-Unterbrechung, Feldschutz, One-shot-Belohnung, Übersetzungen, Forge-JAR und dedizierten Serverstart.
 ---
+
+## Version 1.51.0 — Resonanzparade und lebender Schutz
+
+- **Aktive Konteraktion:** Ein Resonanzfokus-Treffer während der 30-Tick-Aufladung des Kristallpirschers bricht den noch nicht freigesetzten Impuls ab und startet dessen normale Abklingzeit. Außerhalb des Zeitfensters ist der Treffer ein normaler Fokus-Angriff.
+- **Fairer Timing-Bonus:** Eine erfolgreiche Parade verursacht 9 statt 5 Schaden am Kristallpirscher, verlängert die Verlangsamung, verstärkt den Rückstoß und verleiht dem Spieler kurzzeitige Resistenz. Der erfolgreiche Fokusimpuls kostet weiterhin genau einen Resonanzsplitter.
+- **Filtermoos als echte Gegenwehr:** Reifes Filtermoos der Stufe II/III kann den freigesetzten Resonanzimpuls innerhalb seines vorhandenen Schutzradius abfangen. Die zusätzliche Prüfung erfolgt beim ohnehin vorhandenen Puls-Auslösen, nicht in einer neuen Tick-Schleife.
+- **Einmaliger Forschungsfund:** Die erste Unterbrechung schaltet „Echo gebrochen“ frei und gibt Mutagenextrakt plus zwei Sporenfiltereinsätze. Der Advancement-Status verhindert wiederholtes Farmen der Belohnung.
+- **Qualitätssicherung:** Tests prüfen Timing, Windup-Abbruch, Puls-Cooldown, Filtermoos-Schutz, einmalige Belohnung, deutsche/englische Texte, Ressourcen und JAR-Inhalt.
 
 ## Version 1.50.0 — Lebendes Filtermoos und natürliche Feldabwehr
 
