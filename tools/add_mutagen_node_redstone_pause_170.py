@@ -36,6 +36,7 @@ node_path.write_text("""package de.sporenwerk.block;
 import de.sporenwerk.infection.InfectionWorldData;
 import de.sporenwerk.infection.MutationField;
 import de.sporenwerk.infection.MutationNodeData;
+import de.sporenwerk.infection.MutagenBloom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -133,6 +134,7 @@ public final class MutationNodeBlock extends Block {
 
         if (MutationNodeData.get(level).isActive(pos)) {
             MutationField.spreadFromNode(level, pos, random);
+            MutagenBloom.tryTrigger(level, pos, random);
             if (level.getBlockState(pos).is(this) && !level.hasNeighborSignal(pos)) {
                 level.scheduleTick(pos, this, 20);
             }
