@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.76.0 — Biodiversitätsdiagnose der Mutagen-Kontrollstation.**
+**Aktueller Entwicklungsstand: 1.77.0 — Symbiose-Ernte als Redstone-Signal.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.77.0
+
+- **Symbiose als Redstone-Signal:** Das Containment-Relais erhält Modus 8 für die Zahl reifer Erntezentren, die drei Sporenwerk-Arten in unmittelbarer Nähe und ein aktives Mutagenfeld der Stufe II/III besitzen.
+- **Direkte Farm-Automation:** Der Comparator gibt 0 aus, wenn keine passenden Erntezentren bereit sind, und 1–15 entsprechend der Zahl erkannter reifer Zentren (bei 15 gedeckelt). So können Sortierer, Lampen, Trichter-Taktung oder Farm-Stoppschaltungen reagieren.
+- **Echte Laufzeitbedingungen:** Die Prüfung verwendet die vier registrierten Sporenwerk-Arten und die aktuelle Feldstärke, nicht bloß eine gespeicherte Feldfarbe oder globale Pflanzenzahl.
+- **Ereignisgesteuert:** Pflanzen, reife Ernte und Pflanzenentfernung aktualisieren nahe Relais, ohne neue Dauer-Ticker einzubauen. Der Scan bleibt auf geladene Chunks begrenzt.
+- **Qualitätssicherung:** Alle 144 Relais-Blockzustände, DE/EN-Beschriftung, Wachstums-/Pflanzenänderungsereignisse, Chunk-Sicherheit und Release-Metadaten werden geprüft.
 
 ## Aktueller Entwicklungsschritt — 1.76.0
 
@@ -115,6 +123,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.77.0 — Symbiose-Ernte als Redstone-Signal
+
+- **Neuer Containment-Relais-Modus 8:** Das Relais zählt bis zu 15 reife Sporenwerk-Erntezentren, die lokal mindestens drei verschiedene Kulturen und eine echte Feldstärke II/III besitzen.
+- **Farmen lassen sich steuern:** Der Comparator-Wert kann als Erntereife-Signal für Sortierung, Lagerung, Beleuchtung, Farmstopp oder weitere Redstone-Schaltungen genutzt werden.
+- **Aktualisierung bei relevanten Ereignissen:** Eine platzierte dritte Kulturart, der Reifeschritt einer passenden Pflanze und das Entfernen von Kulturen stoßen eine begrenzte Relais-Aktualisierung an. Es kommt kein globaler oder per-Block-Ticker hinzu.
+- **Sicherheit und Lesbarkeit:** Der bestehende Relay-Scan bleibt geladen-chunk-basiert, das Blockmodell bleibt Minecraft-Pixelart, alle 9×16 Zustandskombinationen besitzen Modellzuordnungen und die neue Betriebsart ist auf Deutsch/Englisch beschriftet.
 
 ## Version 1.76.0 — Biodiversitätsdiagnose der Mutagen-Kontrollstation
 
