@@ -35,7 +35,7 @@ for token in (
     'register("mutagenkoloss"',
     "EntityType<MutagenkolossEntity>",
     "MobCategory.MONSTER",
-    ".sized(4.8F, 4.5F)",
+    ".sized(5.2F, 5.7F)",
     ".fireImmune()",
 ):
     require(token in entities, "boss registration missing " + token)
@@ -92,8 +92,13 @@ for token in (
     "ATTACK_STOMP", "ATTACK_BREATH", "ATTACK_AWAKENING",
     "Mth.sin(", "renderToBuffer(",
     "addBox(-20.0F, -8.0F, -26.0F, 40.0F, 20.0F, 52.0F)",
-    "addBox(-7.0F, -1.0F, -6.5F, 14.0F, 13.0F, 13.0F)",
+    "addBox(-8.0F, -2.0F, -6.5F, 16.0F, 8.0F, 13.0F)",
     "height * 0.42F", "height * 0.78F",
+    "PartPose.offset(0.0F, -4.0F, 0.0F)",
+    "addBox(-6.6F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F)",
+    "addBox(-1.7F, 0.25F, -13.2F, 3.4F, 1.25F, 6.2F)",
+    "addBox(3.2F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F)",
+    'getChild("lower_leg").xRot',
 ):
     require(token in model, "custom model/animation missing " + token)
 require("MutagenkolossModel.LAYER_LOCATION" in client
@@ -103,7 +108,8 @@ require("MutagenkolossModel.LAYER_LOCATION" in client
 require("textures/entity/mutagenkoloss.png" in renderer
         and "textures/entity/mutagenkoloss_glow.png" in renderer
         and "RenderType.eyes(GLOW_TEXTURE)" in renderer
-        and "0xF000F0" in renderer,
+        and "0xF000F0" in renderer
+        and "poseStack.scale(1.9F, 1.9F, 1.9F)" in renderer,
         "separate full-bright crystal glow pass must be wired into renderer")
 require("MUTAGENKOLOSS_HERZ" in items and "MUTAGENKOLOSS_SPAWN_EGG" in items
         and "output.accept(ModItems.MUTAGENKOLOSS_SPAWN_EGG.get())" in creative,
@@ -120,8 +126,9 @@ require(advancement["criteria"]["defeat_mutagenkoloss"]["conditions"]["entity"][
         "dedicated boss-kill advancement missing")
 require("Tapered crystal geometry" in model or "height * 0.42F" in model,
         "dorsal spines must use tapered multi-segment crystal geometry")
-require("addBox(-1.4F, 1.0F, -6.8F, 2.8F, 9.0F, 0.8F)" in model,
-        "the four legs must have visible, synchronized emissive seams")
+require("addBox(-1.8F, 0.0F, -6.8F, 3.6F, 6.2F, 0.9F)" in model
+        and "lower_vein" in model and "claw_middle" in model,
+        "the four articulated legs need visible emissive veins and three claws each")
 
 for path in (
     RES / "assets/sporenwerk/models/item/mutagenkoloss_herz.json",
@@ -165,10 +172,10 @@ require("MUTAGENKOLOSS PIXEL ART" in preview
         and "mutagenkoloss_glow.png" in preview,
         "visual QA sheet must show the new boss texture and emissive atlas")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.55\.0['\"]", build) is not None,
-        "artifact must be version 1.55.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.57\.0['\"]", build) is not None,
+        "artifact must be version 1.57.0")
 readme = read("README.md")
-require("Version 1.56.0" in readme and "Version 1.55.0" in readme
-        and "Aktueller Entwicklungsstand: 1.56.0" in readme,
+require("Version 1.57.0" in readme and "Version 1.56.0" in readme
+        and "Aktueller Entwicklungsstand: 1.57.0" in readme,
         "release notes and current version must be updated without losing history")
 print("Crystal Colossus registration, model, glow layer, synchronized animations, attacks, ritual, loot, pixel art, locales and release contracts passed.")

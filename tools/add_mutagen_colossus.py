@@ -57,7 +57,7 @@ if "MUTAGENKOLOSS" not in entities:
     public static final RegistryObject<EntityType<MutagenkolossEntity>> MUTAGENKOLOSS =
             ENTITIES.register("mutagenkoloss", () -> EntityType.Builder
                     .of(MutagenkolossEntity::new, MobCategory.MONSTER)
-                    .sized(4.8F, 4.5F)
+                    .sized(5.2F, 5.7F)
                     .clientTrackingRange(16)
                     .fireImmune()
                     .build("mutagenkoloss"));''', 1)
@@ -413,7 +413,7 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
                 CubeListBuilder.create().texOffs(0, 0).addBox(-20.0F, -8.0F, -26.0F, 40.0F, 20.0F, 52.0F)
                         .texOffs(0, 60).addBox(-21.0F, -7.0F, -25.0F, 42.0F, 17.0F, 24.0F)
                         .texOffs(80, 60).addBox(-19.0F, -6.0F, 3.0F, 38.0F, 15.0F, 22.0F),
-                PartPose.offset(0.0F, 9.0F, 0.0F));
+                PartPose.offset(0.0F, -4.0F, 0.0F));
 
         body.addOrReplaceChild("neck",
                 CubeListBuilder.create().texOffs(100, 0).addBox(-11.0F, -7.0F, -28.0F, 22.0F, 14.0F, 16.0F),
@@ -467,11 +467,32 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
     private static void addLeg(PartDefinition body, String name, int u, int v,
                                float x, float y, float z, boolean left) {
         PartDefinition leg = body.addOrReplaceChild(name,
-                CubeListBuilder.create().texOffs(u, v).addBox(-7.0F, -1.0F, -6.5F, 14.0F, 13.0F, 13.0F),
+                CubeListBuilder.create()
+                        .texOffs(u, v).addBox(-8.0F, -2.0F, -6.5F, 16.0F, 8.0F, 13.0F)
+                        .texOffs(u, v + 18).addBox(-6.4F, 3.0F, -5.5F, 12.8F, 5.0F, 11.0F),
                 PartPose.offset(x, y, z));
-        leg.addOrReplaceChild("paw",
-                CubeListBuilder.create().texOffs(u, v + 32).addBox(-7.5F, 0.0F, -8.0F, 15.0F, 3.0F, 15.0F),
-                PartPose.offset(0.0F, 11.0F, -1.0F));
+        PartDefinition lower = leg.addOrReplaceChild("lower_leg",
+                CubeListBuilder.create().texOffs(u + 14, v + 20)
+                        .addBox(-4.8F, -1.0F, -4.8F, 9.6F, 7.0F, 9.6F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F,
+                        left ? -0.055F : 0.055F));
+        lower.addOrReplaceChild("calf_plate",
+                CubeListBuilder.create().texOffs(u + 24, v + 20)
+                        .addBox(-4.2F, -1.4F, -5.2F, 8.4F, 4.2F, 1.8F),
+                PartPose.ZERO);
+        PartDefinition paw = lower.addOrReplaceChild("paw",
+                CubeListBuilder.create().texOffs(u, v + 32)
+                        .addBox(-7.0F, 0.0F, -8.0F, 14.0F, 2.0F, 15.0F),
+                PartPose.offset(0.0F, 6.0F, -1.0F));
+        paw.addOrReplaceChild("claw_left",
+                CubeListBuilder.create().texOffs(u + 16, v + 32)
+                        .addBox(-6.6F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F), PartPose.ZERO);
+        paw.addOrReplaceChild("claw_middle",
+                CubeListBuilder.create().texOffs(u + 16, v + 32)
+                        .addBox(-1.7F, 0.25F, -13.2F, 3.4F, 1.25F, 6.2F), PartPose.ZERO);
+        paw.addOrReplaceChild("claw_right",
+                CubeListBuilder.create().texOffs(u + 16, v + 32)
+                        .addBox(3.2F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F), PartPose.ZERO);
     }
 
     private static void addCrystal(PartDefinition body, String name, int u,
@@ -527,9 +548,18 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
     private static void addGlowLeg(PartDefinition body, String name, float x, float y, float z) {
         PartDefinition leg = body.addOrReplaceChild(name, CubeListBuilder.create(), PartPose.offset(x, y, z));
         leg.addOrReplaceChild("leg_vein", CubeListBuilder.create().texOffs(208, 80)
-                .addBox(-1.4F, 1.0F, -6.8F, 2.8F, 9.0F, 0.8F), PartPose.ZERO);
-        leg.addOrReplaceChild("paw", CubeListBuilder.create().texOffs(208, 48)
-                .addBox(-7.5F, 0.0F, -8.0F, 15.0F, 3.0F, 15.0F), PartPose.offset(0.0F, 11.0F, -1.0F));
+                .addBox(-1.8F, 0.0F, -6.8F, 3.6F, 6.2F, 0.9F), PartPose.ZERO);
+        PartDefinition lower = leg.addOrReplaceChild("lower_leg", CubeListBuilder.create(), PartPose.offset(0.0F, 6.0F, 0.0F));
+        lower.addOrReplaceChild("lower_vein", CubeListBuilder.create().texOffs(208, 80)
+                .addBox(-1.5F, 0.0F, -5.0F, 3.0F, 6.0F, 0.9F), PartPose.ZERO);
+        PartDefinition paw = lower.addOrReplaceChild("paw", CubeListBuilder.create().texOffs(208, 48)
+                .addBox(-7.0F, 0.0F, -8.0F, 14.0F, 2.0F, 15.0F), PartPose.offset(0.0F, 6.0F, -1.0F));
+        paw.addOrReplaceChild("claw_left", CubeListBuilder.create().texOffs(224, 44)
+                .addBox(-6.6F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F), PartPose.ZERO);
+        paw.addOrReplaceChild("claw_middle", CubeListBuilder.create().texOffs(224, 44)
+                .addBox(-1.7F, 0.25F, -13.2F, 3.4F, 1.25F, 6.2F), PartPose.ZERO);
+        paw.addOrReplaceChild("claw_right", CubeListBuilder.create().texOffs(224, 44)
+                .addBox(3.2F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F), PartPose.ZERO);
     }
 
     private static void addGlowCrystal(PartDefinition body, String name, float x, float z,
@@ -558,6 +588,10 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
         this.frontRight.xRot = -gait;
         this.rearLeft.xRot = -gait;
         this.rearRight.xRot = gait;
+        this.frontLeft.getChild("lower_leg").xRot = Mth.max(0.0F, gait) * 0.55F;
+        this.frontRight.getChild("lower_leg").xRot = Mth.max(0.0F, -gait) * 0.55F;
+        this.rearLeft.getChild("lower_leg").xRot = Mth.max(0.0F, -gait) * 0.55F;
+        this.rearRight.getChild("lower_leg").xRot = Mth.max(0.0F, gait) * 0.55F;
         this.frontLeft.yRot = this.frontRight.yRot = 0.0F;
         this.rearLeft.yRot = this.rearRight.yRot = 0.0F;
         this.frontLeft.zRot = this.frontRight.zRot = 0.0F;
@@ -644,7 +678,7 @@ public final class MutagenkolossRenderer extends MobRenderer<MutagenkolossEntity
 
     @Override
     protected void scale(MutagenkolossEntity entity, PoseStack poseStack, float partialTick) {
-        poseStack.scale(1.22F, 1.22F, 1.22F);
+        poseStack.scale(1.9F, 1.9F, 1.9F);
     }
 
     private static final class GlowLayer extends RenderLayer<MutagenkolossEntity, MutagenkolossModel> {
@@ -1026,26 +1060,34 @@ for test_path in (ROOT / "tools").glob("test_*.py"):
                              "Aktueller Entwicklungsstand: 1.55.0")
     updated = updated.replace("Aktueller Entwicklungsstand: 1.55.0",
                               "Aktueller Entwicklungsstand: 1.56.0")
+    updated = updated.replace("Aktueller Entwicklungsstand: 1.56.0",
+                              "Aktueller Entwicklungsstand: 1.57.0")
     if "build.gradle" in source:
         updated = updated.replace(r"1\.54\.0", r"1\.55\.0")
         updated = updated.replace(r"1\.55\.0", r"1\.56\.0")
+        updated = updated.replace(r"1\.56\.0", r"1\.57\.0")
         updated = updated.replace("artifact must be version 1.54.0",
                                   "artifact must be version 1.55.0")
         updated = updated.replace("artifact must be version 1.55.0",
                                   "artifact must be version 1.56.0")
+        updated = updated.replace("artifact must be version 1.56.0",
+                                  "artifact must be version 1.57.0")
     updated = updated.replace(
         '"Version 1.54.0" in readme and "Version 1.53.0" in readme',
         '"Version 1.55.0" in readme and "Version 1.54.0" in readme')
     updated = updated.replace(
         '"Version 1.55.0" in readme and "Version 1.54.0" in readme',
         '"Version 1.56.0" in readme and "Version 1.55.0" in readme')
+    updated = updated.replace(
+        '"Version 1.56.0" in readme and "Version 1.55.0" in readme',
+        '"Version 1.57.0" in readme and "Version 1.56.0" in readme')
     if updated != source:
         test_path.write_text(updated, encoding="utf-8")
 
 build_path = ROOT / "build.gradle"
 build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]",
-                       "version = '1.56.0'", build_path.read_text(encoding="utf-8"), count=1)
-require(count == 1, "could not advance Gradle artifact version to 1.56.0")
+                       "version = '1.57.0'", build_path.read_text(encoding="utf-8"), count=1)
+require(count == 1, "could not advance Gradle artifact version to 1.57.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
@@ -1064,7 +1106,7 @@ if "## Version 1.55.0 — Der Kristallkoloss erwacht" not in readme:
     legacy_index = readme.find(legacy_marker)
     require(legacy_index >= 0, "could not locate 1.54.0 release notes to preserve history")
     readme = readme[:legacy_index] + legacy_section + readme[legacy_index:]
-section = """## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses
+previous_section = """## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses
 
 - **Silhouette statt Kopf-im-Gras:** Der Panzerkörper wurde verbreitert und verlängert, die Kopfform verkleinert und die Schnauze klarer abgesetzt. Beine sind länger, weiter außen platziert und enden jetzt mit breiten, sichtbaren Klauenfüßen auf Bodenhöhe.
 - **Tatsächliche Kristallspitzen:** Die sieben Rückenstacheln bestehen nun aus drei gestapelten, zunehmend schmalen Segmenten statt gleich breiten rechteckigen Säulen. Hörner laufen ebenfalls sichtbar zu.
@@ -1077,11 +1119,28 @@ Diese Änderung ist eine gezielte Modellkorrektur auf Grundlage des tatsächlich
 
 """
 if "## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses" not in readme:
-    marker = "## Version 1.55.0 — Der Kristallkoloss erwacht"
+    prior_marker = "## Version 1.55.0 — Der Kristallkoloss erwacht"
+    prior_idx = readme.find(prior_marker)
+    require(prior_idx >= 0, "could not locate 1.55.0 notes before adding history")
+    readme = readme[:prior_idx] + previous_section + readme[prior_idx:]
+section = """## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen
+
+- **Körper und Weltursprung stimmen überein:** Der Modellrumpf wird am Vanilla-Entity-Ursprung korrekt nach oben positioniert, sodass die unteren Beine nicht mehr unter der Oberfläche versinken. Die Rückenstacheln ragen sichtbar über den Kopf, ohne dass die Füße im Gras stecken.
+- **Boss-Proportionen:** Die gerenderte Kreatur wird auf etwa 5,5 Blöcke Höhe und über 5 Blöcke Körperbreite skaliert; Entity-Hitbox und Renderer-Größe wurden gemeinsam angepasst.
+- **Vier lesbare, artikulierte Läufe:** Jede Gliedmaße besitzt einen breiten Schulter-/Oberschenkelabschnitt, einen eigenen beweglichen Unterschenkel, einen breiten Fuß und drei sichtbare Frontklauen. Die Unterschenkel erhalten eine separate Laufbewegung.
+- **Passende Leuchtebene:** Cyanfarbene Adern folgen jetzt Ober- und Unterschenkeln; die Klauen werden in derselben Geometrie als eigene Full-Bright-Flächen gezeichnet.
+- **Kristallrücken und Kampf bleiben erhalten:** Die sieben abgestuften Rückenstacheln, der segmentierte Schwanz, Bossleiste, Stampfangriff, Kristallatem, zweite Phase und Survival-Beschwörung bleiben bestehen.
+- **Direkte Regressionsprüfungen:** Die Tests prüfen die neue Hitbox, korrekte Körperposition, Render-Skalierung, Unterschenkel, drei Klauen je Fuß, Leuchtebene, Release-Artefakt und Serverstart.
+
+Der Build prüft die Geometriequelle und die technischen Ressourcen. Ob Perspektive, Silhouette und Leuchten im tatsächlichen Spiel wie gewünscht aussehen, muss weiterhin am Minecraft-Client beurteilt werden.
+
+"""
+if "## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen" not in readme:
+    marker = "## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses"
     idx = readme.find(marker)
     require(idx >= 0, "could not locate 1.54.0 release notes to preserve history")
     readme = readme[:idx] + section + readme[idx:]
-headline = "**Aktueller Entwicklungsstand: 1.56.0 — überarbeitete Kristallkoloss-Silhouette, Klauen und leuchtende Kristallspitzen.**"
+headline = "**Aktueller Entwicklungsstand: 1.57.0 — korrekte Bodenhöhe, massive Silhouette und animierte Klauen des Kristallkolosses.**"
 headlines = [line for line in readme.splitlines() if "Aktueller Entwicklungsstand:" in line]
 if headlines:
     readme = readme.replace(headlines[0], headline, 1)
@@ -1089,8 +1148,8 @@ else:
     readme = headline + "\n\n" + readme.lstrip()
 focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
 if focus_lines:
-    readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.56.0", 1)
+    readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.57.0", 1)
 else:
-    readme = readme.replace(headline, headline + "\n\n## Aktueller Schwerpunkt — 1.56.0", 1)
+    readme = readme.replace(headline, headline + "\n\n## Aktueller Schwerpunkt — 1.57.0", 1)
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed 1.56.0 Crystal Colossus visual correction: custom quadruped model, emissive crystal layer, synchronized attacks, two phases, Survival ritual and boss reward.")
+print("Installed 1.57.0 Crystal Colossus proportion, ground alignment, articulated claws and emissive limb correction: custom quadruped model, emissive crystal layer, synchronized attacks, two phases, Survival ritual and boss reward.")
