@@ -1,18 +1,27 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.48.0 — Bioreaktor-Veredelung, reaktive Sporenabwehr und lokale Symbiose-Erkennung.**
+**Aktueller Entwicklungsstand: 1.49.0 — Lebendes Filtermoos, natürliche Pflanzenabwehr und Expositionsschutz.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.48.0
+## Aktueller Schwerpunkt — 1.49.0
 
-- Symbiosemyzel kann nun in zwei Produktionspfaden genutzt werden: als gezielte Einzelladungs-Wartung eines Resonanzdämpfers und als Bioreaktor-Zutat für Mutagenextrakt.
-- Der Feldscanner unterscheidet Artenvielfalt im Bereich von einem tatsächlich bestätigten lokalen Dreier-Cluster um eine reife Mutagenpflanze.
-- Ein abgewehrter Dämmerling erhält eine einzelne sichtbare Rückmeldung statt Partikelwiederholung bei jedem Ward-Refresh.
-- Die neuen Prüfungen verwenden bereits geladene Scan-Daten und die vorhandene Maschinen-Transaktionslogik; keine zusätzlichen Chunk-Ladevorgänge.
-- Die Release-Pipeline prüft Produktions-Transaktionen, Schutzfeedback, Clusterlogik, Forge-Build, installierbare JAR und dedizierten Serverstart.
+- Ausgewachsenes Filtermoos der Mutagenstufe II/III schützt nahe reife Sporenwerk-Pflanzen vor dem Dämmerling und kann den nächsten fälligen Mutagen-Expositionsimpuls eines nahen Spielers abfangen.
+- Die Kreaturen-KI und die Spieler-Exposition nutzen dieselbe begrenzte, chunk-sichere Schutzregel.
+- Der Feldscanner zählt reife Filtermoos-Filterpflanzen im Messgebiet, ohne den Bereichsgesamtwert mit lokalem Schutz zu verwechseln.
+- Die erste tatsächliche Schutzwirkung schaltet den Forschungsmeilenstein „Ein lebender Filter“ frei und belohnt zwei Filtereinsätze.
+- Die neuen Prüfungen halten alle Abfragen begrenzt, ohne neue Tick-Schleife oder erzwungenes Chunk-Laden.
 
 ---
+
+## Version 1.49.0 — Lebendes Filtermoos und natürliche Feldabwehr
+
+- **Ökologische Begleitpflanze:** Ausgewachsenes Filtermoos mit Mutagenstufe II/III bildet einen Schutzradius von drei Blöcken horizontal und einem vertikal. In diesem Bereich schützt es reife Sporenwerk-Pflanzen vor dem Dämmerling.
+- **Überlebenshilfe im Feld:** Derselbe Filtermoos-Cluster fängt einen fälligen Mutagen-Expositionsimpuls ab, wenn ein Spieler nahe genug steht. Das verbraucht keine Haltbarkeit der Filtermaske; Meldung und Sporenpartikel bestätigen den Schutz.
+- **Nachvollziehbare Entdeckung:** Die erste tatsächlich abgefangene Exposition schaltet den Forschungsmeilenstein „Ein lebender Filter“ frei und belohnt zwei gewöhnliche Filtereinsätze.
+- **Scanner statt Rätselraten:** Der begrenzte Feldbericht zählt reife Filtermoos-Pflanzen der Stufe II/III. Dieser Bereichsgesamtwert bestätigt nicht, dass jede gezählte Pflanze den Spieler oder ein Ziel gerade schützt.
+- **Ressourcen- und Balancegrenzen:** Die Filtermoos-Prüfungen überspringen ungeladene Chunks; die Spielerprüfung läuft nur zu ohnehin fälligen Expositionszeitpunkten. Keine neue Tick-Schleife und kein erzwungenes Chunk-Laden.
+- **Qualitätssicherung:** Regressionen prüfen Mutagenstufen, Pflanzenreife, den gemeinsamen Schutzradius, Maskenhaltbarkeit, Forschungsbelohnung, Scannerbericht, DE/EN-Texte, Forge-Build und Serverstart.
 
 ## Version 1.48.0 — Bioreaktor-Kreislauf und reaktive Sporenabwehr
 
