@@ -52,7 +52,7 @@ for token in ("empowerNearbyCrops(level, origin, random, 6)",
 node_guard = 'level.getBlockState(origin).getValue(MutationNodeBlock.MODE) != 0'
 require(field.count(node_guard) == 2,
         "both source-origin and already-contaminated terrain paths must require spread mode")
-require(field.count("level.hasNeighborSignal(origin)") == 2,
+require(field.count("level.hasNeighborSignal(origin)") >= 3,
         "Redstone must still suppress both spread paths")
 
 blockstate = json.loads((ASSETS / "blockstates/infektionsherd.json").read_text(encoding="utf-8"))
