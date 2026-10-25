@@ -38,6 +38,7 @@ for token in (
     "symbiosisReadyCenters >= 15",
     "MAX_REFRESHED_RELAYS_PER_EVENT",
     "public static void refreshNearbyRelays(Level level, BlockPos sourcePos)",
+    "public static void refreshNearbySymbiosisRelays(Level level, BlockPos sourcePos)",
 ):
     require(token in relay, "comparator readiness contract missing: " + token)
 require("getChunk(" not in relay and "getChunkNow(" not in relay,
@@ -63,7 +64,7 @@ for token in (
     "MutagenSymbiosis.countCropSpecies(level, pos) >= 2",
     "int ageBeforeGrowth = state.getValue(CropBlock.AGE);",
     "afterGrowth.getValue(CropBlock.AGE) == getMaxAge()",
-    "MutagenContainmentRelayBlock.refreshNearbyRelays(level, pos)",
+    "MutagenContainmentRelayBlock.refreshNearbySymbiosisRelays(level, pos)",
     "public void onPlace(BlockState state, Level level, BlockPos pos",
     "public void onRemove(BlockState state, Level level, BlockPos pos",
 ):
