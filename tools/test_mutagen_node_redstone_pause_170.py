@@ -35,6 +35,8 @@ for token in (
     "if (state.getValue(POWERED) || level.hasNeighborSignal(pos)) return;",
     "MutationNodeData.get(serverLevel).activate(pos)",
     "MutationNodeData.get(level).isActive(pos)",
+    "import de.sporenwerk.infection.MutagenBloom;",
+    "MutagenBloom.tryTrigger(level, pos, random)",
     "MutationNodeData.get(serverLevel).unregister(pos)",
     "SoundEvents.AMETHYST_BLOCK_CHIME",
     "ParticleTypes.SMOKE",
