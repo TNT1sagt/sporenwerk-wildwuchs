@@ -133,7 +133,7 @@ public final class MutationNodeBlock extends Block {
             }
         }
         if (!powered && state.getValue(MODE) != 2) {
-            level.scheduleTick(pos, this, state.getValue(MODE) == 1 ? 1 : 1);
+            level.scheduleTick(pos, this, 1);
         }
     }
 
