@@ -32,18 +32,18 @@ if import_line not in items:
     anchor = "import net.minecraft.world.item.Item;"
     require(anchor in items, "ModItems Item import anchor missing")
     items = items.replace(anchor, import_line + "\n" + anchor, 1)
-registration = '    public static final RegistryObject<Item> RESONANZSPORNENKAPSEL = ITEMS.register("resonanzsporen_kapsel", () -> new ResonanzsporenKapselItem(new Item.Properties().stacksTo(16)));'
+registration = '    public static final RegistryObject<Item> RESONANZSPORENKAPSEL = ITEMS.register("resonanzsporen_kapsel", () -> new ResonanzsporenKapselItem(new Item.Properties().stacksTo(16)));'
 if registration not in items:
     anchor = '    public static final RegistryObject<Item> LEUCHTENDER_KRISTALLKERN = ITEMS.register("leuchtender_kristallkern", () -> new LeuchtenderKristallkernItem(new Item.Properties().stacksTo(1)));'
     require(anchor in items, "Luminous Crystal Core registration missing")
     items = items.replace(anchor, anchor + "\n" + registration, 1)
 items_path.write_text(items, encoding="utf-8")
-require("RESONANZSPORNENKAPSEL" in items_path.read_text(encoding="utf-8"),
+require("RESONANZSPORENKAPSEL" in items_path.read_text(encoding="utf-8"),
         "capsule registration missing")
 
 creative_path = SRC / "registry/ModCreativeTabs.java"
 creative = creative_path.read_text(encoding="utf-8")
-creative_entry = "output.accept(ModItems.RESONANZSPORNENKAPSEL.get());"
+creative_entry = "output.accept(ModItems.RESONANZSPORENKAPSEL.get());"
 if creative_entry not in creative:
     anchor = "output.accept(ModItems.LEUCHTENDER_KRISTALLKERN.get());"
     require(anchor in creative, "core relic creative-tab anchor missing")
@@ -137,7 +137,7 @@ anchor = """        ItemStack held = player.getItemInHand(hand);
         if (held.is(ModItems.KRISTALLPIRSCHER_RESONANZSPLITTER.get())) {"""
 branch = """        ItemStack held = player.getItemInHand(hand);
         int currentCharge = state.getValue(CHARGE);
-        if (held.is(ModItems.RESONANZSPORNENKAPSEL.get())) {
+        if (held.is(ModItems.RESONANZSPORENKAPSEL.get())) {
             if (currentCharge >= MAX_CHARGE) {
                 player.displayClientMessage(Component.translatable(
                         "message.sporenwerk.resonanzkapsel.dampener_full", currentCharge, MAX_CHARGE)
@@ -161,11 +161,11 @@ branch = """        ItemStack held = player.getItemInHand(hand);
             return InteractionResult.CONSUME;
         }
         if (held.is(ModItems.KRISTALLPIRSCHER_RESONANZSPLITTER.get())) {"""
-if "held.is(ModItems.RESONANZSPORNENKAPSEL.get())" not in dampener:
+if "held.is(ModItems.RESONANZSPORENKAPSEL.get())" not in dampener:
     require(anchor in dampener, "could not locate dampener charge interaction")
     dampener = dampener.replace(anchor, branch, 1)
     dampener_path.write_text(dampener, encoding="utf-8")
-require("held.is(ModItems.RESONANZSPORNENKAPSEL.get())" in dampener_path.read_text(encoding="utf-8"),
+require("held.is(ModItems.RESONANZSPORENKAPSEL.get())" in dampener_path.read_text(encoding="utf-8"),
         "dampener capsule branch was not installed")
 
 # Shape and recipe: rare symbiosis plus Mutagen spores are turned into a finite resource
