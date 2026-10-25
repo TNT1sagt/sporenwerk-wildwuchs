@@ -76,7 +76,7 @@ for filename, expected in (
     ("en_us.json", "The Dampener caught the crystal breath! The crystal core is exposed."),
 ):
     locale = json.loads((ASSETS / "lang" / filename).read_text(encoding="utf-8"))
-    require(locale.get("message.sporenwerk.colossus.core_exposed") == expected,
+    require(locale.get("message.sporenwerk.colossus.core_exposed_countermeasure") == expected,
             filename + " missing localized counterattack feedback")
 
 build = (ROOT / "build.gradle").read_text(encoding="utf-8")
