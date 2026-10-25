@@ -1,8 +1,21 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.70.0 — Redstone-Sperre für kontrollierte Mutagenherde.**
+**Aktueller Entwicklungsstand: 1.72.0 — Mutagenstärke folgt dem Betriebsmodus.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.72.0
+
+- **Sichere Mutagenstufen:** Kulturmodus hält sichtbare Mutagen-Phänotypen und stufenabhängige Ernteboni aktiv, ohne Gelände auszubreiten, Spieler zu exponieren oder Mutagenblüten auszulösen.
+- **Ruhend ist wirklich inaktiv:** Ruhender und Redstone-gesperrter Herd liefern Feldstärke 0, obwohl Herd und persistente Registrierung erhalten bleiben.
+- **Gemeinsame Laufzeitabfrage:** Pflanzenvisualisierung, stufenabhängige Ernte und Feldanalyse verwenden dieselbe Prüfung des real platzierten Herdes und seines Betriebsmodus.
+- **Chunk-sicher:** Die Feldstärkeabfrage liest nur bereits geladene Quell-Chunks.
+
+## Aktueller Entwicklungsschritt — 1.71.0
+
+- **Drei Betriebsmodi:** Rechtsklick schaltet zwischen Ausbreitung, sicherem Kulturmodus und Ruhend um.
+- **Redstone-Sperre:** Strom pausiert unabhängig vom gewählten Modus jede Feldwirkung und bleibt im Weltzustand sichtbar.
+- **Sichtbare Zustände:** Die drei Betriebsmodi und der elektrische Sperrzustand verwenden unterschiedliche Pixeltexturen.
 
 ## Aktueller Entwicklungsschritt — 1.70.0
 
@@ -74,6 +87,20 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.72.0 — Mutagenstärke folgt dem Betriebsmodus
+
+- **Kulturmodus mit Phänotypen:** Sporenwerk-Pflanzen können Mutagenstufen und vorhandene stufenabhängige Ernteboni erhalten, ohne dass der Herd Terraininfektion, Exposition oder Mutagenblüten auslöst.
+- **Keine Geisterfelder:** Ruhend und Redstone-gesperrt liefern Feldstärke 0, auch wenn die Quelle für einen späteren Neustart registriert bleibt.
+- **Einheitliche Intensität:** Pflanzenvisualisierung, Ernte und Feldanalyse verwenden dieselbe serverseitige, quellspezifische Stärkenabfrage.
+- **Chunk-Grenzen:** Die neue Abfrage überspringt ungeladene Quellen-Chunks und erzwingt keine Ladevorgänge.
+
+## Version 1.71.0 — Drei Betriebsmodi für den Mutagenherd
+
+- Rechtsklick schaltet Ausbreitung, Kulturmodus und Ruhend um; der Modus wird im Blockzustand gespeichert.
+- Kulturmodus beschleunigt nur geeignete Sporenwerk-Pflanzen, erzeugt aber keine neuen befallenen Bodenblöcke und keine Spielerexposition.
+- Der Redstone-Sperrzustand hat Vorrang und verwendet weiterhin die auffällige rote Pixeltextur.
+- Alle sechs Blockstate-Kombinationen, Bloom-Integration, Übersetzungen und Texturkontrast werden geprüft.
 
 ## Version 1.70.0 — Redstone-Sperre für kontrollierte Mutagenherde
 
