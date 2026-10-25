@@ -104,7 +104,7 @@ for locale in ("de_de.json", "en_us.json"):
         require(bool(data.get(key, "").strip()), locale + " missing " + key)
 
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.49\.0['\"]", build) is not None,
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.50\.0['\"]", build) is not None,
         "artifact must be version 1.50.0")
 readme = read("README.md")
 require("Version 1.50.0" in readme and "Version 1.49.0" in readme,
