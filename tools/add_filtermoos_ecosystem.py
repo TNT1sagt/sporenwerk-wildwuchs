@@ -84,10 +84,10 @@ add_import(entity_path, "import de.sporenwerk.registry.ModBlocks;",
            "import de.sporenwerk.infection.FilterMossSymbiosis;", "Dämmerling Filtermoos protection")
 replace_once(
     entity_path,
-    "        if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;\n        for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),",
-    "        if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;\n"
-    "        if (FilterMossSymbiosis.protects(mob.level(), cropPos)) return true;\n"
-    "        for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),",
+    "            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;\n            for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),",
+    "            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;\n"
+    "            if (FilterMossSymbiosis.protects(mob.level(), cropPos)) return true;\n"
+    "            for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),",
     "natural Filtermoos protection in Dämmerling target selection"
 )
 # The existing collector scan must remain chunk-safe at chunk borders.
