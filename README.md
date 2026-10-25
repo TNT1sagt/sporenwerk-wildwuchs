@@ -4,6 +4,14 @@
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
+## Aktueller Entwicklungsschritt — 1.64.0
+
+- **Kristallkoloss:** Kantige Brauen- und Wangenpanzer verstärken die Kopfsilhouette; eine separate Glow-Textur setzt kontrollierte cyan-violette Risse.
+- **Containment-Relais:** Der sechste Modus berechnet eine geschätzte Restgefahr aus Mutagenfeldstärke, Warnsignalen und vorhandenen Schutzressourcen.
+- **Redstone-Steuerung:** Die Restgefahr wird als Comparator-Signal ausgegeben, damit Anlagen auf die kombinierte Situation reagieren können.
+- **Qualitätssicherung:** Neue Regressionen prüfen die Modellschichten, Textur-UVs, 96 Relaiszustände, Chunk-Sicherheit und den vollständigen Forge-Starttest.
+
+
 ## Aktueller Entwicklungsschritt — 1.63.0
 
 - **Direktes Feldstärke-Signal:** Das Containment-Relais erhält einen fünften Modus, der Mutagenboden und mutagenaktive Pflanzen selbst abtastet und als Comparator-Wert ausgibt.
