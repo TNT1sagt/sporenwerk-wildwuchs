@@ -1,8 +1,15 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.74.0 — Leuchtender Kristallkern als aktive Bossreliquie.**
+**Aktueller Entwicklungsstand: 1.75.0 — Resonanzsporen-Kapsel für Kultur und Containment.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.75.0
+
+- **Sporenpflege:** Die neue Resonanzsporen-Kapsel beschleunigt kontrolliert das Wachstum unreifer Sporenwerk-Pflanzen.
+- **Containment-Wartung:** Dieselbe Kapsel lädt Resonanzdämpfer um eine Stufe nach, ohne bei vollem Gerät verbraucht zu werden. Verbundene Relais erhalten ein Update.
+- **Kreislauf:** Seltenes Symbiosemyzel und mutagene Sporen aus der Feldernte werden zu einer handlichen Ressource für Farmen und Sicherheitsanlagen.
+- **Qualität:** Eigene Itemtextur, Crafting-Rezept, Übersetzungen, Advancement, Regressionen, Forge-JAR- und Serverstartprüfung.
 
 ## Aktueller Entwicklungsschritt — 1.74.0
 
@@ -101,6 +108,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.75.0 — Resonanzsporen-Kapsel für Kultur und Containment
+
+- **Ökologie wird zur Wartungsressource:** Symbiosemyzel und mutagene Sporen lassen sich mit Knochenmehl und Redstone zu zwei Resonanzsporen-Kapseln verarbeiten.
+- **Gezielte Pflanzenpflege:** Rechtsklick auf eine unreife Sporenwerk-Pflanze erhöht ihr Wachstum um bis zu zwei Stufen. Die operative Mutagenfeldstärke wird bei Bedarf sofort im sichtbaren Phänotyp berücksichtigt; Terrain-Ausbreitung wird nicht ausgelöst.
+- **Reparatur statt Einweg-Sonderfall:** Rechtsklick auf einen Resonanzdämpfer stellt genau eine Ladung wieder her und aktualisiert gekoppelte Containment-Relais. Bei voller Ladung wird keine Kapsel verbraucht.
+- **Spielklare Darstellung:** Eigenes 16×16-Item-Artwork, Modell, Tooltip, DE/EN-Meldungen und Rezept-Advancement sind enthalten und werden im visuellen QA-Bogen geprüft.
+- **Regressionen:** Tests sichern Eingabekosten, Wachstumskappung, Mutagen-Phänotyp, Dämpfer-Ladung, Comparator-/Relay-Aktualisierung, volle Zustände, Rezept und Versionsmetadaten.
 
 ## Version 1.74.0 — Leuchtender Kristallkern als Bossreliquie
 
