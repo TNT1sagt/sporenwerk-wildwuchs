@@ -1,18 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.48.0 — Bioreaktor-Veredelung, reaktive Sporenabwehr und lokale Symbiose-Erkennung.**
+**Aktueller Entwicklungsstand: 1.49.0 — Resonanzfokus für taktische Gegenwehr im Nahbereich.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.48.0
+## Aktueller Schwerpunkt — 1.49.0
 
-- Symbiosemyzel kann nun in zwei Produktionspfaden genutzt werden: als gezielte Einzelladungs-Wartung eines Resonanzdämpfers und als Bioreaktor-Zutat für Mutagenextrakt.
-- Der Feldscanner unterscheidet Artenvielfalt im Bereich von einem tatsächlich bestätigten lokalen Dreier-Cluster um eine reife Mutagenpflanze.
-- Ein abgewehrter Dämmerling erhält eine einzelne sichtbare Rückmeldung statt Partikelwiederholung bei jedem Ward-Refresh.
-- Die neuen Prüfungen verwenden bereits geladene Scan-Daten und die vorhandene Maschinen-Transaktionslogik; keine zusätzlichen Chunk-Ladevorgänge.
-- Die Release-Pipeline prüft Produktions-Transaktionen, Schutzfeedback, Clusterlogik, Forge-Build, installierbare JAR und dedizierten Serverstart.
-
+- **Aktive Gegenwehr statt nur passiver Sicherung:** Der Resonanzfokus verwandelt Kristallpirscher-Beute in eine wiederverwendbare Nahbereichswaffe.
+- **Taktischer Einsatz:** Ein erfolgreicher Impuls verbraucht genau einen Resonanzsplitter, trifft höchstens drei Sporenwerk-Gegner in 5,5 Blöcken Sichtweite und kombiniert typabhängigen Schaden mit Verlangsamung und Rückstoß.
+- **Faire Fehlversuche:** Ohne passendes Ziel oder ohne Munition wird kein Splitter verbraucht und keine Abklingzeit gestartet.
+- **Technische Grenzen:** Serverseitige Zielauswahl, Sichtlinienprüfung, festes Zielmaximum und vier Sekunden Abklingzeit.
+- **Release-QA:** Rezept, Pixel-Art, DE/EN-Rückmeldungen, Regressionstest, Forge-Build, JAR-Inhalt und dedizierter Serverstart.
 ---
+
+## Version 1.49.0 — Resonanzfokus und aktive Gegenwehr
+
+- **Neues Kampfwerkzeug:** Der Resonanzfokus feuert einen sichtbaren Impuls und nutzt Kristallpirscher-Resonanzsplitter als echte Munition.
+- **Zielgerichtete Wirkung:** Er trifft maximal drei Dämmerlinge oder Kristallpirscher innerhalb von 5,5 Blöcken und nur bei freier Sicht. Der Dämmerling erleidet höheren Schaden und längere Verlangsamung; der Kristallpirscher wird ebenfalls getroffen und kurz ausgebremst.
+- **Ressourcenvertrag:** Ein Splitter wird erst nach erfolgreicher Zielsuche verbraucht. Fehlen Ziel oder Munition, wird keine Abklingzeit gestartet.
+- **Minecraft-Integration:** Eigenes 16×16-Pixel-Artwork, Rezept, Rezeptbuch-Freischaltung, Creative-Tab-Eintrag und deutsche/englische Tooltips sowie Statusmeldungen.
+- **Qualitätssicherung:** Regressionen prüfen Zielarten, Sichtlinie, Reichweite, Zielmaximum, Effekte, Splitterverbrauch, Rezept und Ressourcen. Die Pipeline baut anschließend die installierbare Forge-JAR und startet einen dedizierten Server.
 
 ## Version 1.48.0 — Bioreaktor-Kreislauf und reaktive Sporenabwehr
 
