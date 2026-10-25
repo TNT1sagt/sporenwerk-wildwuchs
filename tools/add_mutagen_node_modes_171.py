@@ -355,6 +355,12 @@ test170_source = test170_source.replace(
 test170_source = test170_source.replace(
     'field.count("MutationNodeData.get(level).isActive(origin)") == 2',
     'field.count("MutationNodeData.get(level).isActive(origin)") >= 2')
+test170_source = test170_source.replace(
+    '"de_de.json", "Beschleunigt Sporenwerk-Pflanzen"',
+    '"de_de.json", "Rechtsklick wechselt den Modus"')
+test170_source = test170_source.replace(
+    '"en_us.json", "Accelerates Sporenwerk crops"',
+    '"en_us.json", "Right-click to cycle modes"')
 test170.write_text(test170_source, encoding="utf-8")
 
 for test_path in (ROOT / "tools").glob("test_*.py"):
