@@ -72,7 +72,7 @@ require(damp_adv["rewards"]["loot"] == ["sporenwerk:quests/bloom_dampened"]
         "finite-charge Dampener research route must remain separate and intact")
 
 for locale, keys in (
-    ("de_de.json", ("Leise Wurzeln", "aktive Sporenabwehr", "Mutagenblüten")),
+    ("de_de.json", ("Leise Wurzeln", "aktive Sporenabwehr", "Mutagenblüte")),
     ("en_us.json", ("Quiet Roots", "powered Spore Ward", "Mutagen Bloom")),
 ):
     lang = json.loads((ASSETS / "lang" / locale).read_text(encoding="utf-8"))
