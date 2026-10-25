@@ -52,7 +52,7 @@ scanner = read("src/main/java/de/sporenwerk/item/FeldscannerItem.java")
 for source, token, label in (
     (field, "return MutationNodeData.get(serverLevel).getOperationalFieldStrengthAt(", "field/area queries"),
     (crop, "MutationField.mutagenStrengthAt(level, pos)", "crop phenotype"),
-    (scanner, "MutationField.mutagenStrengthAt(serverLevel, target)", "scanner block survey"),
+    (scanner, "MutationField.mutagenStrengthAt(", "scanner block survey"),
 ):
     require(token in source, label + " must remain tied to the shared operational intensity")
 
