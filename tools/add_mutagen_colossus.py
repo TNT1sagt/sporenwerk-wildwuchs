@@ -311,14 +311,14 @@ public final class MutagenkolossEntity extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("SporenwerkPhaseTwo", this.secondPhaseTriggered);
         tag.putInt("SporenwerkAttackCooldown", this.attackCooldown);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.secondPhaseTriggered = tag.getBoolean("SporenwerkPhaseTwo");
         this.attackCooldown = Math.max(20, tag.getInt("SporenwerkAttackCooldown"));
