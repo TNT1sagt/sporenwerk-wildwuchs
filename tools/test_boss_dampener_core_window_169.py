@@ -48,11 +48,11 @@ for token in (
     "interceptCrystalBreath(serverLevel, origin, direction)",
     "this.exposeCoreFromCountermeasure();",
     "message.sporenwerk.colossus.breath_intercepted",
-    "message.sporenwerk.colossus.core_exposed",
+    "message.sporenwerk.colossus.core_exposed_countermeasure",
 ):
     require(token in branch, "intercepted breath must trigger the counter window: " + token)
 require(branch.index("this.exposeCoreFromCountermeasure();")
-        < branch.index("message.sporenwerk.colossus.core_exposed"),
+        < branch.index("message.sporenwerk.colossus.core_exposed_countermeasure"),
         "relay/core update must happen before player confirmation")
 
 scan_start = entity.find("private boolean interceptCrystalBreath(")
