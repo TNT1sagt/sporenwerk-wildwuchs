@@ -588,10 +588,10 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
         this.frontRight.xRot = -gait;
         this.rearLeft.xRot = -gait;
         this.rearRight.xRot = gait;
-        this.frontLeft.getChild("lower_leg").xRot = Mth.max(0.0F, gait) * 0.55F;
-        this.frontRight.getChild("lower_leg").xRot = Mth.max(0.0F, -gait) * 0.55F;
-        this.rearLeft.getChild("lower_leg").xRot = Mth.max(0.0F, -gait) * 0.55F;
-        this.rearRight.getChild("lower_leg").xRot = Mth.max(0.0F, gait) * 0.55F;
+        this.frontLeft.getChild("lower_leg").xRot = Math.max(0.0F, gait) * 0.55F;
+        this.frontRight.getChild("lower_leg").xRot = Math.max(0.0F, -gait) * 0.55F;
+        this.rearLeft.getChild("lower_leg").xRot = Math.max(0.0F, -gait) * 0.55F;
+        this.rearRight.getChild("lower_leg").xRot = Math.max(0.0F, gait) * 0.55F;
         this.frontLeft.yRot = this.frontRight.yRot = 0.0F;
         this.rearLeft.yRot = this.rearRight.yRot = 0.0F;
         this.frontLeft.zRot = this.frontRight.zRot = 0.0F;
