@@ -1,8 +1,15 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.68.0 — Boss-Reaktionssignal und priorisierte Resonanzfokus-Parade.**
+**Aktueller Entwicklungsstand: 1.69.0 — Dämpfer-Parade und verwundbarer Kristallkern.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.69.0
+
+- **Dämpfer als Gegenangriff:** Ein geladener Resonanzdämpfer, der den Kristallatem abfängt, legt den Kern für 60 Ticks frei. Die Gegenmaßnahme bleibt an den tatsächlichen Verbrauch einer Dämpferladung gebunden.
+- **Gemeinsamer Kernöffnungs-Effekt:** Resonanzfokus und Dämpfer nutzen denselben serverseitigen Effekt für Partikel, Klang und Redstone-Relais-Refresh.
+- **Live-Redstone-Rückmeldung:** Relais erkennen nach der abgefangenen Atemattacke den freigelegten Kern, sobald der Angriffszustand zurückgesetzt wurde.
+- **Keine zusätzlichen Dauerabfragen:** Der bestehende begrenzte Scan und die Ereignisverteilung werden weiterverwendet; es gibt keinen neuen Tick-Loop und keine erzwungenen Chunk-Ladevorgänge.
 
 ## Aktueller Entwicklungsschritt — 1.68.0
 
@@ -60,6 +67,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.69.0 — Dämpfer-Parade öffnet den Kristallkern
+
+- **Mehr als Schadensvermeidung:** Fängt ein geladener Resonanzdämpfer den Kristallatem ab, wird der Kristallkern 60 Ticks lang verwundbar. Schutzanlagen erzeugen so ein Gegenangriffsfenster, statt nur Schaden zu verhindern.
+- **Gemeinsame Gegenmaßnahme:** Resonanzfokus und platzierter Dämpfer verwenden denselben serverseitigen Effekt für Kernöffnung, Kristallpartikel, Klang und Relais-Aktualisierung.
+- **Redstone reagiert sofort:** Der Boss-Reaktionsmodus wird nach dem Abfangen erneut ausgewertet und wechselt von der Atemwarnung zur Kernöffnung.
+- **Spielerfeedback:** Nahe Spieler erhalten die Bestätigung, dass der Atem abgefangen und der Kern freigelegt wurde.
+- **Qualitätssicherung:** Tests prüfen Dämpferladung, 60-Tick-Fenster, Ereignis-Refresh und DE/EN-Texte.
 
 ## Version 1.68.0 — Boss-Reaktionssignal für Redstone und Fokus-Priorität
 
