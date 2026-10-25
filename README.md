@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.67.0 — Resonanzfokus-Parade und verwundbarer Kristallkern.**
+**Aktueller Entwicklungsstand: 1.68.0 — Boss-Reaktionssignal und priorisierte Resonanzfokus-Parade.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.68.0
+
+- **Boss-Reaktionssignal:** Das Containment-Relais erhält Modus 7. Der Comparator zeigt 15 für den aufgeladenen Kristallatem, 10 für andere Boss-Aufladeangriffe, 6 für einen freigelegten Kern und 0 ohne aktive Reaktion.
+- **Ereignisgesteuerte Aktualisierung:** Angriffsbeginn/-abschluss, erfolgreiche Fokus-Parade und Ende des Kernfensters aktualisieren die lokalen Relais innerhalb der bestehenden 32-Relais-Grenze.
+- **Zuverlässiger Resonanzfokus:** Der Koloss wird innerhalb der bisherigen Reichweite vor normalen Gegnern priorisiert, wenn sein Kristallatem abfangbar ist.
+- **Leistungsgrenzen:** Keine dauerhafte Tick-Schleife, begrenzte Entity-Abfrage und keine erzwungenen Chunk-Ladevorgänge.
+- **Qualitätssicherung:** Acht Modi mit 128 Blockstates, Ereignis-Refresh, Zielpriorität und DE/EN-Texte werden geprüft.
 
 ## Aktueller Entwicklungsschritt — 1.67.0
 
@@ -52,6 +60,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.68.0 — Boss-Reaktionssignal für Redstone und Fokus-Priorität
+
+- **Achter Relaismodus:** „Kristallkoloss-Reaktion“ gibt einen Comparator-Wert für aktive Bossphasen aus: 15 während der Atem-Aufladung, 10 bei anderen Aufladeangriffen, 6 bei freigelegtem Kern und 0 ohne aktive Reaktion.
+- **Ereignisgesteuert:** Angriffsbeginn, Angriffsabschluss, Fokus-Parade und Ablauf des Kernfensters aktualisieren bis zu 32 nahe Relais. Kein neuer Tick-Loop und keine erzwungenen Chunk-Loads.
+- **Priorisierter Fokus:** Ein unterbrechbarer Kristallkoloss wird vor normalen Zielen ausgewählt, damit andere Gegner den bezahlten Parier-Einsatz nicht verdrängen.
+- **Farbfeedback:** Atem-Aufladung rot, andere Aufladeangriffe gelb, freigelegter Kern cyan, keine aktive Reaktion grün.
+- **Qualitätssicherung:** Regressionen prüfen 128 Blockstates, Bossphasen, Event-Refresh, Fokus-Priorität und DE/EN-Übersetzungen.
 
 ## Version 1.67.0 — Resonanzfokus kann den Kristallatem parieren
 
