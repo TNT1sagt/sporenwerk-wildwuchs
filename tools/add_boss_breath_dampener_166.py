@@ -135,6 +135,19 @@ if "if (mode == 6)" not in current_color:
     relay = relay[:start] + color_method + relay[end:]
 relay_path.write_text(relay, encoding="utf-8")
 
+# Keep the older heartbeat regression aligned with the exposed-core spine flare.
+heartbeat_test_path = ROOT / "tools/test_colossus_visual_161.py"
+if heartbeat_test_path.exists():
+    heartbeat_test = heartbeat_test_path.read_text(encoding="utf-8")
+    old_spine_contract = '"float spinePulse = 1.0F + heartbeat * 0.018F;",'
+    new_spine_contract = '"(entity.isCoreExposed() ? 0.055F : 0.0F)",'
+    if old_spine_contract in heartbeat_test:
+        heartbeat_test = heartbeat_test.replace(old_spine_contract, new_spine_contract, 1)
+        heartbeat_test_path.write_text(heartbeat_test, encoding="utf-8")
+    else:
+        require(new_spine_contract in heartbeat_test,
+                "could not migrate heartbeat regression to exposed-core spine resonance")
+
 # Promote all active-version assertions in the generated test suite only after patches are installed.
 for test_path in (ROOT / "tools").glob("test_*.py"):
     if test_path.name == "test_boss_breath_dampener_166.py":
