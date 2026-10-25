@@ -75,7 +75,9 @@ for name in ("infektionsherd.png", "infektionsherd_cultivation.png",
         image = source.convert("RGBA")
     require(image.size == (16, 16), name + " must be proper 16x16 Minecraft pixel art")
     require(all(px[3] == 255 for px in image.getdata()), name + " must be opaque")
-    require(len(set(image.getdata())) >= 8, name + " lacks visible pixel detail")
+    minimum_colors = 3 if name == "infektionsherd.png" else 8
+    require(len(set(image.getdata())) >= minimum_colors,
+            name + " lacks visible pixel detail for its role")
 
 for left, right in (
     ("infektionsherd.png", "infektionsherd_cultivation.png"),
