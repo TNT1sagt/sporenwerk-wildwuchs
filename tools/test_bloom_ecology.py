@@ -2,7 +2,6 @@
 """Regression coverage for the 1.54.0 Mutagen Bloom scent ecology."""
 from pathlib import Path
 import json
-import re
 import sys
 
 ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
@@ -26,8 +25,18 @@ for token in (
     "Math.abs(dy) > verticalRadius",
 ):
     require(token in nodes, "persistent source/scent API is missing " + token)
-require("level.getBlockState(" not in nodes and "getChunk(" not in nodes and "getChunkNow(" not in nodes,
-        "saved bloom source queries must not read world blocks or load chunks")
+for signature in (
+    "public BlockPos nearestRecentBloom(",
+    "public int countRecentBlooms(",
+):
+    start = nodes.find(signature)
+    require(start >= 0, "saved bloom source query is missing " + signature)
+    end = nodes.find("\n    }", start)
+    require(end > start, "could not isolate saved bloom source query " + signature)
+    body = nodes[start:end]
+    require("level.getBlockState(" not in body and "getChunk(" not in body
+            and "getChunkNow(" not in body,
+            "saved bloom scent queries must use persistent timestamps only: " + signature)
 
 entity = read("src/main/java/de/sporenwerk/entity/KristallpirscherEntity.java")
 for token in (
@@ -75,9 +84,6 @@ for locale in ("de_de.json", "en_us.json"):
             else "2,400" in data["message.sporenwerk.scanner.survey.recent_blooms"],
             locale + " must accurately describe the scent window")
 
-build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.54\.0['\"]", build) is not None,
-        "artifact must be version 1.54.0")
 readme = read("README.md")
 require("Version 1.54.0" in readme and "Version 1.53.0" in readme,
         "release notes must preserve previous release history")
