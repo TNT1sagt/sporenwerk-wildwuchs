@@ -1,10 +1,19 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.53.0 — ereignisgesteuerte Mutagenblüten-Alarme im Containment-Netz.**
+**Aktueller Entwicklungsstand: 1.62.0 — mehrlagige Kristallkoloss-Panzerung mit cyan-violetten Leuchtkanten.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.53.0
+## Aktueller Entwicklungsschritt — 1.62.0
+
+- **Mehr Volumen:** Mehrlagige, kantige Schulter- und Hinterhandplatten verleihen dem Kristallkoloss eine schwerere Rüstungssilhouette.
+- **Gezielte Leuchtkanten:** Die neue Full-Bright-Textur zeichnet cyanfarbene Kanten und violette Risse, während der Großteil der Platten dunkel bleibt.
+- **Bewegliche Rüstung:** Die Platten reagieren dezent auf die Idle-Animation. Kampfwerte und Beschwörung wurden nicht verändert.
+- **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
+
+Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Historischer Schwerpunkt — 1.53.0
 
 - **Reaktionskampf:** Der Resonanzfokus kann einen laufenden Kristallpirscher-Resonanzimpuls unterbrechen. Das Zeitfenster wird über das vorhandene Klang-/Partikel-Telegraphing angekündigt.
 - **Lebende Schutzökologie:** Reifes Filtermoos der Mutagenstufe II/III puffert den tatsächlichen Resonanztreffer im kleinen Schutzradius. Die Prüfung findet nur beim Puls-Auslösen statt, nicht als zusätzliche Tick-Schleife.
