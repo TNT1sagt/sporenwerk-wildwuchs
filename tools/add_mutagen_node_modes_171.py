@@ -349,6 +349,12 @@ test170_source = test170_source.replace(
 test170_source = test170_source.replace(
     '"if (state.getValue(POWERED) || level.hasNeighborSignal(pos)) return;"',
     '"state.getValue(POWERED) || level.hasNeighborSignal(pos)"')
+test170_source = test170_source.replace(
+    'field.count("level.hasNeighborSignal(origin)") == 2',
+    'field.count("level.hasNeighborSignal(origin)") >= 2')
+test170_source = test170_source.replace(
+    'field.count("MutationNodeData.get(level).isActive(origin)") == 2',
+    'field.count("MutationNodeData.get(level).isActive(origin)") >= 2')
 test170.write_text(test170_source, encoding="utf-8")
 
 for test_path in (ROOT / "tools").glob("test_*.py"):
