@@ -1,18 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.47.0 — Symbiose-Forschung, Filter-Endstufe und Biodiversitätsdiagnose.**
+**Aktueller Entwicklungsstand: 1.48.0 — Bioreaktor-Veredelung, reaktive Sporenabwehr und lokale Symbiose-Erkennung.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.47.0
+## Aktueller Schwerpunkt — 1.48.0
 
-- Artenvielfalt ist nun Teil der Ausrüstungsprogression: Symbiosemyzel aus einem artenreichen Mutagenfeld wird für den mutagenen Filtereinsatz der höchsten Stufe benötigt.
-- Rezeptfreigabe erfordert beide Forschungsfunde: Mutagenextrakt und Symbiosemyzel.
-- Der Feldscanner zählt die vier Sporenwerk-Pflanzenarten im gesamten Messbereich und erklärt die zusätzliche Nahbereichsbedingung für Symbiosemyzel.
-- Die Biodiversitätsdiagnose bleibt einmalig, serverseitig und chunk-sicher; der Gesamtwert behauptet nicht, dass ein passender lokaler Pflanzencluster existiert.
-- Die Release-Pipeline prüft Ressourcen, Übersetzungen, Regressionen, Forge-Build, installierbare JAR und dedizierten Serverstart.
+- Symbiosemyzel kann nun in zwei Produktionspfaden genutzt werden: als gezielte Einzelladungs-Wartung eines Resonanzdämpfers und als Bioreaktor-Zutat für Mutagenextrakt.
+- Der Feldscanner unterscheidet Artenvielfalt im Bereich von einem tatsächlich bestätigten lokalen Dreier-Cluster um eine reife Mutagenpflanze.
+- Ein abgewehrter Dämmerling erhält eine einzelne sichtbare Rückmeldung statt Partikelwiederholung bei jedem Ward-Refresh.
+- Die neuen Prüfungen verwenden bereits geladene Scan-Daten und die vorhandene Maschinen-Transaktionslogik; keine zusätzlichen Chunk-Ladevorgänge.
+- Die Release-Pipeline prüft Produktions-Transaktionen, Schutzfeedback, Clusterlogik, Forge-Build, installierbare JAR und dedizierten Serverstart.
 
 ---
+
+## Version 1.48.0 — Bioreaktor-Kreislauf und reaktive Sporenabwehr
+
+- **Neue Produktionsoption:** Ein Symbiosemyzel wird im Biomasse-Bioreaktor mit 180 FE zu einem Mutagenextrakt veredelt. Der Bioreaktor prüft Ausgabepuffer und Energie vor dem Verbrauch des Eingangs; das Myzel wird erst nach erfolgreicher Ausgabe entfernt.
+- **Gegenwehr mit Sichtbarkeit:** Wenn ein powered Sporenabwehrsender einen Dämmerling erstmals abwehrt, erscheinen einmalig Sporenpartikel. Der periodische Refresh verlängert den Schutz, ohne bei jedem Refresh erneut Partikel zu erzeugen.
+- **Lokaler Cluster statt bloßer Gesamtzahl:** Der Feldscanner bestätigt einen Symbiose-Cluster nur, wenn drei Pflanzenarten innerhalb derselben begrenzten Nachbarschaft einer reifen Mutagenpflanze der Stufe II/III vorkommen. Die Prüfung nutzt die bereits erfassten Scan-Daten, ohne zusätzliche Weltblöcke zu lesen.
+- **Leistungsgrenzen:** Das Scannergebiet bleibt auf Radius 8 und Höhe ±4 begrenzt. Clusterzentren müssen vollständig innerhalb des Messbereichs liegen; ungeladene Chunks werden übersprungen.
+- **Qualitätssicherung:** Neue Regressionen prüfen die Bioreaktor-Transaktion, einmaliges Ward-Feedback, lokale Clustererkennung und DE/EN-Texte. Forge-Build, installierbare JAR und dedizierter Serverstart bleiben Pflicht.
 
 ## Version 1.47.0 — Symbiose-Forschung und Filter-Endstufe
 
