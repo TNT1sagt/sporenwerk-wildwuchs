@@ -1,10 +1,10 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.51.0 — Resonanzparade, lebender Schutz und Feldforschung.**
+**Aktueller Entwicklungsstand: 1.53.0 — ereignisgesteuerte Mutagenblüten-Alarme im Containment-Netz.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.51.0
+## Aktueller Schwerpunkt — 1.53.0
 
 - **Reaktionskampf:** Der Resonanzfokus kann einen laufenden Kristallpirscher-Resonanzimpuls unterbrechen. Das Zeitfenster wird über das vorhandene Klang-/Partikel-Telegraphing angekündigt.
 - **Lebende Schutzökologie:** Reifes Filtermoos der Mutagenstufe II/III puffert den tatsächlichen Resonanztreffer im kleinen Schutzradius. Die Prüfung findet nur beim Puls-Auslösen statt, nicht als zusätzliche Tick-Schleife.
@@ -12,6 +12,20 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Klares Kampf-Feedback:** Eine gelungene Parade verursacht stärkeren Schaden und längere Verlangsamung am Kristallpirscher und verleiht dem Spieler kurzzeitig Resistenz.
 - **Release-QA:** Separate Regressionen prüfen Windup-Unterbrechung, Feldschutz, One-shot-Belohnung, Übersetzungen, Forge-JAR und dedizierten Serverstart.
 ---
+
+## Version 1.53.0 — Mutagenblüten melden sich im Containment-Netz
+
+- **Ereignis löst Alarm aus:** Eine echte Mutagenblüte der höchsten Feldstufe erhöht bis zu vier nahe Warnsirenen direkt auf die kritische Alarmstufe.
+- **Die Sirene bleibt ehrlich:** Das Ereignis setzt einen Alarm-Latch, verändert aber keinen physischen Redstone-Eingang. Rechtsklick quittiert wie bisher und synchronisiert den gespeicherten Spitzenwert zurück auf das echte Redstone-Signal.
+- **Relais folgen dem Ereignis:** Jede neu erhöhte Sirene aktualisiert ihr nahes Containment-Relaisnetz; der Comparator-Ausgang stellt den gespeicherten Alarmwert bereit.
+- **Leistungsgrenzen:** Die Suche läuft nur nach einem tatsächlich ausgelösten, cooldown-geschützten Blütenereignis, überspringt ungeladene Chunks und verarbeitet höchstens vier Sirenen. Kein neuer Block-Ticker.
+
+## Version 1.52.0 — Mutagenblüte, Resonanzdämpfer und Containment-Netz
+
+- **Mehrstufiger Schutz:** Ein eingeschalteter Sporenabwehrsender fängt den Blütenimpuls zuerst ab. Fehlt er, kann ein geladener Resonanzdämpfer innerhalb seines vorhandenen Schutzradius einen Spielerimpuls auffangen.
+- **Echte endliche Ladung:** Jeder abgefangene Spielerimpuls verbraucht genau eine Dämpferladung. Leere Dämpfer schützen nicht weiter.
+- **Relais und Redstone:** Der tatsächliche Ladungsverbrauch aktualisiert das nahe Containment-Netz. Neue Partikel, Ton und eine einmalige Forschungsstufe bestätigen die Abwehr.
+- **Sicherheitsgrenzen:** Die Suche überspringt ungeladene Chunks und läuft nur beim seltenen Mutagenblüten-Ereignis.
 
 ## Version 1.51.0 — Resonanzparade und lebender Schutz
 

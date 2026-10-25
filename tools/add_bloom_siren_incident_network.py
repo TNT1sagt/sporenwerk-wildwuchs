@@ -39,13 +39,7 @@ if "public static boolean raiseBloomIncident(" not in siren:
 
         level.setBlock(pos, state.setValue(SIGNAL, next), 3);
         if (riskBand(next) > riskBand(previous)) {
-            float pitch = switch (riskBand(next)) {
-                case 3 -> 0.55F;
-                case 2 -> 0.82F;
-                default -> 1.18F;
-            };
-            level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(),
-                    SoundSource.BLOCKS, 0.9F, pitch);
+            playSeverityTone(level, pos, riskBand(next));
         }
         MutagenContainmentRelayBlock.refreshNearbyRelays(level, pos);
         return true;
@@ -53,7 +47,39 @@ if "public static boolean raiseBloomIncident(" not in siren:
 
 """
     require(anchor in siren, "could not locate the shared siren severity helper")
-    siren = siren.replace(anchor, method + anchor, 1)
+    require("""        if (nextBand > previousBand) {
+            float pitch = switch (nextBand) {
+                case 3 -> 0.55F;
+                case 2 -> 0.82F;
+                default -> 1.18F;
+            };
+            level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(),
+                    SoundSource.BLOCKS, 0.9F, pitch);
+        }""" in siren, "could not locate original severity-tone block")
+    siren = siren.replace("""        if (nextBand > previousBand) {
+            float pitch = switch (nextBand) {
+                case 3 -> 0.55F;
+                case 2 -> 0.82F;
+                default -> 1.18F;
+            };
+            level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(),
+                    SoundSource.BLOCKS, 0.9F, pitch);
+        }""", """        if (nextBand > previousBand) {
+            playSeverityTone(level, pos, nextBand);
+        }""", 1)
+    # One shared guarded sound call serves redstone escalations and Mutagen Bloom incidents.
+    tone_helper = """    private static void playSeverityTone(Level level, BlockPos pos, int band) {
+        float pitch = switch (band) {
+            case 3 -> 0.55F;
+            case 2 -> 0.82F;
+            default -> 1.18F;
+        };
+        level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(),
+                SoundSource.BLOCKS, 0.9F, pitch);
+    }
+
+"""
+    siren = siren.replace(anchor, method + tone_helper + anchor, 1)
     # These imports are intentionally explicit; this patch runs after the relay implementation.
     if "import net.minecraft.sounds.SoundEvents;" not in siren:
         siren = siren.replace("import net.minecraft.network.chat.Component;",
