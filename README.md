@@ -45,6 +45,27 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
 
+## Version 1.66.0 — Kristallatem abfangen und Sicherheitsreserve richtig markieren
+
+- **Taktische Boss-Abwehr:** Ein geladener Resonanzdämpfer direkt an der Kristallatem-Bahn kann den Angriff abfangen und verbraucht dafür genau eine Ladung.
+- **Rückmeldung und Automation:** Blockzustand, Comparator und nahe Containment-Relais werden nach dem Abfangen aktualisiert; Partikel, Klang und eine DE/EN-Meldung bestätigen den Eingriff.
+- **Sicherheitsdiagnose:** Relaismodus 6 verwendet jetzt Rot für geringe, Gelb für mittlere und Grün für hohe Sicherheitsreserven. Die Warnfarben der Gefahrenmodi bleiben erhalten.
+- **Leistungsgrenzen:** Der Atembahnen-Scan ist räumlich begrenzt, überspringt ungeladene Chunks und fügt keine permanente Tick-Abfrage hinzu.
+
+## Version 1.65.0 — Überladener Kristallkern und Containment-Sicherheitspuffer
+
+- **Boss-Gegenmaßnahme:** Nach dem Kristallatem ist der Kristallkern 90 Ticks überladen. Die Actionbar und Partikel machen das Zeitfenster sichtbar; Spieler- und Projektiltreffer verursachen 30 % mehr Schaden.
+- **Visuelles Feedback:** Brustkern und Rückenstacheln pulsieren während der Überladung stärker. Der Bonus endet automatisch.
+- **Redstone-Diagnose:** Der siebte Relaismodus liefert einen Comparator-Wert von 0–15 für die geschätzte Sicherheitsreserve; 15 bedeutet, dass keine Gefahr erkannt wurde.
+- **Qualitätssicherung:** Regressionen prüfen Zeitfenster, Schadensbonus, Übersetzungen, Modellreaktion, 112 Relaiszustände und Chunk-Sicherheit.
+
+## Version 1.64.0 — Kopfpanzer des Kristallkolosses und Restgefahr-Signal
+
+- **Kristallkoloss:** Vier kantige Brauen- und Wangenplatten verstärken die Kopfsilhouette und folgen der Kopfanimation. Die Glow-Textur zeigt gezielte cyan-violette Risse.
+- **Containment-Relais:** Modus 5 berechnet eine geschätzte Restgefahr aus Feldstärke, Warnsignalen und aktiven Schutzressourcen.
+- **Redstone-Automation:** Der geschätzte Restwert kann als Comparator-Signal von weiteren Anlagen ausgewertet werden.
+- **Qualitätssicherung:** Modellschichten, UV-Farbflächen, sechs Modi, 96 Blockstate-Kombinationen und Chunk-Sicherheit werden geprüft.
+
 ## Historischer Schwerpunkt — 1.53.0
 
 - **Reaktionskampf:** Der Resonanzfokus kann einen laufenden Kristallpirscher-Resonanzimpuls unterbrechen. Das Zeitfenster wird über das vorhandene Klang-/Partikel-Telegraphing angekündigt.
