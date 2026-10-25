@@ -107,8 +107,8 @@ build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.49\.0['\"]", build) is not None,
         "artifact must be version 1.50.0")
 readme = read("README.md")
-require("Version 1.50.0" in readme and "Version 1.48.0" in readme,
-        "release notes must add 1.50.0 while preserving 1.48.0")
+require("Version 1.50.0" in readme and "Version 1.49.0" in readme,
+        "release notes must add 1.50.0 while preserving 1.49.0")
 require("Aktueller Entwicklungsstand: 1.50.0" in readme,
         "README current development headline is stale")
 print("Mature Filtermoos aura, Dämmerling crop deterrence, exposure interception, one-time research reward, scanner count and DE/EN text passed.")
