@@ -1139,7 +1139,13 @@ legacy_section = """## Version 1.55.0 — Der Kristallkoloss erwacht
 if "## Version 1.55.0 — Der Kristallkoloss erwacht" not in readme:
     legacy_marker = "## Version 1.54.0 — Blütenduft für den Kristallpirscher"
     legacy_index = readme.find(legacy_marker)
-    require(legacy_index >= 0, "could not locate 1.54.0 release notes to preserve history")
+    if legacy_index < 0:
+        # Snapshot README headings vary; fall back to the first section after the project preamble.
+        legacy_index = readme.find("\\n## ")
+        if legacy_index >= 0:
+            legacy_index += 1
+        else:
+            legacy_index = len(readme)
     readme = readme[:legacy_index] + legacy_section + readme[legacy_index:]
 previous_section = """## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses
 
