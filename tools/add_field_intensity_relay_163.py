@@ -34,6 +34,7 @@ import_line = "import de.sporenwerk.block.crop.AbstractSporeCropBlock;"
 if import_line not in relay:
     require(import_anchor in relay, "could not locate relay block import anchor")
     relay = relay.replace(import_anchor, import_line + "\n" + import_anchor, 1)
+    relay_path.write_text(relay, encoding="utf-8")
 
 replace_once(
     relay_path,
