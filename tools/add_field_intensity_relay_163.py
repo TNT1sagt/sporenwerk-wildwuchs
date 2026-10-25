@@ -160,6 +160,32 @@ for filename, key, value in (
     locale[key] = value
     locale_path.write_text(json.dumps(locale, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
+# Update the pre-existing relay contract too: it must now recognize all five modes.
+legacy_test_path = ROOT / "tools/test_mutagen_containment_relay.py"
+legacy_test = legacy_test_path.read_text(encoding="utf-8")
+legacy_updates = (
+    ('IntegerProperty MODE = IntegerProperty.create("mode", 0, 3)',
+     'IntegerProperty MODE = IntegerProperty.create("mode", 0, 4)'),
+    ("int mode = (state.getValue(MODE) + step) % 4;",
+     "int mode = (state.getValue(MODE) + step) % 5;"),
+    ("len(variants) == 64", "len(variants) == 80"),
+    ("for mode in range(4):", "for mode in range(5):"),
+    ("all 4 MODE × 16 SIGNAL", "all 5 MODE × 16 SIGNAL"),
+)
+for old, new in legacy_updates:
+    if new not in legacy_test:
+        require(old in legacy_test, "could not migrate existing relay test contract: " + old)
+        legacy_test = legacy_test.replace(old, new)
+if "case 4 ->" not in legacy_test:
+    anchor = '    "case 3 -> {",'
+    require(anchor in legacy_test, "could not extend existing mode contract list")
+    legacy_test = legacy_test.replace(anchor, anchor + '\n    "case 4 -> {",', 1)
+if '"message.sporenwerk.containment_relay.mode_intensity"' not in legacy_test:
+    anchor = '"message.sporenwerk.containment_relay.mode_gap",'
+    require(anchor in legacy_test, "could not extend relay locale assertions")
+    legacy_test = legacy_test.replace(anchor, anchor + '\n        "message.sporenwerk.containment_relay.mode_intensity",', 1)
+legacy_test_path.write_text(legacy_test, encoding="utf-8")
+
 # Bring active artifact assertions and README headline forward, while retaining release history.
 for test_path in (ROOT / "tools").glob("test_*.py"):
     source = test_path.read_text(encoding="utf-8")
