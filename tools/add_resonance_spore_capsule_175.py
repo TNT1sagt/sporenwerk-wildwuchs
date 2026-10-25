@@ -85,6 +85,7 @@ public final class ResonanzsporenKapselItem extends Item {
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
         if (!(state.getBlock() instanceof AbstractSporeCropBlock crop)) return InteractionResult.PASS;
+        if (context.getPlayer() == null) return InteractionResult.PASS;
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
         int age = state.getValue(CropBlock.AGE);
