@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.66.0 — Kristallatem-Abwehr und korrekte Sicherheitsreserve.**
+**Aktueller Entwicklungsstand: 1.67.0 — Resonanzfokus-Parade und verwundbarer Kristallkern.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.67.0
+
+- **Resonanzfokus als aktive Boss-Abwehr:** Während der Kristallatem-Aufladung kann der Fokus den Koloss aus 5,5 Blöcken Reichweite unterbrechen, wenn noch mindestens acht Wind-up-Ticks verbleiben.
+- **Preis und Risiko:** Der Einsatz verbraucht einen Kristallpirscher-Resonanzsplitter und startet die bestehende viersekündige Abklingzeit.
+- **Fenster für den Gegenschlag:** Das erfolgreiche Parieren legt den Kern 60 Ticks frei und löst sichtbare Resonanzpartikel und Klangfeedback aus.
+- **Alternative Taktik bleibt erhalten:** Ein platzierter, geladener Resonanzdämpfer kann den Atem weiterhin automatisch abfangen.
+- **Qualitätssicherung:** Neue Regressionen sichern Serverseitigkeit, Target-Filter, Splitterverbrauch, Kernfenster, Übersetzungen und vollständigen Forge-Build.
 
 ## Aktueller Entwicklungsschritt — 1.66.0
 
@@ -44,6 +52,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.67.0 — Resonanzfokus kann den Kristallatem parieren
+
+- **Aktive Gegenmaßnahme:** Der Resonanzfokus erkennt den telegraphierten Kristallatem des Kristallkolosses im Nahbereich und unterbricht ihn, solange mindestens acht Wind-up-Ticks verbleiben.
+- **Bezahlte Parieraktion:** Der erfolgreiche Einsatz verbraucht einen Resonanzsplitter und startet die reguläre Fokus-Abklingzeit.
+- **Konterfenster:** Nach der Unterbrechung wird der Kern 60 Ticks freigelegt, begleitet von Resonanzpartikeln und Klangfeedback.
+- **Mehrere Taktiken:** Der Kristallatem lässt sich weiterhin über einen platzierten, geladenen Dämpfer abfangen; der Fokus eröffnet einen aktiven Timing-Gegenschlag.
+- **Regressionen:** Neue Prüfungen sichern Wind-up-Grenze, Synchro-Zustand, Splitterverbrauch, Kernfenster und DE/EN-Rückmeldung.
 
 ## Version 1.66.0 — Kristallatem abfangen und Sicherheitsreserve richtig markieren
 
