@@ -229,6 +229,33 @@ for token in (
 ):
     require(token in crop_path.read_text(encoding="utf-8"), "crop event refresh missing " + token)
 
+# Preserve every older relay regression while raising its full mode × signal-state expectations.
+for test_name in (
+    "test_mutagen_containment_relay.py",
+    "test_field_intensity_relay_163.py",
+    "test_field_response_relay_164.py",
+    "test_containment_margin_relay_165.py",
+    "test_boss_response_relay_168.py",
+):
+    test_path = ROOT / "tools" / test_name
+    if not test_path.exists():
+        continue
+    source = test_path.read_text(encoding="utf-8")
+    for old, new in (
+        ('IntegerProperty MODE = IntegerProperty.create("mode", 0, 7)',
+         'IntegerProperty MODE = IntegerProperty.create("mode", 0, 8)'),
+        ("int mode = (state.getValue(MODE) + step) % 8;",
+         "int mode = (state.getValue(MODE) + step) % 9;"),
+        ("len(variants) == 128", "len(variants) == 144"),
+        ("for mode in range(8):", "for mode in range(9):"),
+        ("all 8 MODE × 16 SIGNAL", "all 9 MODE × 16 SIGNAL"),
+        ("eight modes × sixteen signals", "nine modes × sixteen signals"),
+        ("eight modes × sixteen signal strengths", "nine modes × sixteen signal strengths"),
+    ):
+        if old in source and new not in source:
+            source = source.replace(old, new, 1)
+    test_path.write_text(source, encoding="utf-8")
+
 # Advance all current-artifact assertions while retaining the release history.
 for test_path in (ROOT / "tools").glob("test_*.py"):
     if test_path.name == "test_symbiosis_relay_mode_177.py":
