@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.65.0 — überladener Kristallkern und Containment-Sicherheitspuffer.**
+**Aktueller Entwicklungsstand: 1.66.0 — Kristallatem-Abwehr und korrekte Sicherheitsreserve.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.66.0
+
+- **Boss-Abwehr:** Ein geladener Resonanzdämpfer direkt an der Kristallatem-Bahn fängt den Atem ab und verbraucht genau eine Ladung.
+- **Rückmeldung:** Der Dämpfer zeigt den erfolgreichen Eingriff mit Partikeln und Klang; Spieler in der Nähe erhalten eine Meldung. Die Ladung wird als Blockzustand aktualisiert und das nahe Containment-Relaisnetz sofort neu ausgewertet.
+- **Sicherheitsfarbe korrigiert:** Relaismodus 6 nutzt die inverse Farbskala für Sicherheit: Rot bei niedriger Reserve, Gelb im Mittelbereich und Grün bei hoher Reserve.
+- **Begrenzte Weltabfrage:** Die Atembahn wird mit einem festen kleinen Suchvolumen untersucht. Ungeladene Chunks bleiben unangetastet; es gibt keine permanente Prüfschleife.
+- **Regressionen:** Ein neuer Test überprüft Abfangen, Ladungsverbrauch, Relais-Refresh, Chunk-Sicherheit, Übersetzungen und Farblogik.
 
 ## Aktueller Entwicklungsschritt — 1.65.0
 
