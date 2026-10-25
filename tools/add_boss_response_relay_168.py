@@ -167,17 +167,19 @@ entity = patch(
     "            } else if (this.coreExposureTicks % 6 == 0",
     "            if (this.coreExposureTicks == 0) {\n"
     "                this.entityData.set(CORE_EXPOSED, false);\n"
+    "                // Refresh response relays when the exposure timer expires.\n"
     "                MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());\n"
     "            } else if (this.coreExposureTicks % 6 == 0",
-    "MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());",
+    "// Refresh response relays when the exposure timer expires.",
     "exposed-core expiry refresh",
 )
 entity = patch(
     entity,
     "    }\n\n    private void emitWindupParticles() {\n",
+    "        // Refresh response relays when the attack wind-up begins.\n"
     "        MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());\n"
     "    }\n\n    private void emitWindupParticles() {\n",
-    "private void emitWindupParticles()",
+    "// Refresh response relays when the attack wind-up begins.",
     "attack-start relay refresh",
 )
 entity = patch(
@@ -188,10 +190,11 @@ entity = patch(
     "    private void performStomp(float damage, double radius) {",
     "        this.entityData.set(ATTACK_STATE, ATTACK_IDLE);\n"
     "        this.entityData.set(ATTACK_TICKS, 0);\n"
+    "        // Refresh response relays after the attack resolves.\n"
     "        MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());\n"
     "    }\n\n"
     "    private void performStomp(float damage, double radius) {",
-    "private void performStomp(float damage, double radius)",
+    "// Refresh response relays after the attack resolves.",
     "attack-release relay refresh",
 )
 entity = patch(
@@ -200,8 +203,9 @@ entity = patch(
     "        this.entityData.set(CORE_EXPOSED, true);\n",
     "        this.coreExposureTicks = Math.max(this.coreExposureTicks, 60);\n"
     "        this.entityData.set(CORE_EXPOSED, true);\n"
+    "        // Let response relays observe the exposed-core counter window.\n"
     "        MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());\n",
-    "this.coreExposureTicks = Math.max(this.coreExposureTicks, 60);\n        this.entityData.set(CORE_EXPOSED, true);\n        MutagenContainmentRelayBlock.refreshNearbyRelays",
+    "// Let response relays observe the exposed-core counter window.",
     "parry-window relay refresh",
 )
 entity_path.write_text(entity, encoding="utf-8")
