@@ -29,7 +29,7 @@ for token in ('import de.sporenwerk.item.ResonanzsporenKapselItem;',
               'ITEMS.register("resonanzsporen_kapsel"',
               "new ResonanzsporenKapselItem(new Item.Properties().stacksTo(16))"):
     require(token in items, "item registration missing " + token)
-require("output.accept(ModItems.RESONANZSPORNENKAPSEL.get())" in creative,
+require("output.accept(ModItems.RESONANZSPORENKAPSEL.get())" in creative,
         "capsule missing from creative catalogue")
 
 for token in (
@@ -51,7 +51,7 @@ require("ModBlocks.INFEKTIONSHERD" not in item and "spreadFromNode" not in item,
         "crop treatment must not trigger or expand terrain infection")
 
 for token in (
-    "held.is(ModItems.RESONANZSPORNENKAPSEL.get())",
+    "held.is(ModItems.RESONANZSPORENKAPSEL.get())",
     "if (currentCharge >= MAX_CHARGE)",
     "int nextCharge = currentCharge + 1",
     "state.setValue(CHARGE, nextCharge)",
@@ -61,7 +61,7 @@ for token in (
     "message.sporenwerk.resonanzkapsel.dampener_recharged",
 ):
     require(token in dampener, "dampener charge contract missing " + token)
-branch_start = dampener.find("held.is(ModItems.RESONANZSPORNENKAPSEL.get())")
+branch_start = dampener.find("held.is(ModItems.RESONANZSPORENKAPSEL.get())")
 branch_end = dampener.find("if (held.is(ModItems.KRISTALLPIRSCHER_RESONANZSPLITTER.get()))", branch_start)
 require(branch_start >= 0 and branch_end > branch_start, "capsule branch must be separate from rare-shard refill")
 branch = dampener[branch_start:branch_end]
