@@ -1141,7 +1141,7 @@ if "## Version 1.55.0 — Der Kristallkoloss erwacht" not in readme:
     legacy_index = readme.find(legacy_marker)
     if legacy_index < 0:
         # Snapshot README headings vary; fall back to the first section after the project preamble.
-        legacy_index = readme.find("\\n## ")
+        legacy_index = readme.find("\n## ")
         if legacy_index >= 0:
             legacy_index += 1
         else:
@@ -1164,6 +1164,20 @@ if "## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses" not in r
     prior_idx = readme.find(prior_marker)
     require(prior_idx >= 0, "could not locate 1.55.0 notes before adding history")
     readme = readme[:prior_idx] + previous_section + readme[prior_idx:]
+previous_section_157 = """## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen
+
+- **Körper und Weltursprung stimmen überein:** Der Modellrumpf ist am Entity-Ursprung nach oben positioniert, damit die unteren Beine nicht unter der Oberfläche versinken.
+- **Boss-Proportionen:** Renderer-Skalierung und Entity-Hitbox wurden gemeinsam angepasst.
+- **Vier artikulierte Läufe:** Ober- und Unterschenkel, breite Füße und drei Frontklauen je Bein mit eigener Laufbewegung.
+- **Passende Leuchtebene:** Cyanfarbene Adern folgen Beinen und Klauen.
+- **Kampf und Survival-Beschwörung:** Bossleiste, Stampfen, Kristallatem, zweite Phase und das Ritual mit drei Mutagenkernkristallen bleiben enthalten.
+
+"""
+if "## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen" not in readme:
+    previous_marker_157 = "## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses"
+    previous_idx_157 = readme.find(previous_marker_157)
+    require(previous_idx_157 >= 0, "could not locate 1.56.0 notes before adding 1.57.0 history")
+    readme = readme[:previous_idx_157] + previous_section_157 + readme[previous_idx_157:]
 section = """## Version 1.58.0 — Facettierte Kristallspitzen und korrektes Leucht-UV
 
 - **Drei echte Modellsegmente je Rückenstachel:** Basis, Mittelteil und Spitze sind nun getrennte, gestaffelte Modellteile. Sie verjüngen sich sichtbar, statt als drei sich überlappende hohe Quader auf demselben Ursprung zu liegen.
