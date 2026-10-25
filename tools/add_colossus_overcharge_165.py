@@ -256,6 +256,20 @@ for test_name in (
         source = source.replace('"case 5 ->",', '"case 5 ->",\n    "case 6 ->",', 1)
     test_path.write_text(source, encoding="utf-8")
 
+# The older heartbeat regression must follow the extended pulse expression added above.
+# Otherwise the feature is correct but the previous visual contract falsely rejects it.
+heartbeat_test_path = ROOT / "tools/test_colossus_visual_161.py"
+if heartbeat_test_path.exists():
+    heartbeat_test = heartbeat_test_path.read_text(encoding="utf-8")
+    old_pulse_contract = '"float pulseScale = 1.0F + 0.012F + heartbeat * 0.026F + afterBeat * 0.014F",'
+    new_pulse_contract = '"float pulseScale = 1.0F + 0.012F + heartbeat * 0.026F + afterBeat * 0.014F + overloadSurge",'
+    if old_pulse_contract in heartbeat_test:
+        heartbeat_test = heartbeat_test.replace(old_pulse_contract, new_pulse_contract, 1)
+        heartbeat_test_path.write_text(heartbeat_test, encoding="utf-8")
+    else:
+        require(new_pulse_contract in heartbeat_test,
+                "could not migrate heartbeat regression to the overload pulse expression")
+
 new_tests = {"test_colossus_overcharge_165.py", "test_containment_margin_relay_165.py"}
 for test_path in (ROOT / "tools").glob("test_*.py"):
     if test_path.name in new_tests:
