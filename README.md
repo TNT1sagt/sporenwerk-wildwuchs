@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.77.0 — Symbiose-Ernte als Redstone-Signal.**
+**Aktueller Entwicklungsstand: 1.78.0 — Forschungszweig für abgefangene Mutagenblüten.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.78.0
+
+- **Zweite Schutzroute:** Eine aktive Sporenabwehr schützt nicht nur vor dem Blütenimpuls, sondern dokumentiert den tatsächlichen Abfang als eigenständigen Forschungsfortschritt.
+- **Forschungsbelohnung nur bei Erfolg:** Die neue Advancement wird ausschließlich dann vergeben, wenn eine Mutagenblüte ausgelöst wurde und die Sporenabwehr den Impuls für diesen Spieler tatsächlich abfängt. Reines Platzieren oder Einschalten reicht nicht.
+- **Neue Fortschrittsverzweigung:** „Leise Wurzeln“ gewährt einmalig zwei Feldwissen und einen Myzelkompost. Die bestehende Route „Stiller Ausbruch“ für den ladungsverbrauchenden Resonanzdämpfer bleibt getrennt.
+- **Ökologie + Containment:** Der Belohnungspfad verbindet den Blüten-Event, die echte Ward-Reichweite, den Forschungsbaum und die bestehende Farm-/Kompostproduktion.
+- **Sicherer Ablauf:** Serverseitige Vergabe, vorhandener Blüten-Cooldown und bestehende Chunk-Grenzen bleiben erhalten; kein zusätzlicher Tick-Loop.
+- **Qualität:** Advancement-Schema, Loot-Tabelle, deutsche/englische Texte, bestehende Dämpfer- und Ward-Regressionen, Forge-JAR und dedizierter Serverstart werden geprüft.
 
 ## Aktueller Entwicklungsschritt — 1.77.0
 
@@ -123,6 +132,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.78.0 — Forschungszweig für abgefangene Mutagenblüten
+
+- **Neue Feldforschungs-Advancement „Leise Wurzeln“:** Eine aktive Sporenabwehr meldet den Spielerfortschritt erst, wenn sie einen realen Mutagenblüten-Expositionsimpuls abfängt.
+- **Einmalige Belohnung:** Zwei Feldwissen und ein Myzelkompost verbinden die sichere Verteidigungsstrategie mit weiterer Forschung und der ökologischen Produktionskette.
+- **Getrennter Schutzpfad:** Die bisherige Dämpfer-Advancement „Stiller Ausbruch“ bleibt an den tatsächlichen Verbrauch einer endlichen Resonanzdämpfer-Ladung gekoppelt.
+- **Keine Gratisbelohnung beim Aufstellen:** Der Trigger sitzt im serverseitigen Schutz-Zweig der echten Blüten-Expositionsroutine; Einschalten, Platzieren oder bloßes Beobachten reicht nicht.
+- **Qualitätssicherung:** Tests verifizieren Advancement-Kriterium, Loot-Inhalte, Sprachdateien, Dämpfer-Gegenpfad und vollständigen Forge-Serverstart.
 
 ## Version 1.77.0 — Symbiose-Ernte als Redstone-Signal
 
