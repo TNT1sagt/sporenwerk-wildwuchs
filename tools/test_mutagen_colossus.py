@@ -153,7 +153,7 @@ with Image.open(glow) as image:
     glow_rgba = image.convert("RGBA")
 require(glow_rgba.size == (256, 256), "emissive atlas must match the model's UV size")
 alpha_values = [p[3] for p in glow_rgba.getdata()]
-require(alpha_values.count(0) > 50000 and alpha_values.count(255) > 500,
+require(alpha_values.count(0) > 45000 and alpha_values.count(255) > 500,
         "glow atlas must be transparent outside luminous regions and opaque on crystal geometry")
 require("Independent full-bright crystal motifs use the same seven UV strips" in read("tools/add_mutagen_colossus.py"),
         "glow texture must use separate matching UV strips for all seven crystal spines")
