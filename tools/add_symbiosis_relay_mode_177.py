@@ -132,6 +132,54 @@ if "int symbiosisReadyCenters = 0;" not in eval_text:
     eval_text = eval_text[:default_at] + "            case 8 -> Math.min(15, symbiosisReadyCenters);\n" + eval_text[default_at:]
 
 relay = relay[:eval_start] + eval_text
+# Crop events need only refresh symbiosis relays; preserve the broader existing refresh path
+# for alarms and boss phases, but avoid rescanning each nearby legacy relay per crop event.
+symbiosis_refresh = """    /**
+     * Recalculate only mode-8 symbiosis relays after a local crop change.
+     * The spatial search is loaded-chunk-only and shares the existing event cap.
+     */
+    public static void refreshNearbySymbiosisRelays(Level level, BlockPos sourcePos) {
+        if (level.isClientSide) return;
+        int radius = HORIZONTAL_SCAN_RADIUS;
+        int radiusSquared = radius * radius;
+        int refreshed = 0;
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+
+        for (int ring = 0; ring <= radius && refreshed < MAX_REFRESHED_RELAYS_PER_EVENT; ring++) {
+            for (int dx = -ring; dx <= ring && refreshed < MAX_REFRESHED_RELAYS_PER_EVENT; dx++) {
+                for (int dz = -ring; dz <= ring && refreshed < MAX_REFRESHED_RELAYS_PER_EVENT; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != ring
+                            || dx * dx + dz * dz > radiusSquared) continue;
+                    int x = sourcePos.getX() + dx;
+                    int z = sourcePos.getZ() + dz;
+                    if (!level.hasChunkAt(new BlockPos(x, sourcePos.getY(), z))) continue;
+                    for (int dy = -VERTICAL_SCAN_RADIUS;
+                         dy <= VERTICAL_SCAN_RADIUS && refreshed < MAX_REFRESHED_RELAYS_PER_EVENT; dy++) {
+                        int y = sourcePos.getY() + dy;
+                        if (y < level.getMinBuildHeight() || y >= level.getMaxBuildHeight()) continue;
+                        cursor.set(x, y, z);
+                        BlockState candidate = level.getBlockState(cursor);
+                        if (!(candidate.getBlock() instanceof MutagenContainmentRelayBlock)
+                                || candidate.getValue(MODE) != 8) continue;
+                        BlockPos relayPos = cursor.immutable();
+                        int signal = evaluate(level, relayPos, 8);
+                        if (candidate.getValue(SIGNAL) != signal) {
+                            level.setBlock(relayPos, candidate.setValue(SIGNAL, signal), 3);
+                        }
+                        refreshed++;
+                    }
+                }
+            }
+        }
+    }
+
+"""
+if "public static void refreshNearbySymbiosisRelays(" not in relay:
+    require_anchor = "    private static boolean isRelevantInput(Block block) {"
+    if require_anchor not in relay:
+        raise SystemExit("Symbiosis relay 1.77: could not locate relay refresh insertion point")
+    relay = relay.replace(require_anchor, symbiosis_refresh + require_anchor, 1)
+
 relay_path.write_text(relay, encoding="utf-8")
 relay = relay_path.read_text(encoding="utf-8")
 for token in (
@@ -187,7 +235,7 @@ event_hooks = """    @Override
         if (!level.isClientSide && oldState.getBlock() != state.getBlock()
                 && MutationField.mutagenStrengthAt(level, pos) >= 2
                 && MutagenSymbiosis.countCropSpecies(level, pos) >= 3) {
-            MutagenContainmentRelayBlock.refreshNearbyRelays(level, pos);
+            MutagenContainmentRelayBlock.refreshNearbySymbiosisRelays(level, pos);
         }
     }
 
@@ -197,7 +245,7 @@ event_hooks = """    @Override
         if (!level.isClientSide && state.getBlock() != newState.getBlock()
                 && MutationField.mutagenStrengthAt(level, pos) >= 2
                 && MutagenSymbiosis.countCropSpecies(level, pos) >= 2) {
-            MutagenContainmentRelayBlock.refreshNearbyRelays(level, pos);
+            MutagenContainmentRelayBlock.refreshNearbySymbiosisRelays(level, pos);
         }
     }
 
@@ -215,7 +263,7 @@ tick_add = """        int ageBeforeGrowth = state.getValue(CropBlock.AGE);
                 && afterGrowth.getValue(CropBlock.AGE) == getMaxAge()
                 && MutationField.mutagenStrengthAt(level, pos) >= 2
                 && MutagenSymbiosis.countCropSpecies(level, pos) >= 3) {
-            MutagenContainmentRelayBlock.refreshNearbyRelays(level, pos);
+            MutagenContainmentRelayBlock.refreshNearbySymbiosisRelays(level, pos);
         }"""
 if "int ageBeforeGrowth = state.getValue(CropBlock.AGE);" not in crop:
     require(tick_anchor in crop, "could not locate crop growth update")
@@ -225,7 +273,7 @@ for token in (
     "public void onPlace(BlockState state, Level level, BlockPos pos",
     "public void onRemove(BlockState state, Level level, BlockPos pos",
     "int ageBeforeGrowth = state.getValue(CropBlock.AGE);",
-    "MutagenContainmentRelayBlock.refreshNearbyRelays(level, pos);",
+    "MutagenContainmentRelayBlock.refreshNearbySymbiosisRelays(level, pos);",
 ):
     require(token in crop_path.read_text(encoding="utf-8"), "crop event refresh missing " + token)
 
