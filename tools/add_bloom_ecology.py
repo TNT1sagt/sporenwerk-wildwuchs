@@ -220,6 +220,9 @@ for test_name in ("test_mutagen_symbiosis_progression.py", "test_mutagen_symbios
     source = source.replace(
         '"int cropSpecies, boolean symbiosisCluster, int protectiveFilterMoss)"',
         '"int cropSpecies, boolean symbiosisCluster, int protectiveFilterMoss, int recentBloomSources)"')
+    source = source.replace(
+        '"int protectiveFilterMoss)"',
+        '"int protectiveFilterMoss, int recentBloomSources)"')
     path.write_text(source, encoding="utf-8")
 
 # Advance the release contract, without rewriting the historical release notes.
