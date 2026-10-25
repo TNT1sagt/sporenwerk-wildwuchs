@@ -72,7 +72,7 @@ glow_addition = glow_anchor + '''
                         .addBox(2.88F, -1.12F, -14.98F, 5.24F, 5.24F, 5.24F)
                         .texOffs(216, 84).addBox(2.88F, 1.88F, -16.18F, 4.24F, 3.12F, 3.24F),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.06F));'''
-replace_once(MODEL, glow_anchor, glow_addition, 'head.addOrReplaceChild("brow_armor_left"', "head glow armor")
+replace_once(MODEL, glow_anchor, glow_addition, 'addBox(-8.18F, -8.72F, -14.38F', "head glow armor")
 
 def paint_head_atlas(path, emissive):
     image = Image.open(path).convert("RGBA")
