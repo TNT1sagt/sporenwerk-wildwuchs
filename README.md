@@ -1,17 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.49.0 — Resonanzfokus für taktische Gegenwehr im Nahbereich.**
+**Aktueller Entwicklungsstand: 1.50.0 — Lebendes Filtermoos, natürliche Pflanzenabwehr und Expositionsschutz.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
-## Aktueller Schwerpunkt — 1.49.0
+## Aktueller Schwerpunkt — 1.50.0
 
-- **Aktive Gegenwehr statt nur passiver Sicherung:** Der Resonanzfokus verwandelt Kristallpirscher-Beute in eine wiederverwendbare Nahbereichswaffe.
-- **Taktischer Einsatz:** Ein erfolgreicher Impuls verbraucht genau einen Resonanzsplitter, trifft höchstens drei Sporenwerk-Gegner in 5,5 Blöcken Sichtweite und kombiniert typabhängigen Schaden mit Verlangsamung und Rückstoß.
-- **Faire Fehlversuche:** Ohne passendes Ziel oder ohne Munition wird kein Splitter verbraucht und keine Abklingzeit gestartet.
-- **Technische Grenzen:** Serverseitige Zielauswahl, Sichtlinienprüfung, festes Zielmaximum und vier Sekunden Abklingzeit.
-- **Release-QA:** Rezept, Pixel-Art, DE/EN-Rückmeldungen, Regressionstest, Forge-Build, JAR-Inhalt und dedizierter Serverstart.
+- **Lebende Feldabwehr:** Ausgewachsenes Filtermoos der Mutagenstufe II/III schützt reife Nutzpflanzen vor dem Dämmerling und kann einen fälligen Mutagen-Expositionsimpuls eines nahen Spielers abfangen.
+- **Einheitliche Schutzregel:** Kreaturen-KI und Spielerüberleben verwenden denselben begrenzten Schutzradius von drei Blöcken horizontal und einem vertikal; Maskenhaltbarkeit bleibt bei abgefangener Exposition erhalten.
+- **Diagnose und Fortschritt:** Der Feldscanner zählt reife Filtermoos-Pflanzen der Stufe II/III im Messgebiet. Die erste tatsächliche Schutzwirkung schaltet „Ein lebender Filter“ frei und belohnt zwei Filtereinsätze.
+- **Aktive Gegenwehr bleibt erhalten:** Der Resonanzfokus verbraucht genau einen Resonanzsplitter pro erfolgreichem Impuls, trifft höchstens drei Gegner in 5,5 Blöcken Sichtweite und startet bei Fehlversuchen keine Abklingzeit.
+- **Qualität und Leistung:** Chunk-sichere Prüfungen, DE/EN-Rückmeldungen, Regressionstests, Forge-Build, JAR-Inhalt und dedizierter Serverstart sind Teil der Release-QA.
 ---
+
+## Version 1.50.0 — Lebendes Filtermoos und natürliche Feldabwehr
+
+- **Ökologische Begleitpflanze:** Ausgewachsenes Filtermoos mit Mutagenstufe II/III bildet einen begrenzten Schutzradius von drei Blöcken horizontal und einem vertikal. Innerhalb dieses Radius schützt es reife Sporenwerk-Pflanzen vor dem Dämmerling.
+- **Überlebenshilfe im Feld:** Derselbe Filtermoos-Cluster fängt einen fälligen Mutagen-Expositionsimpuls ab, wenn ein Spieler nahe genug steht. Das verbraucht keine Haltbarkeit der Filtermaske; eine lokale Meldung und Sporenpartikel bestätigen den Schutz.
+- **Nachvollziehbare Entdeckung:** Die erste tatsächlich abgefangene Exposition löst den Forschungsfortschritt „Ein lebender Filter“ aus und belohnt zwei gewöhnliche Filtereinsätze.
+- **Scanner statt Rätselraten:** Der begrenzte Feldbericht zählt reife Filtermoos-Pflanzen der Stufe II/III im Messgebiet. Dieser Bereichsgesamtwert behauptet nicht, dass jede gezählte Pflanze den Spieler oder ein Ziel gerade schützt.
+- **Ressourcen- und Balancegrenzen:** Filtermoos-Prüfungen überspringen ungeladene Chunks; die Spielerprüfung läuft nur zu ohnehin fälligen Expositionszeitpunkten. Keine neue Tick-Schleife und kein erzwungenes Chunk-Laden.
+- **Qualitätssicherung:** Regressionen prüfen Mutagenstufen, Pflanzenreife, Schutzradius, Maskenhaltbarkeit, Forschungsbelohnung, Scannerbericht, DE/EN-Texte, Forge-Build und Serverstart.
 
 ## Version 1.49.0 — Resonanzfokus und aktive Gegenwehr
 
