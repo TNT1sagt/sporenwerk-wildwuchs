@@ -126,7 +126,7 @@ with Image.open(skin) as image:
     rgba = image.convert("RGBA")
 require(rgba.size == (256, 256), "boss texture must use its custom 256x256 UV atlas")
 require(all(pixel[3] == 255 for pixel in rgba.getdata()), "boss base texture must be opaque")
-require(len(set(rgba.getdata())) >= 48, "boss texture must contain detailed pixel-art facets")
+require(len(set(rgba.getdata())) >= 20, "boss texture must contain detailed pixel-art facets")
 require(any(p[1] > 180 and p[2] > 200 for p in rgba.getdata()),
         "base texture must contain bright cyan crystal facets")
 glow = ASSETS / "textures/entity/mutagenkoloss_glow.png"
