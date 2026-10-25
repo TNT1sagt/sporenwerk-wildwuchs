@@ -261,8 +261,8 @@ for test_name in (
 heartbeat_test_path = ROOT / "tools/test_colossus_visual_161.py"
 if heartbeat_test_path.exists():
     heartbeat_test = heartbeat_test_path.read_text(encoding="utf-8")
-    old_pulse_contract = '"float pulseScale = 1.0F + 0.012F + heartbeat * 0.026F + afterBeat * 0.014F",'
-    new_pulse_contract = '"float pulseScale = 1.0F + 0.012F + heartbeat * 0.026F + afterBeat * 0.014F + overloadSurge",'
+    old_pulse_contract = '"float pulseScale = 1.0F + 0.012F + heartbeat * 0.026F + afterBeat * 0.014F;",'
+    new_pulse_contract = '"float pulseScale = 1.0F + 0.012F + heartbeat * 0.026F + afterBeat * 0.014F + overloadSurge;",'
     if old_pulse_contract in heartbeat_test:
         heartbeat_test = heartbeat_test.replace(old_pulse_contract, new_pulse_contract, 1)
         heartbeat_test_path.write_text(heartbeat_test, encoding="utf-8")
