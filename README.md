@@ -4,6 +4,14 @@
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
+## Aktueller Entwicklungsschritt — 1.63.0
+
+- **Direktes Feldstärke-Signal:** Das Containment-Relais erhält einen fünften Modus, der Mutagenboden und mutagenaktive Pflanzen selbst abtastet und als Comparator-Wert ausgibt.
+- **Redstone-Automation:** Nach einem Relais-Scan können Lampen, Türen oder Filtermaschinen auf lokale Feldstärke reagieren, ohne erst einen Kontrollstations-Scan zu benötigen.
+- **Sicherheit bleibt erhalten:** Der begrenzte Radius und der Schutz vor Chunk-Loads bleiben erhalten; der Modus fügt keine permanente Abfrageschleife hinzu.
+- **Build-QA:** Alle fünf Modi und 80 Blockstate-Kombinationen werden geprüft, bevor die Forge-JAR gebaut wird.
+
+
 ## Aktueller Entwicklungsschritt — 1.62.0
 
 - **Mehr Volumen:** Mehrlagige, kantige Schulter- und Hinterhandplatten verleihen dem Kristallkoloss eine schwerere Rüstungssilhouette.
