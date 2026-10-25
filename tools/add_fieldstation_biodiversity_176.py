@@ -96,11 +96,11 @@ if "int symbiosisRadiusSquared = 3 * 3;" not in station_path.read_text(encoding=
 
 old_return = "return new Survey(soil, highSoil, crops, standard, reinforced, advanced, networkMembers, poweredWards, dampeners, chargedDampeners, availablePulses, sirenSignals, criticalSirenSignals, highestSirenSignal);"
 new_return = "return new Survey(soil, highSoil, crops, standard, reinforced, advanced, networkMembers, poweredWards, dampeners, chargedDampeners, availablePulses, sirenSignals, criticalSirenSignals, highestSirenSignal, Integer.bitCount(cropSpeciesMask), matureCrops, symbiosisReadyCrops);"
-new_return = "return new Survey(soil, highSoil, crops, standard, reinforced, advanced, networkMembers, poweredWards, dampeners, chargedDampeners, availablePulses, Integer.bitCount(cropSpeciesMask), matureCrops, symbiosisReadyCrops);"
+new_return = "return new Survey(soil, highSoil, crops, standard, reinforced, advanced, networkMembers, poweredWards, dampeners, chargedDampeners, availablePulses, sirenSignals, criticalSirenSignals, highestSirenSignal, Integer.bitCount(cropSpeciesMask), matureCrops, symbiosisReadyCrops);"
 replace_once(station_path, old_return, new_return, "survey record result")
 old_record = "private record Survey(int soil, int highSoil, int crops, int standard, int reinforced, int advanced, int networkMembers, int poweredWards, int dampeners, int chargedDampeners, int availablePulses, int sirenSignals, int criticalSirenSignals, int highestSirenSignal) {}"
 new_record = "private record Survey(int soil, int highSoil, int crops, int standard, int reinforced, int advanced, int networkMembers, int poweredWards, int dampeners, int chargedDampeners, int availablePulses, int sirenSignals, int criticalSirenSignals, int highestSirenSignal, int cropSpecies, int matureCrops, int symbiosisReadyCrops) {}"
-new_record = "private record Survey(int soil, int highSoil, int crops, int standard, int reinforced, int advanced, int networkMembers, int poweredWards, int dampeners, int chargedDampeners, int availablePulses, int cropSpecies, int matureCrops, int symbiosisReadyCrops) {}"
+new_record = "private record Survey(int soil, int highSoil, int crops, int standard, int reinforced, int advanced, int networkMembers, int poweredWards, int dampeners, int chargedDampeners, int availablePulses, int sirenSignals, int criticalSirenSignals, int highestSirenSignal, int cropSpecies, int matureCrops, int symbiosisReadyCrops) {}"
 replace_once(station_path, old_record, new_record, "survey result schema")
 
 report_anchor = '        player.displayClientMessage(Component.translatable("message.sporenwerk.fieldstation.crops", s.crops()).withStyle(ChatFormatting.GREEN), false);'
