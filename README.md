@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.62.0 — mehrlagige Kristallkoloss-Panzerung mit cyan-violetten Leuchtkanten.**
+**Aktueller Entwicklungsstand: 1.65.0 — überladener Kristallkern und Containment-Sicherheitspuffer.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.65.0
+
+- **Kristallkoloss – Gegenangriffsfenster:** Nach dem Kristallatem ist der Kern 90 Ticks überladen. Der Boss kündigt das Zeitfenster per Actionbar und End-Rod-Partikeln an; Spieler- und Projektiltreffer verursachen 30 % mehr Schaden.
+- **Sichtbare Reaktion:** Brustkern und Rückenstacheln pulsieren während der Überladung deutlich stärker. Das endet automatisch, ohne permanent laufende Zusatzlogik.
+- **Containment-Relais – Sicherheitsreserve:** Der siebte Modus liefert einen Comparator-Wert von 0–15. 15 heißt, dass keine Gefahr erkannt wurde; bei aktiver Gefahr verbessern zusätzliche Schutzressourcen den Wert.
+- **Sichere Diagnose:** Das Relais bleibt bei begrenztem Umkreis, prüft nur bereits geladene Chunks und erzeugt keine permanente Tick-Abfrage.
+- **Tests und Build:** Beide Systeme haben eigene Regressionstests; die bestehende Forge-JAR, der Ressourcencheck und der dedizierte Serverstart bleiben Teil der Pipeline.
 
 ## Aktueller Entwicklungsschritt — 1.64.0
 
