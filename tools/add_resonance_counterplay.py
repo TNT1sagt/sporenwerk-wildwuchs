@@ -205,6 +205,14 @@ for filename, entries in translations.items():
     data.update(entries)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
+# The existing Resonanzfokus regression expected a fixed knockback literal. Its contract now
+# explicitly accepts the stronger, successful-parry knockback while preserving ordinary hits.
+focus_test_path = ROOT / "tools/test_resonance_focus.py"
+if focus_test_path.is_file():
+    focus_test = focus_test_path.read_text(encoding="utf-8")
+    focus_test = focus_test.replace('"target.knockback(0.9D"', '"target.knockback(interrupted ? 1.25D : 0.9D"')
+    focus_test_path.write_text(focus_test, encoding="utf-8")
+
 # Bump test contracts that target the active release; historical release notes stay intact.
 for test_path in (ROOT / "tools").glob("test_*.py"):
     source = test_path.read_text(encoding="utf-8")
