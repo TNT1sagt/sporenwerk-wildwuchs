@@ -90,13 +90,13 @@ intercept_replacement = """        if (this.level() instanceof ServerLevel serve
                 player.displayClientMessage(Component.translatable(
                         "message.sporenwerk.colossus.breath_intercepted"), true);
                 player.displayClientMessage(Component.translatable(
-                        "message.sporenwerk.colossus.core_exposed"), false);
+                        "message.sporenwerk.colossus.core_exposed_countermeasure"), false);
             }
             return;
         }"""
 entity = patch(
     entity, intercept_block, intercept_replacement,
-    'player.displayClientMessage(Component.translatable(\n                        "message.sporenwerk.colossus.core_exposed"), false);',
+    'player.displayClientMessage(Component.translatable(\n                        "message.sporenwerk.colossus.core_exposed_countermeasure"), false);',
     "Dampener interception must open the core and notify nearby players",
 )
 require("MutagenContainmentRelayBlock.refreshNearbyRelays(this.level(), this.blockPosition());"
@@ -109,7 +109,9 @@ for filename, value in (
 ):
     path = ASSETS / "lang" / filename
     locale = json.loads(path.read_text(encoding="utf-8"))
-    locale["message.sporenwerk.colossus.core_exposed"] = value
+    # Keep the original 1.65 overcharge warning intact; countermeasure feedback
+    # has its own key so the two successful exposure paths remain distinguishable.
+    locale["message.sporenwerk.colossus.core_exposed_countermeasure"] = value
     path.write_text(json.dumps(locale, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 # Preserve all historical regression suites while advancing the active build metadata.
