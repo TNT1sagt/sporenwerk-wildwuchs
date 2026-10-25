@@ -1050,6 +1050,20 @@ build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
+legacy_section = """## Version 1.55.0 — Der Kristallkoloss erwacht
+
+- **Eigener Boss statt umgefärbter Zombie:** Der Kristallkoloss verwendet ein separates vierbeiniges Modell mit massigem Panzerkörper, sieben Rückenstacheln, Hörnern, vier animierten Läufen und segmentiertem Kristallschwanz.
+- **Leuchtende Kristalle:** Eine zweite, transparente Emissiv-Textur wird über einen Full-Bright-Eyes-Layer gerendert.
+- **Prozedurale Animation und Kampf:** Laufbewegung, Schwanzpendel, angekündigter Stampfangriff, gerichteter Kristallatem, Bossleiste und eine zweite Phase ab 50 % Leben.
+- **Survival-Beschwörung:** Geduckt mit drei Mutagenkernkristallen auf Mutagenboden Stufe III rechtsklicken. Bei blockiertem Spawn wird nichts verbraucht.
+- **Sieg mit Belohnung:** Ein garantiertes Kristallkoloss-Herz, weitere Kernkristalle, Pflanzenreste und ein eigenes Challenge-Advancement.
+
+"""
+if "## Version 1.55.0 — Der Kristallkoloss erwacht" not in readme:
+    legacy_marker = "## Version 1.54.0 — Blütenduft für den Kristallpirscher"
+    legacy_index = readme.find(legacy_marker)
+    require(legacy_index >= 0, "could not locate 1.54.0 release notes to preserve history")
+    readme = readme[:legacy_index] + legacy_section + readme[legacy_index:]
 section = """## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses
 
 - **Silhouette statt Kopf-im-Gras:** Der Panzerkörper wurde verbreitert und verlängert, die Kopfform verkleinert und die Schnauze klarer abgesetzt. Beine sind länger, weiter außen platziert und enden jetzt mit breiten, sichtbaren Klauenfüßen auf Bodenhöhe.
