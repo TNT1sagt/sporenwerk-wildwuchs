@@ -167,7 +167,7 @@ if "## Aktueller Entwicklungsschritt — 1.69.0" not in readme:
     marker = "Dieses Repository enthält die Patch-Skripte"
     intro_start = readme.find(marker)
     if intro_start >= 0:
-        intro_end = readme.find("\\n\\n", intro_start)
+        intro_end = readme.find("\n\n", intro_start)
         require(intro_end > intro_start, "could not find README introduction boundary")
         insert_at = intro_end + 2
     else:
