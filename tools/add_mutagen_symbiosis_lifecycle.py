@@ -254,6 +254,19 @@ for locale, entries in {
     data.update(entries)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
+# The 1.47 regression also validates the AreaSurvey schema. Keep that older contract
+# aligned with the additive cluster flag, while preserving its checks for the old fields.
+progression_test_path = ROOT / "tools/test_mutagen_symbiosis_progression.py"
+if progression_test_path.is_file():
+    progression_test = progression_test_path.read_text(encoding="utf-8")
+    old_schema_token = '"int cropSpecies)"'
+    new_schema_token = '"int cropSpecies, boolean symbiosisCluster)"'
+    if old_schema_token in progression_test:
+        progression_test = progression_test.replace(old_schema_token, new_schema_token, 1)
+        progression_test_path.write_text(progression_test, encoding="utf-8")
+    elif new_schema_token not in progression_test:
+        raise SystemExit("Could not update prior scanner progression regression for the cluster flag")
+
 # Bump active assertions while preserving all historical version notes.
 for test_path in (ROOT / "tools").glob("test_*.py"):
     lines = test_path.read_text(encoding="utf-8").splitlines(keepends=True)
