@@ -1,8 +1,15 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.73.0 — Resonanzverdichtung überlappender Mutagenfelder.**
+**Aktueller Entwicklungsstand: 1.74.0 — Leuchtender Kristallkern als aktive Bossreliquie.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.74.0
+
+- **Leuchtender Kristallkern:** Das Kristallkern-Bild ist als transparentes 16×16-Minecraft-Item eingebunden und wird als garantierte Endgame-Beute des Kristallkolosses vergeben.
+- **Resonanzimpuls:** Rechtsklick trifft bis zu vier nahe sichtbare Mutagengegner, mit Abklingzeit und serverseitiger Zielprüfung.
+- **Gegen die Boss-Angriffsfenster:** Der Impuls kann Stampf- und Atemaufladungen des Kristallkolosses beenden; außerhalb solcher Aufladungen unterbricht er keine Bossphase.
+- **Visual QA und Inhalt:** Itemmodell, Tooltip, DE/EN-Texte, Fund-Advancement und JAR-Prüfung sind Bestandteil des Build-Workflows.
 
 ## Aktueller Entwicklungsschritt — 1.73.0
 
@@ -94,6 +101,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.74.0 — Leuchtender Kristallkern als Bossreliquie
+
+- **Das Konzept wird zum echten Item:** Der Leuchtende Kristallkern erhält eine eigene transparente 16×16-Pixeltextur, Itemmodell, Kreativkatalog-Eintrag und deutsche/englische Lokalisierung.
+- **Funktion statt reiner Dekoration:** Rechtsklick entfesselt serverseitig einen Resonanzimpuls, der bis zu vier Mutagengegner in Sichtweite innerhalb von acht Blöcken trifft. Das Artefakt ist wiederverwendbar und hat eine feste Abklingzeit von zehn Sekunden.
+- **Aktive Boss-Gegenwehr:** Trifft der Impuls den Kristallkoloss während seiner angekündigten Stampf- oder Atemaufladung, unterbricht er diesen Angriff, setzt den Windup sichtbar zurück und verursacht zusätzlichen Schaden. Aufwachen und normale Phasen werden nicht abgebrochen.
+- **Verdienter Endgame-Fund:** Der Kristallkoloss lässt einen Kern garantiert fallen. Ein eigenes Advancement zeichnet den Fund auf; das Bild ist außerdem in der Visual-QA-Vorschau enthalten.
+- **Sicherheits- und Regressionstests:** Zielauswahl und Schaden laufen serverseitig; Reichweite, Sichtlinie, Zielobergrenze, Windup-Interruption, Loot-Tabelle, Modell, Textur, DE/EN-Texte und Versionsmetadaten werden geprüft.
 
 ## Version 1.73.0 — Resonanzverdichtung überlappender Mutagenfelder
 
