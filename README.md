@@ -1,8 +1,15 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.69.0 — Dämpfer-Parade und verwundbarer Kristallkern.**
+**Aktueller Entwicklungsstand: 1.70.0 — Redstone-Sperre für kontrollierte Mutagenherde.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.70.0
+
+- **Redstone-Kontrolle:** Der Mutagenherd lässt sich elektrisch anhalten und wieder starten. Ein pausierter Herd bleibt als solcher platziert und wird nicht als sterilisiert oder gelöscht missverstanden.
+- **Saubere Stoppgrenze:** Auch bereits befallener Mutagenboden darf nicht weiterwachsen, solange die zugehörige Quelle Redstone-Strom erhält.
+- **Minecraft-lesbarer Zustand:** Aktiv und pausiert besitzen unterschiedliche Blockmodelle/Texturen. Ton, Partikel und nahe Spieler erhalten beim Umschalten Feedback.
+- **Kein neuer globaler Tick-Loop:** Die vorhandene begrenzte Quellen-Ticklogik wird weiterverwendet; beim Wiederanschalten wird genau ein neuer Tick geplant.
 
 ## Aktueller Entwicklungsschritt — 1.69.0
 
@@ -67,6 +74,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.70.0 — Redstone-Sperre für kontrollierte Mutagenherde
+
+- **Feld auf Knopfdruck anhalten:** Ein Redstone-Signal pausiert den Mutagenherd, ohne ihn zu zerstören oder seinen persistenten Aktivierungsstatus zu verlieren. Wird das Signal entfernt, wird die Ausbreitung automatisch fortgesetzt.
+- **Bereits befallener Boden stoppt mit:** Mutagenboden prüft weiterhin seine ursprüngliche Quelle. Solange diese Quelle mit Redstone gesperrt ist, entstehen keine neuen befallenen Nachbarblöcke.
+- **Im Spiel deutlich sichtbar:** Der gesperrte Herd erhält ein eigenes dunkelmetallisches Pixelmuster mit rotem Sperrbalken, statt dass man einen Scanner zum Erkennen benötigt.
+- **Rückmeldung und Grenzen:** Signalwechsel erzeugen Ton, Partikel und eine lokale Nachricht. Die 8-Block-Horizontalreichweite, die vertikale Begrenzung, Heilanker, immune Baublöcke und die Endgame-Sterilisierung bleiben erhalten.
+- **Qualitätssicherung:** Regressionen prüfen beide Spread-Pfade, gespeicherten Herdstatus, Blockstate-Modellzuordnung, 16×16-Texturkontrast und deutsche/englische Meldungen.
 
 ## Version 1.69.0 — Dämpfer-Parade öffnet den Kristallkern
 
