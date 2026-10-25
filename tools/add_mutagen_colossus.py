@@ -448,13 +448,13 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
                         .texOffs(104, 140).addBox(-3.0F, -2.0F, 14.0F, 6.0F, 4.0F, 8.0F),
                 PartPose.offset(0.0F, 0.0F, 16.0F));
 
-        addCrystal(body, "spine_0", 0, -10.0F, -16.0F, 18, -0.22F);
-        addCrystal(body, "spine_1", 24, 7.0F, -13.0F, 22, 0.18F);
-        addCrystal(body, "spine_2", 48, -3.0F, -7.0F, 18, -0.12F);
-        addCrystal(body, "spine_3", 72, 8.0F, -1.0F, 23, 0.22F);
-        addCrystal(body, "spine_4", 96, -5.0F, 5.0F, 18, -0.14F);
-        addCrystal(body, "spine_5", 120, 5.0F, 11.0F, 15, 0.19F);
-        addCrystal(body, "spine_6", 144, 0.0F, 17.0F, 13, 0.0F);
+        addCrystal(body, "spine_0", 0, -10.0F, -16.0F, 22, -0.28F);
+        addCrystal(body, "spine_1", 32, 7.0F, -13.0F, 29, 0.22F);
+        addCrystal(body, "spine_2", 64, -3.0F, -7.0F, 24, -0.16F);
+        addCrystal(body, "spine_3", 96, 8.0F, -1.0F, 31, 0.24F);
+        addCrystal(body, "spine_4", 128, -5.0F, 5.0F, 24, -0.18F);
+        addCrystal(body, "spine_5", 160, 5.0F, 11.0F, 20, 0.22F);
+        addCrystal(body, "spine_6", 192, 0.0F, 17.0F, 17, 0.0F);
         body.addOrReplaceChild("shoulder_crystal_left",
                 CubeListBuilder.create().texOffs(176, 100).addBox(-3.0F, -13.0F, -3.0F, 6.0F, 13.0F, 6.0F),
                 PartPose.offsetAndRotation(-14.0F, -4.0F, -13.0F, 0.12F, 0.0F, -0.62F));
@@ -497,15 +497,23 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
 
     private static void addCrystal(PartDefinition body, String name, int u,
                                    float x, float z, int height, float lean) {
-        body.addOrReplaceChild(name,
-                CubeListBuilder.create()
-                        .texOffs(u, 176).addBox(-3.5F, -height * 0.42F, -3.8F,
-                                7.0F, height * 0.42F, 7.6F)
-                        .texOffs(u + 8, 176).addBox(-2.4F, -height * 0.78F, -2.8F,
-                                4.8F, height * 0.36F, 5.6F)
-                        .texOffs(u + 14, 176).addBox(-1.1F, -height, -1.5F,
-                                2.2F, height * 0.25F, 3.0F),
+        PartDefinition crystal = body.addOrReplaceChild(name, CubeListBuilder.create(),
                 PartPose.offsetAndRotation(x, -7.0F, z, 0.0F, 0.0F, lean));
+        // Each tapered tier is a real child part; these are not overlapping tall boxes.
+        crystal.addOrReplaceChild("crystal_base",
+                CubeListBuilder.create().texOffs(u, 176)
+                        .addBox(-4.0F, -height * 0.38F, -4.0F,
+                                8.0F, height * 0.38F, 8.0F), PartPose.ZERO);
+        crystal.addOrReplaceChild("crystal_middle",
+                CubeListBuilder.create().texOffs(u + 8, 176)
+                        .addBox(-2.8F, -height * 0.35F, -2.8F,
+                                5.6F, height * 0.35F, 5.6F),
+                PartPose.offset(0.0F, -height * 0.38F, 0.0F));
+        crystal.addOrReplaceChild("crystal_tip",
+                CubeListBuilder.create().texOffs(u + 16, 176)
+                        .addBox(-1.25F, -height * 0.27F, -1.25F,
+                                2.5F, height * 0.27F, 2.5F),
+                PartPose.offset(0.0F, -height * 0.73F, 0.0F));
     }
 
     public static LayerDefinition createGlowLayer() {
@@ -535,13 +543,13 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
         tail.addOrReplaceChild("tail_tip", CubeListBuilder.create().texOffs(224, 44)
                 .addBox(-1.5F, -3.0F, 1.0F, 3.0F, 6.0F, 17.0F), PartPose.offset(0.0F, 0.0F, 16.0F));
 
-        addGlowCrystal(body, "spine_0", -10.0F, -16.0F, 16, -0.22F);
-        addGlowCrystal(body, "spine_1", 7.0F, -13.0F, 20, 0.18F);
-        addGlowCrystal(body, "spine_2", -3.0F, -7.0F, 16, -0.12F);
-        addGlowCrystal(body, "spine_3", 8.0F, -1.0F, 21, 0.22F);
-        addGlowCrystal(body, "spine_4", -5.0F, 5.0F, 16, -0.14F);
-        addGlowCrystal(body, "spine_5", 5.0F, 11.0F, 13, 0.19F);
-        addGlowCrystal(body, "spine_6", 0.0F, 17.0F, 11, 0.0F);
+        addGlowCrystal(body, "spine_0", 0, -10.0F, -16.0F, 22, -0.28F);
+        addGlowCrystal(body, "spine_1", 32, 7.0F, -13.0F, 29, 0.22F);
+        addGlowCrystal(body, "spine_2", 64, -3.0F, -7.0F, 24, -0.16F);
+        addGlowCrystal(body, "spine_3", 96, 8.0F, -1.0F, 31, 0.24F);
+        addGlowCrystal(body, "spine_4", 128, -5.0F, 5.0F, 24, -0.18F);
+        addGlowCrystal(body, "spine_5", 160, 5.0F, 11.0F, 20, 0.22F);
+        addGlowCrystal(body, "spine_6", 192, 0.0F, 17.0F, 17, 0.0F);
         return LayerDefinition.create(mesh, 256, 256);
     }
 
@@ -562,16 +570,24 @@ public final class MutagenkolossModel extends EntityModel<MutagenkolossEntity> {
                 .addBox(3.2F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F), PartPose.ZERO);
     }
 
-    private static void addGlowCrystal(PartDefinition body, String name, float x, float z,
-                                       int height, float lean) {
-        body.addOrReplaceChild(name, CubeListBuilder.create()
-                .texOffs(176, 64).addBox(-3.2F, -height * 0.42F, -3.4F,
-                        6.4F, height * 0.42F, 6.8F)
-                .texOffs(184, 64).addBox(-2.2F, -height * 0.78F, -2.4F,
-                        4.4F, height * 0.36F, 4.8F)
-                .texOffs(190, 64).addBox(-1.0F, -height, -1.3F,
-                        2.0F, height * 0.25F, 2.6F),
+    private static void addGlowCrystal(PartDefinition body, String name, int u,
+                                       float x, float z, int height, float lean) {
+        PartDefinition crystal = body.addOrReplaceChild(name, CubeListBuilder.create(),
                 PartPose.offsetAndRotation(x, -7.0F, z, 0.0F, 0.0F, lean));
+        crystal.addOrReplaceChild("crystal_base",
+                CubeListBuilder.create().texOffs(u, 176)
+                        .addBox(-4.1F, -height * 0.38F, -4.1F,
+                                8.2F, height * 0.38F, 8.2F), PartPose.ZERO);
+        crystal.addOrReplaceChild("crystal_middle",
+                CubeListBuilder.create().texOffs(u + 8, 176)
+                        .addBox(-2.9F, -height * 0.35F, -2.9F,
+                                5.8F, height * 0.35F, 5.8F),
+                PartPose.offset(0.0F, -height * 0.38F, 0.0F));
+        crystal.addOrReplaceChild("crystal_tip",
+                CubeListBuilder.create().texOffs(u + 16, 176)
+                        .addBox(-1.35F, -height * 0.27F, -1.35F,
+                                2.7F, height * 0.27F, 2.7F),
+                PartPose.offset(0.0F, -height * 0.73F, 0.0F));
     }
 
     @Override
@@ -849,20 +865,23 @@ def make_colossus_texture():
             if (row + col) % 3 == 0:
                 draw.line([(x + 16, y + 13), (x + 20, y + 18), (x + 18, y + 23)],
                           fill=(58, 146, 207, 255), width=2)
-    # Cyan crystal facets concentrated across the spine and claw UV areas.
-    for x, y, scale in ((8, 184, 1), (34, 190, 2), (63, 184, 1), (91, 192, 2),
-                        (117, 186, 1), (145, 194, 2), (173, 188, 1), (201, 193, 2),
-                        (226, 180, 1), (18, 224, 1), (75, 228, 1), (135, 224, 1),
-                        (193, 229, 1), (232, 217, 1)):
-        w = 6 * scale
-        h = 17 * scale
-        draw.polygon([(x, y + h), (x + w // 2, y), (x + w, y + h - 4),
-                      (x + w - 2, y + h), (x + 2, y + h)], fill=(27, 106, 147, 255))
-        draw.polygon([(x + 1, y + h - 2), (x + w // 2, y + 2),
-                      (x + w // 2 + 1, y + h - 4)], fill=(71, 207, 228, 255))
-        draw.line([(x + w // 2, y + 3), (x + w // 2, y + h - 5)],
-                  fill=(172, 252, 255, 255), width=1)
-        draw.point((x + w - 1, y + h - 5), fill=(37, 145, 197, 255))
+    # Seven large crystal UV strips align exactly with the seven articulated spine parts.
+    spine_heights = (60, 77, 65, 82, 68, 57, 50)
+    for idx, height in enumerate(spine_heights):
+        x = idx * 32
+        tip = 254 - height
+        draw.polygon([(x + 2, 251), (x + 5, tip + 10), (x + 12, tip),
+                      (x + 20, tip + 7), (x + 29, tip + 19), (x + 30, 251)],
+                     fill=(16, 58, 105, 255))
+        draw.polygon([(x + 4, 249), (x + 8, tip + 12), (x + 13, tip + 4),
+                      (x + 17, tip + 17), (x + 26, 249)],
+                     fill=(27, 133, 184, 255))
+        draw.polygon([(x + 8, 245), (x + 13, tip + 6), (x + 16, tip + 17),
+                      (x + 20, 247)], fill=(75, 220, 246, 255))
+        draw.line([(x + 12, tip + 8), (x + 16, tip + 19), (x + 17, 242)],
+                  fill=(218, 255, 255, 255), width=2)
+        draw.line([(x + 22, tip + 14), (x + 27, 242)],
+                  fill=(51, 179, 225, 255), width=2)
     # Magenta-violet crystal faults break up the dark armor, matching the high-mutagen palette.
     for x, y in ((14, 61), (53, 88), (88, 63), (126, 94), (169, 79),
                  (205, 85), (232, 63), (29, 169), (80, 150), (177, 145), (224, 164)):
@@ -907,13 +926,21 @@ def make_colossus_glow():
     for y in range(64, 98, 4):
         draw.line([(177, y), (221, y + 2)], fill=(95, 233, 255, 255), width=2)
     draw.rectangle((204, 104, 226, 126), fill=(30, 168, 255, 255))
-    # Brighter veins/panels deliberately cover the UV rectangles used by the tapered spine overlay.
-    for idx, (x, y) in enumerate(((176, 64), (184, 68), (190, 72), (176, 82),
-                                  (184, 86), (190, 90))):
-        draw.polygon([(x, y + 15), (x + 3, y), (x + 6, y + 15)],
-                     fill=(28, 196, 255, 255))
-        draw.line([(x + 3, y + 2), (x + 3, y + 12)],
-                  fill=(200, 255, 255, 255), width=1)
+    # Independent full-bright crystal motifs use the same seven UV strips as the main model.
+    spine_heights = (60, 77, 65, 82, 68, 57, 50)
+    for idx, height in enumerate(spine_heights):
+        x = idx * 32
+        tip = 254 - height
+        draw.polygon([(x + 1, 253), (x + 4, tip + 9), (x + 12, tip),
+                      (x + 20, tip + 6), (x + 30, tip + 18), (x + 31, 253)],
+                     fill=(10, 95, 192, 255))
+        draw.polygon([(x + 5, 251), (x + 9, tip + 12), (x + 14, tip + 5),
+                      (x + 18, tip + 16), (x + 27, 251)],
+                     fill=(36, 212, 255, 255))
+        draw.polygon([(x + 11, 246), (x + 14, tip + 9), (x + 17, tip + 19),
+                      (x + 21, 248)], fill=(191, 255, 255, 255))
+        draw.line([(x + 14, tip + 8), (x + 17, tip + 23), (x + 17, 245)],
+                  fill=(245, 255, 255, 255), width=2)
     draw.rectangle((208, 80, 212, 91), fill=(22, 154, 255, 255))
     draw.rectangle((209, 81, 210, 89), fill=(143, 251, 255, 255))
     draw.rectangle((208, 48, 223, 51), fill=(20, 172, 255, 255))
@@ -1062,16 +1089,21 @@ for test_path in (ROOT / "tools").glob("test_*.py"):
                               "Aktueller Entwicklungsstand: 1.56.0")
     updated = updated.replace("Aktueller Entwicklungsstand: 1.56.0",
                               "Aktueller Entwicklungsstand: 1.57.0")
+    updated = updated.replace("Aktueller Entwicklungsstand: 1.57.0",
+                              "Aktueller Entwicklungsstand: 1.58.0")
     if "build.gradle" in source:
         updated = updated.replace(r"1\.54\.0", r"1\.55\.0")
         updated = updated.replace(r"1\.55\.0", r"1\.56\.0")
         updated = updated.replace(r"1\.56\.0", r"1\.57\.0")
+        updated = updated.replace(r"1\.57\.0", r"1\.58\.0")
         updated = updated.replace("artifact must be version 1.54.0",
                                   "artifact must be version 1.55.0")
         updated = updated.replace("artifact must be version 1.55.0",
                                   "artifact must be version 1.56.0")
         updated = updated.replace("artifact must be version 1.56.0",
                                   "artifact must be version 1.57.0")
+        updated = updated.replace("artifact must be version 1.57.0",
+                                  "artifact must be version 1.58.0")
     updated = updated.replace(
         '"Version 1.54.0" in readme and "Version 1.53.0" in readme',
         '"Version 1.55.0" in readme and "Version 1.54.0" in readme')
@@ -1081,13 +1113,16 @@ for test_path in (ROOT / "tools").glob("test_*.py"):
     updated = updated.replace(
         '"Version 1.56.0" in readme and "Version 1.55.0" in readme',
         '"Version 1.57.0" in readme and "Version 1.56.0" in readme')
+    updated = updated.replace(
+        '"Version 1.57.0" in readme and "Version 1.56.0" in readme',
+        '"Version 1.58.0" in readme and "Version 1.57.0" in readme')
     if updated != source:
         test_path.write_text(updated, encoding="utf-8")
 
 build_path = ROOT / "build.gradle"
 build, count = re.subn(r"(?m)^\s*version\s*=\s*['\"][^'\"]+['\"]",
-                       "version = '1.57.0'", build_path.read_text(encoding="utf-8"), count=1)
-require(count == 1, "could not advance Gradle artifact version to 1.57.0")
+                       "version = '1.58.0'", build_path.read_text(encoding="utf-8"), count=1)
+require(count == 1, "could not advance Gradle artifact version to 1.58.0")
 build_path.write_text(build, encoding="utf-8")
 
 readme_path = ROOT / "README.md"
@@ -1123,24 +1158,24 @@ if "## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses" not in r
     prior_idx = readme.find(prior_marker)
     require(prior_idx >= 0, "could not locate 1.55.0 notes before adding history")
     readme = readme[:prior_idx] + previous_section + readme[prior_idx:]
-section = """## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen
+section = """## Version 1.58.0 — Facettierte Kristallspitzen und korrektes Leucht-UV
 
-- **Körper und Weltursprung stimmen überein:** Der Modellrumpf wird am Vanilla-Entity-Ursprung korrekt nach oben positioniert, sodass die unteren Beine nicht mehr unter der Oberfläche versinken. Die Rückenstacheln ragen sichtbar über den Kopf, ohne dass die Füße im Gras stecken.
-- **Boss-Proportionen:** Die gerenderte Kreatur wird auf etwa 5,5 Blöcke Höhe und über 5 Blöcke Körperbreite skaliert; Entity-Hitbox und Renderer-Größe wurden gemeinsam angepasst.
-- **Vier lesbare, artikulierte Läufe:** Jede Gliedmaße besitzt einen breiten Schulter-/Oberschenkelabschnitt, einen eigenen beweglichen Unterschenkel, einen breiten Fuß und drei sichtbare Frontklauen. Die Unterschenkel erhalten eine separate Laufbewegung.
-- **Passende Leuchtebene:** Cyanfarbene Adern folgen jetzt Ober- und Unterschenkeln; die Klauen werden in derselben Geometrie als eigene Full-Bright-Flächen gezeichnet.
-- **Kristallrücken und Kampf bleiben erhalten:** Die sieben abgestuften Rückenstacheln, der segmentierte Schwanz, Bossleiste, Stampfangriff, Kristallatem, zweite Phase und Survival-Beschwörung bleiben bestehen.
-- **Direkte Regressionsprüfungen:** Die Tests prüfen die neue Hitbox, korrekte Körperposition, Render-Skalierung, Unterschenkel, drei Klauen je Fuß, Leuchtebene, Release-Artefakt und Serverstart.
+- **Drei echte Modellsegmente je Rückenstachel:** Basis, Mittelteil und Spitze sind nun getrennte, gestaffelte Modellteile. Sie verjüngen sich sichtbar, statt als drei sich überlappende hohe Quader auf demselben Ursprung zu liegen.
+- **Sieben individuelle UV-Streifen:** Jeder Rückenstachel besitzt einen eigenen 32-Pixel-UV-Bereich. Die normale Haut und die Full-Bright-Leuchtebene verwenden dieselben sieben Streifen und dieselben Segmentmaße.
+- **Mehr erkennbare Kristallfacetten:** Die Pixeltextur zeichnet pro Stachel dunkle Randfacetten, tiefblaue Kernflächen, Cyan-Kanten und helle Bruchlinien in der passenden UV-Spalte.
+- **Stärkeres Leuchten ohne Lichtmod:** Die transparente Glow-Textur enthält nun tatsächliche Kristallsilhouetten an den UV-Koordinaten der Modellteile. So leuchtet nicht nur ein zufälliger Streifen am Kopf – die Rückenstacheln selbst bekommen den Full-Bright-Pass.
+- **Animationen und Größe bleiben erhalten:** Die unterschiedlichen Stachelhöhen und -neigungen, große vierbeinige Silhouette, artikulierte Klauen, Boss-Angriffe, zweite Phase und Survival-Ritual bleiben vorhanden.
+- **Zusätzliche Texturregression:** Die Prüfung kontrolliert die gestaffelten Modellteile, eindeutige UV-Offsets und die sieben ausgerichteten, transparenten Leuchtmotive.
 
-Der Build prüft die Geometriequelle und die technischen Ressourcen. Ob Perspektive, Silhouette und Leuchten im tatsächlichen Spiel wie gewünscht aussehen, muss weiterhin am Minecraft-Client beurteilt werden.
+Das ist eine weitere konkrete Modell-/UV-Korrektur; ein Minecraft-Client-Sichttest ist weiterhin notwendig, um das tatsächliche Ergebnis visuell abzunehmen.
 
 """
-if "## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen" not in readme:
-    marker = "## Version 1.56.0 — Visuelle Überarbeitung des Kristallkolosses"
+if "## Version 1.58.0 — Facettierte Kristallspitzen und korrektes Leucht-UV" not in readme:
+    marker = "## Version 1.57.0 — Kristallkoloss: Proportionen, Bodenhöhe und artikulierte Klauen"
     idx = readme.find(marker)
     require(idx >= 0, "could not locate 1.54.0 release notes to preserve history")
     readme = readme[:idx] + section + readme[idx:]
-headline = "**Aktueller Entwicklungsstand: 1.57.0 — korrekte Bodenhöhe, massive Silhouette und animierte Klauen des Kristallkolosses.**"
+headline = "**Aktueller Entwicklungsstand: 1.58.0 — facettierte Kristallspitzen mit eigenständigen Leucht-UVs.**"
 headlines = [line for line in readme.splitlines() if "Aktueller Entwicklungsstand:" in line]
 if headlines:
     readme = readme.replace(headlines[0], headline, 1)
@@ -1148,8 +1183,8 @@ else:
     readme = headline + "\n\n" + readme.lstrip()
 focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
 if focus_lines:
-    readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.57.0", 1)
+    readme = readme.replace(focus_lines[0], "## Aktueller Schwerpunkt — 1.58.0", 1)
 else:
-    readme = readme.replace(headline, headline + "\n\n## Aktueller Schwerpunkt — 1.57.0", 1)
+    readme = readme.replace(headline, headline + "\n\n## Aktueller Schwerpunkt — 1.58.0", 1)
 readme_path.write_text(readme, encoding="utf-8")
-print("Installed 1.57.0 Crystal Colossus proportion, ground alignment, articulated claws and emissive limb correction: custom quadruped model, emissive crystal layer, synchronized attacks, two phases, Survival ritual and boss reward.")
+print("Installed 1.58.0 Crystal Colossus segmented crystal facets and aligned emissive UV strips: custom quadruped model, emissive crystal layer, synchronized attacks, two phases, Survival ritual and boss reward.")

@@ -93,7 +93,8 @@ for token in (
     "Mth.sin(", "renderToBuffer(",
     "addBox(-20.0F, -8.0F, -26.0F, 40.0F, 20.0F, 52.0F)",
     "addBox(-8.0F, -2.0F, -6.5F, 16.0F, 8.0F, 13.0F)",
-    "height * 0.42F", "height * 0.78F",
+    "height * 0.38F", "height * 0.35F", "height * 0.27F",
+    '"crystal_base"', '"crystal_middle"', '"crystal_tip"',
     "PartPose.offset(0.0F, -4.0F, 0.0F)",
     "addBox(-6.6F, 0.25F, -12.2F, 3.4F, 1.25F, 5.2F)",
     "addBox(-1.7F, 0.25F, -13.2F, 3.4F, 1.25F, 6.2F)",
@@ -124,8 +125,9 @@ require(any(entry.get("name") == "sporenwerk:mutagenkernkristall" for entry in a
 advancement = json.loads((RES / "data/sporenwerk/advancements/monsters/mutagenkoloss.json").read_text(encoding="utf-8"))
 require(advancement["criteria"]["defeat_mutagenkoloss"]["conditions"]["entity"]["type"] == "sporenwerk:mutagenkoloss",
         "dedicated boss-kill advancement missing")
-require("Tapered crystal geometry" in model or "height * 0.42F" in model,
-        "dorsal spines must use tapered multi-segment crystal geometry")
+require('"crystal_base"' in model and '"crystal_middle"' in model and '"crystal_tip"' in model
+        and "texOffs(u + 8, 176)" in model and "texOffs(u + 16, 176)" in model,
+        "each dorsal spine must use separately modeled tapered tiers with distinct UV offsets")
 require("addBox(-1.8F, 0.0F, -6.8F, 3.6F, 6.2F, 0.9F)" in model
         and "lower_vein" in model and "claw_middle" in model,
         "the four articulated legs need visible emissive veins and three claws each")
@@ -142,6 +144,8 @@ with Image.open(skin) as image:
 require(rgba.size == (256, 256), "boss texture must use its custom 256x256 UV atlas")
 require(all(pixel[3] == 255 for pixel in rgba.getdata()), "boss base texture must be opaque")
 require(len(set(rgba.getdata())) >= 20, "boss texture must contain detailed pixel-art facets")
+require("spine_heights = (60, 77, 65, 82, 68, 57, 50)" in read("tools/add_mutagen_colossus.py"),
+        "main texture must generate seven aligned individual spine motifs")
 require(any(p[1] > 180 and p[2] > 200 for p in rgba.getdata()),
         "base texture must contain bright cyan crystal facets")
 glow = ASSETS / "textures/entity/mutagenkoloss_glow.png"
@@ -151,6 +155,8 @@ require(glow_rgba.size == (256, 256), "emissive atlas must match the model's UV 
 alpha_values = [p[3] for p in glow_rgba.getdata()]
 require(alpha_values.count(0) > 50000 and alpha_values.count(255) > 500,
         "glow atlas must be transparent outside luminous regions and opaque on crystal geometry")
+require("Independent full-bright crystal motifs use the same seven UV strips" in read("tools/add_mutagen_colossus.py"),
+        "glow texture must use separate matching UV strips for all seven crystal spines")
 heart = ASSETS / "textures/item/mutagenkoloss_herz.png"
 with Image.open(heart) as image:
     heart_rgba = image.convert("RGBA")
@@ -172,10 +178,10 @@ require("MUTAGENKOLOSS PIXEL ART" in preview
         and "mutagenkoloss_glow.png" in preview,
         "visual QA sheet must show the new boss texture and emissive atlas")
 build = read("build.gradle")
-require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.57\.0['\"]", build) is not None,
-        "artifact must be version 1.57.0")
+require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.58\.0['\"]", build) is not None,
+        "artifact must be version 1.58.0")
 readme = read("README.md")
-require("Version 1.57.0" in readme and "Version 1.56.0" in readme
-        and "Aktueller Entwicklungsstand: 1.57.0" in readme,
+require("Version 1.58.0" in readme and "Version 1.57.0" in readme
+        and "Aktueller Entwicklungsstand: 1.58.0" in readme,
         "release notes and current version must be updated without losing history")
 print("Crystal Colossus registration, model, glow layer, synchronized animations, attacks, ritual, loot, pixel art, locales and release contracts passed.")
