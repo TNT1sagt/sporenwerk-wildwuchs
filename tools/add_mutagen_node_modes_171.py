@@ -337,6 +337,18 @@ test170_source = test170_source.replace('blockstate["variants"].get("powered=fal
                                         'blockstate["variants"].get("mode=0,powered=false", {})')
 test170_source = test170_source.replace('blockstate["variants"].get("powered=true", {})',
                                         'blockstate["variants"].get("mode=0,powered=true", {})')
+# 1.71 adds MODE beside POWERED and schedules by mode; keep the earlier safety
+# assertions semantic rather than tied to the pre-mode single-property source layout.
+test170_source = test170_source.replace('"builder.add(POWERED)"', '"builder.add(POWERED, MODE)"')
+test170_source = test170_source.replace(
+    '"this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false))"',
+    '"this.registerDefaultState(this.stateDefinition.any()"')
+test170_source = test170_source.replace(
+    '"if (!powered) level.scheduleTick(pos, this, 1)"',
+    '"level.scheduleTick(pos, this, 1)"')
+test170_source = test170_source.replace(
+    '"if (state.getValue(POWERED) || level.hasNeighborSignal(pos)) return;"',
+    '"state.getValue(POWERED) || level.hasNeighborSignal(pos)"')
 test170.write_text(test170_source, encoding="utf-8")
 
 for test_path in (ROOT / "tools").glob("test_*.py"):
