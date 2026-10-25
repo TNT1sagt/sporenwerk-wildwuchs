@@ -195,6 +195,10 @@ jobs:
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_field_response_relay_164.py .
 
+      - name: Validate containment margin mode and redstone safety output
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_containment_margin_relay_165.py .
+
       - name: Validate event-driven containment signal distribution and bounded refresh
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_mutagen_event_network.py .
@@ -329,6 +333,10 @@ jobs:
       - name: Validate Crystal Colossus head armor and emissive cracks
         working-directory: source/sporenwerk-wildwuchs
         run: python3 tools/test_colossus_head_armor_164.py .
+
+      - name: Validate Crystal Colossus overcharge window and damage counterplay
+        working-directory: source/sporenwerk-wildwuchs
+        run: python3 tools/test_colossus_overcharge_165.py .
 
       - name: Validate integrated residual-threat relay mode
         working-directory: source/sporenwerk-wildwuchs
