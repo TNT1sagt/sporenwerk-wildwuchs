@@ -268,7 +268,7 @@ for test_path in (ROOT / "tools").glob("test_*.py"):
             line = lines[index]
         if r"1\.49\.0" not in line or "version" not in line.lower():
             continue
-        newer = line.replace(r"1\.49\.0", r"1\.49\.0")
+        newer = line.replace(r"1\.49\.0", r"1\.50\.0")
         if newer != line:
             lines[index] = newer
             changed = True
