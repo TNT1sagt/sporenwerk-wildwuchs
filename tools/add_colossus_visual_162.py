@@ -25,15 +25,19 @@ def patch(path, old, new, sentinel, label):
 
 
 # Angular, overlapping plates widen the front shoulders and rear quarters.
-main_anchor = '''        body.addOrReplaceChild("shoulder_crystal_right",
-                CubeListBuilder.create().texOffs(200, 100).addBox(-3.0F, -13.0F, -3.0F, 6.0F, 13.0F, 6.0F),
-                PartPose.offsetAndRotation(14.0F, -4.0F, -13.0F, 0.12F, 0.0F, 0.62F));
-        return LayerDefinition.create(mesh, 256, 256);'''
-main_new = '''        body.addOrReplaceChild("shoulder_crystal_right",
-                CubeListBuilder.create().texOffs(200, 100).addBox(-3.0F, -13.0F, -3.0F, 6.0F, 13.0F, 6.0F),
-                PartPose.offsetAndRotation(14.0F, -4.0F, -13.0F, 0.12F, 0.0F, 0.62F));
+# Insert before the two layer returns rather than depending on the position of prior crystal patches.
+def insert_before_layer_return(path, layer_index, addition, sentinel, label):
+    source = path.read_text(encoding="utf-8")
+    if sentinel in source:
+        return
+    returns = list(re.finditer(r"(?m)^\s*return LayerDefinition\.create\(mesh, 256, 256\);", source))
+    require(len(returns) >= layer_index + 1,
+            f"{label}: could not find model layer return {layer_index + 1}")
+    at = returns[layer_index].start()
+    path.write_text(source[:at] + addition + "\n" + source[at:], encoding="utf-8")
 
-        body.addOrReplaceChild("shoulder_armor_left",
+
+main_armor = '''        body.addOrReplaceChild("shoulder_armor_left",
                 CubeListBuilder.create().texOffs(32, 224).addBox(-4.0F, -3.0F, -7.0F, 9.0F, 4.0F, 13.0F)
                         .texOffs(80, 224).addBox(-5.0F, -5.0F, -5.0F, 9.0F, 3.0F, 10.0F)
                         .texOffs(120, 224).addBox(-3.0F, -7.0F, -3.0F, 6.0F, 3.0F, 6.0F),
@@ -52,15 +56,12 @@ main_new = '''        body.addOrReplaceChild("shoulder_crystal_right",
                 CubeListBuilder.create().texOffs(0, 204).addBox(-4.0F, -3.0F, -7.0F, 8.0F, 4.0F, 14.0F)
                         .texOffs(48, 204).addBox(-2.0F, -5.0F, -5.0F, 8.0F, 3.0F, 10.0F)
                         .texOffs(96, 204).addBox(-2.0F, -7.0F, -3.0F, 6.0F, 3.0F, 6.0F),
-                PartPose.offsetAndRotation(15.0F, -3.0F, 10.0F, 0.0F, 0.0F, 0.10F));
-        return LayerDefinition.create(mesh, 256, 256);'''
-patch(MODEL, main_anchor, main_new, '"shoulder_armor_left"', "main armor silhouette")
+                PartPose.offsetAndRotation(15.0F, -3.0F, 10.0F, 0.0F, 0.0F, 0.10F));'''
+insert_before_layer_return(MODEL, 0, main_armor,
+    'CubeListBuilder.create().texOffs(32, 224).addBox(-4.0F, -3.0F, -7.0F, 9.0F, 4.0F, 13.0F)',
+    "main armor silhouette")
 
-# The glow layer uses the same UV islands and nearly identical plate volume. Only hand-painted
-# edge cracks are opaque in the glow atlas, so the armor stays dark while its seams catch light.
-glow_anchor = '''        addGlowCrystal(body, "rib_crystal_right", 96, 19.0F, -8.0F, 12, 0.42F);'''
-glow_new = glow_anchor + '''
-        body.addOrReplaceChild("shoulder_armor_left",
+glow_armor = '''        body.addOrReplaceChild("shoulder_armor_left",
                 CubeListBuilder.create().texOffs(32, 224).addBox(-4.15F, -3.1F, -7.1F, 9.3F, 4.2F, 13.2F)
                         .texOffs(80, 224).addBox(-5.1F, -5.1F, -5.1F, 9.2F, 3.1F, 10.2F)
                         .texOffs(120, 224).addBox(-3.1F, -7.1F, -3.1F, 6.2F, 3.1F, 6.2F),
@@ -80,7 +81,9 @@ glow_new = glow_anchor + '''
                         .texOffs(48, 204).addBox(-2.1F, -5.1F, -5.1F, 8.2F, 3.1F, 10.2F)
                         .texOffs(96, 204).addBox(-2.1F, -7.1F, -3.1F, 6.2F, 3.1F, 6.2F),
                 PartPose.offsetAndRotation(15.0F, -3.0F, 10.0F, 0.0F, 0.0F, 0.10F));'''
-patch(MODEL, glow_anchor, glow_new, 'body.addOrReplaceChild("shoulder_armor_left"', "emissive armor layer")
+insert_before_layer_return(MODEL, 1, glow_armor,
+    'CubeListBuilder.create().texOffs(32, 224).addBox(-4.15F, -3.1F, -7.1F, 9.3F, 4.2F, 13.2F)',
+    "emissive armor layer")
 
 # Keep armor articulation subtle; the broad plates should follow the living body without wobbling.
 field_anchor = '''    private final ModelPart shoulderCrystalRight;'''
