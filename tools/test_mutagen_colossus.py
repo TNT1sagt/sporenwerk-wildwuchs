@@ -35,7 +35,7 @@ for token in (
     'register("mutagenkoloss"',
     "EntityType<MutagenkolossEntity>",
     "MobCategory.MONSTER",
-    ".sized(3.6F, 3.35F)",
+    ".sized(4.8F, 4.5F)",
     ".fireImmune()",
 ):
     require(token in entities, "boss registration missing " + token)
@@ -91,6 +91,9 @@ for token in (
     "spine_0", "spine_6", "tail_tip", "front_left", "rear_right",
     "ATTACK_STOMP", "ATTACK_BREATH", "ATTACK_AWAKENING",
     "Mth.sin(", "renderToBuffer(",
+    "addBox(-20.0F, -8.0F, -26.0F, 40.0F, 20.0F, 52.0F)",
+    "addBox(-7.0F, -1.0F, -6.5F, 14.0F, 13.0F, 13.0F)",
+    "height * 0.42F", "height * 0.78F",
 ):
     require(token in model, "custom model/animation missing " + token)
 require("MutagenkolossModel.LAYER_LOCATION" in client
@@ -115,6 +118,11 @@ require(any(entry.get("name") == "sporenwerk:mutagenkernkristall" for entry in a
 advancement = json.loads((RES / "data/sporenwerk/advancements/monsters/mutagenkoloss.json").read_text(encoding="utf-8"))
 require(advancement["criteria"]["defeat_mutagenkoloss"]["conditions"]["entity"]["type"] == "sporenwerk:mutagenkoloss",
         "dedicated boss-kill advancement missing")
+require("Tapered crystal geometry" in model or "height * 0.42F" in model,
+        "dorsal spines must use tapered multi-segment crystal geometry")
+require("addBox(-1.4F, 1.0F, -6.8F, 2.8F, 9.0F, 0.8F)" in model,
+        "the four legs must have visible, synchronized emissive seams")
+
 for path in (
     RES / "assets/sporenwerk/models/item/mutagenkoloss_herz.json",
     RES / "assets/sporenwerk/models/item/mutagenkoloss_spawn_egg.json",
@@ -160,7 +168,7 @@ build = read("build.gradle")
 require(re.search(r"(?m)^\s*version\s*=\s*['\"]1\.55\.0['\"]", build) is not None,
         "artifact must be version 1.55.0")
 readme = read("README.md")
-require("Version 1.55.0" in readme and "Version 1.54.0" in readme
-        and "Aktueller Entwicklungsstand: 1.55.0" in readme,
+require("Version 1.56.0" in readme and "Version 1.55.0" in readme
+        and "Aktueller Entwicklungsstand: 1.56.0" in readme,
         "release notes and current version must be updated without losing history")
 print("Crystal Colossus registration, model, glow layer, synchronized animations, attacks, ritual, loot, pixel art, locales and release contracts passed.")
