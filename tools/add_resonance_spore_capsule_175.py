@@ -132,12 +132,8 @@ write("src/main/java/de/sporenwerk/item/ResonanzsporenKapselItem.java", java)
 # keeping the charge mutation, comparator output, and relay refresh in the same transaction.
 dampener_path = SRC / "block/MutagenResonanceDampenerBlock.java"
 dampener = dampener_path.read_text(encoding="utf-8")
-anchor = """        ItemStack held = player.getItemInHand(hand);
-        int currentCharge = state.getValue(CHARGE);
-        if (held.is(ModItems.KRISTALLPIRSCHER_RESONANZSPLITTER.get())) {"""
-branch = """        ItemStack held = player.getItemInHand(hand);
-        int currentCharge = state.getValue(CHARGE);
-        if (held.is(ModItems.RESONANZSPORENKAPSEL.get())) {
+anchor = """        if (held.is(ModItems.KRISTALLPIRSCHER_RESONANZSPLITTER.get())) {"""
+branch = """        if (held.is(ModItems.RESONANZSPORENKAPSEL.get())) {
             if (currentCharge >= MAX_CHARGE) {
                 player.displayClientMessage(Component.translatable(
                         "message.sporenwerk.resonanzkapsel.dampener_full", currentCharge, MAX_CHARGE)
