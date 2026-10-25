@@ -136,8 +136,6 @@ replace_once(
     "case 4 -> {\n                if (tierThreeSoil > 0)",
     "field intensity output bands",
 )
-relay_path.write_text(relay, encoding="utf-8")
-
 # Five modes × sixteen comparator values are valid blockstates; the relay's appearance stays stable.
 blockstate_path = ASSETS / "blockstates/mutagen_containment_relay.json"
 blockstate = {
