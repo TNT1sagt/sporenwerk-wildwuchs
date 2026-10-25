@@ -162,10 +162,19 @@ current = """## Aktueller Entwicklungsschritt — 1.69.0
 
 """
 if "## Aktueller Entwicklungsschritt — 1.69.0" not in readme:
-    marker = "## Aktueller Entwicklungsschritt — 1.68.0"
-    idx = readme.find(marker)
-    require(idx >= 0, "could not find active 1.68.0 development section")
-    readme = readme[:idx] + current + readme[idx:]
+    # Source snapshots may carry an earlier release's README layout; insert after
+    # the introductory paragraph instead of relying on a historical current-step heading.
+    marker = "Dieses Repository enthält die Patch-Skripte"
+    intro_start = readme.find(marker)
+    if intro_start >= 0:
+        intro_end = readme.find("\\n\\n", intro_start)
+        require(intro_end > intro_start, "could not find README introduction boundary")
+        insert_at = intro_end + 2
+    else:
+        marker = "## Version 1.69.0 — Dämpfer-Parade öffnet den Kristallkern"
+        insert_at = readme.find(marker)
+        require(insert_at >= 0, "could not find README insertion point")
+    readme = readme[:insert_at] + current + readme[insert_at:]
 
 readme = readme.replace(
     "**Aktueller Entwicklungsstand: 1.68.0 — Boss-Reaktionssignal und priorisierte Resonanzfokus-Parade.**",
