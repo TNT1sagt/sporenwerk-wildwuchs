@@ -1,8 +1,15 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.72.0 — Mutagenstärke folgt dem Betriebsmodus.**
+**Aktueller Entwicklungsstand: 1.73.0 — Resonanzverdichtung überlappender Mutagenfelder.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.73.0
+
+- **Resonanzverdichtung:** Die Stärke an einer Position wird aus allen dort wirksamen, tatsächlich aktiven Quellen ermittelt. Ab zwei überlappenden Quellen kommt eine Stufe hinzu, gedeckelt auf III.
+- **Ökologie und Darstellung verbunden:** Stärkestufen fließen in die vorhandenen Pflanzenphänotypen, den Feldscanner, Ernte und Mutagenblüten ein.
+- **Keine Geisterquellen:** Ruhende und Redstone-gesperrte Herde werden bei der Ermittlung ausgeschlossen; nicht geladene Quell-Chunks werden nicht geladen.
+- **Regressionen getrennt nach Verantwortung:** Die alten Dufttests prüfen nur die gespeicherten Duftabfragen, während die neuen Feldtests tatsächliche Betriebszustände und Überlappung prüfen.
 
 ## Aktueller Entwicklungsschritt — 1.72.0
 
@@ -87,6 +94,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.73.0 — Resonanzverdichtung überlappender Mutagenfelder
+
+- **Feldüberlappung hat einen Gameplay-Effekt:** Wenn mindestens zwei aktive Quellen denselben Ort innerhalb ihrer Reichweite erreichen, steigt dessen effektive Mutagenstärke um eine Stufe, höchstens bis Stufe III.
+- **Mehr als ein visueller Trick:** Pflanzenphänotypen, Ernteboni, Feldscanner und Mutagenblüten lesen weiterhin dieselbe operative Stärke. In Überschneidungszonen können deshalb sichtbare Hochstufen und seltene Blüten entstehen, ohne dass ein zusätzlicher Block-Ticker nötig ist.
+- **Die Betriebsmodi bleiben maßgeblich:** Ruhende, entfernte, nicht registrierte oder per Redstone gesperrte Quellen tragen nichts zur Feldverdichtung bei. Kulturquellen zählen dagegen weiter als sichere Pflanzungsfelder, nicht als Terrain-Ausbreitung.
+- **Chunk-sicher:** Quellen werden nur dann abgefragt, wenn ihr Chunk bereits geladen ist; die vorhandene Feldreichweite und vertikale Grenze bleiben unverändert.
+- **Qualitätssicherung:** Tests sichern Quellenüberlappung, Stärke-Obergrenze, Modus-/Redstone-Gates, Chunk-Grenze, historische Duft-Abfragen und die aktiven Versionsmetadaten.
 
 ## Version 1.72.0 — Mutagenstärke folgt dem Betriebsmodus
 
