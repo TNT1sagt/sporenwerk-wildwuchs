@@ -315,7 +315,7 @@ else:
     focus_lines = [line for line in readme.splitlines() if line.startswith("## Aktueller Schwerpunkt — ")]
     if focus_lines:
         focus_start = readme.find(focus_lines[0])
-        focus_end = readme.find("\\n---", focus_start)
+        focus_end = readme.find("\n---", focus_start)
         require(focus_end >= 0, "could not locate separator after current focus section")
         readme = readme[:focus_start] + new_focus + readme[focus_end:]
 readme_path.write_text(readme, encoding="utf-8")
