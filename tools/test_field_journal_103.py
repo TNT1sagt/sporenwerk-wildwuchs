@@ -77,8 +77,21 @@ for lang in ("de_de.json","en_us.json"):
         need(key in obj and obj[key].count("%s")==n,lang+" must translate five stats and hint "+k)
 
 crop=mob[mob.index("private static final class CropThreatGoal extends Goal"):]
-warning=crop[crop.index("private void emitRaidWarning("):
-             crop.index("private boolean isMatureCrop(")]
+# Delimit only the visual method, not the later defensive player-scan
+# helpers that legitimately look for soul lanterns and glowberries.
+warning_start=crop.index("private void emitRaidWarning(")
+opening=crop.index("{",warning_start)
+depth=0
+ending=-1
+for at in range(opening,len(crop)):
+    if crop[at]=="{":depth+=1
+    elif crop[at]=="}":
+        depth-=1
+        if depth==0:
+            ending=at+1
+            break
+need(ending>opening,"must find complete audiovisual raid warning method")
+warning=crop[warning_start:ending]
 for token in (
  "for (int sample = 0; sample < 12; sample++)",
  "double radius = urgent ? 1.35D : 0.72D;",
