@@ -106,7 +106,14 @@ for token in (
 need(crop.count("emitRaidWarning(target, chewTicks == 20);")==1
      and crop.count("if (chewTicks == 8 || chewTicks == 20)")==1,
      "rings only at two existing raid moments")
-for forbidden in ("setBlock(", "destroyBlock(", "getChunk(", "getEntitiesOfClass(",
+# The established 1.91 raid warning already includes ONE bounded player
+# message scan on the first warning. Preserve that anti-spam alert, and do
+# not permit a second scan from the new radius particles.
+need(warning.count("getEntitiesOfClass(")==1
+     and "if (!urgent) {" in warning
+     and "SporenwerkRaidAlertUntil" in warning,
+     "preserve one bounded 1.91 player warning, no extra search")
+for forbidden in ("setBlock(", "destroyBlock(", "getChunk(",
                   "scheduleTick(", ".hurt(", "getEntities(", "spawn("):
     need(forbidden not in warning,"ring must be audiovisual only "+forbidden)
 need("Items.GLOW_BERRIES" in crop and "Items.SOUL_LANTERN" in crop
