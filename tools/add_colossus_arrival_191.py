@@ -48,7 +48,7 @@ patch("    private void beginAttack(int state, int duration) {", """    /**
                 this.getX(), this.getY() + 2.7D, this.getZ(),
                 10 + stage * 6, 1.0D, 0.6D, 1.0D, 0.018D);
         level.playSound(null, this.blockPosition(),
-                stage == 2 ? SoundEvents.RESPAWN_ANCHOR_DEPLETE : SoundEvents.AMETHYST_BLOCK_CHIME,
+                stage == 2 ? SoundEvents.RESPAWN_ANCHOR_DEPLETE.value() : SoundEvents.AMETHYST_BLOCK_CHIME,
                 SoundSource.HOSTILE, 1.1F, stage == 2 ? 0.55F : 0.70F - stage * 0.10F);
         if (stage == 0) {
             for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class,
