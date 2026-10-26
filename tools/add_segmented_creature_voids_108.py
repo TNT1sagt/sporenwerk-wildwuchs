@@ -51,10 +51,10 @@ replace_once(p,
 # identically so the two baked LayerDefinitions still have the same topology.
 b=C/"MutagenkolossModel.java"
 boss=b.read_text(encoding="utf-8")
-need(boss.count('body.addOrReplaceChild("monolith_')==2
-     and boss.count('fin_left.addOrReplaceChild("monolith_prism"')==1
-     and boss.count('fin_right.addOrReplaceChild("monolith_prism"')==1,
-     "both regular Colossus monoliths and their glowing prism children required")
+need(boss.count('body.addOrReplaceChild("monolith_')==4
+     and boss.count('fin_left.addOrReplaceChild("monolith_prism"')==2
+     and boss.count('fin_right.addOrReplaceChild("monolith_prism"')==2,
+     "matched skin and glow Colossus monoliths and prism children required")
 old="""CubeListBuilder.create().texOffs(32, 224).addBox(-5.5F, -17.0F, -5.0F, 11.0F, 18.0F, 10.0F).texOffs(80, 224).addBox(-4.2F, -24.0F, -3.8F, 8.4F, 8.0F, 7.6F)"""
 new="""CubeListBuilder.create().texOffs(32, 224)
                         .addBox(-5.1F, -17.0F, -4.6F, 3.4F, 17.0F, 9.2F)
