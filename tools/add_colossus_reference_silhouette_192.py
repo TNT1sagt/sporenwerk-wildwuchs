@@ -83,7 +83,11 @@ constructor='        this.crystalCrownRight = head.hasChild("crystal_crown_right
 patch(constructor,constructor+"""
         this.monolithLeft = body.hasChild("monolith_left") ? body.getChild("monolith_left") : null;
         this.monolithRight = body.hasChild("monolith_right") ? body.getChild("monolith_right") : null;
-        this.tailStinger = tailTip.hasChild("stinger_bloom") ? tailTip.getChild("stinger_bloom") : null;""","both layer bone references")
+""","both layer bone references")
+patch('        this.tailTip = tailMid.getChild("tail_tip");',
+      '        this.tailTip = tailMid.getChild("tail_tip");\n'
+      '        this.tailStinger = this.tailTip.hasChild("stinger_bloom") ? this.tailTip.getChild("stinger_bloom") : null;',
+      "initialize stinger after final tail tip")
 anchor="""        this.tailTip.yRot += Mth.sin(stridePhase - 1.70F) * stride * 0.14F;
         for (int i = 0; i < this.spines.length; i++) {"""
 patch(anchor,"""        this.tailTip.yRot += Mth.sin(stridePhase - 1.70F) * stride * 0.14F;
