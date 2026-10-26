@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.92.0 — Referenzgerichtete Kristallkoloss-Geometrie direkt im Minecraft-Mod.**
+**Aktueller Entwicklungsstand: 1.93.0 — Eigenes animiertes 3D-Modell für den Kristallpirscher.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.93.0
+
+- **Kristallpirscher jetzt als echtes 3D-Monster:** Der Renderer verwendet einen eigenen gebackenen Forge-ModelLayer. Anstelle der einfachen Vanilla-Zombie-Körperform kommen große asymmetrische Rückenwucherungen, markante Kopfkristalle, mineralische Gesichtsmaske, schwere Schulterplatten und verlängerte Cyan-Kristallklauen hinzu. Die zuverlässige Vanilla-Lauf- und Angriffsanimation wird als Basis erhalten.
+- **Lebendige Wucherungen:** Eigene animierte Modellknochen bewegen Rücken, Schultern und Kopfkristalle beim Laufen. In aggressiver Haltung beugt sich der Kristallpirscher stärker vor.
+- **Eigenes selektives Leuchten:** Originaler 128×128-Pixelatlas plus eine zweite transparente Emissiv-Textur, die nur Cyan-Adern, Kristalle und Augen beleuchtet, nicht die dunklen Steinflächen.
+- **Bewährte Spielmechaniken:** Tier-III-Mutagenfeld-Spawn, Maskenschutz gegen Giftangriffe, Beute, Heilung auf Mutagenboden und Forschung funktionieren unverändert.
+- **Qualität und Ressourcen:** Forge-Java-Kompilierung, separate Pixel-/Layer-Regressionsprüfungen, Paketprüfung der neuen Klassen und PNGs, dedizierter Serverstart sowie 104 erfolgreiche GitHub-Actions-Schritte. Ein instabiler Vanilla-Minecraft-Asset-Download wurde beim Server-Smoke-Test separat mit einem begrenzten Retry abgesichert.
+- **Noch offene visuelle Abnahme:** Die tatsächliche Darstellung und Animation im Minecraft-Client muss mit den Nutzerreferenzen verglichen werden; ein erfolgreicher automatisierter Serverbuild weist die Optik nicht nach.
+
+### Minecraft-Client-Test für 1.93.0
+
+1. Den Kristallpirscher mit seinem Spawn-Ei erstellen und aus Vorder-, Seiten- und Rückansicht auf Kristallpanzer, Kopf- und Klauensilhouette prüfen.
+2. Bewegungen und Angriffshaltung betrachten: Der Rückenkamm und die Schulterwucherungen müssen mit dem Körper mitlaufen und dürfen nicht abreißen.
+3. Nachts ohne direkte Beleuchtung prüfen, ob nur Kristalladern/Augen leuchten und der dunkle Panzer nicht unnatürlich vollhell erscheint.
+4. Auf Tier-III-Mutagenboden Spawns, Giftschaden, Filtermaske und Drops prüfen, anschließend Multiplayer und Weltneuladen testen.
+5. Screenshots mit den eingesandten Konzeptvorlagen vergleichen, bevor die endgültige visuelle Gleichheit freigegeben wird.
 
 ## Aktueller Entwicklungsschritt — 1.92.0
 
@@ -278,6 +295,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.93.0 — Kristallpirscher: eigenständige Minecraft-Anatomie
+
+- Eigener 128×128-Modelllayer und Forge-Renderer mit schweren ungleichen Rückenkristallen, scharfkantigem Kopfschmuck, Schulter- und Beinkristallen, verlängerten Klauen und kampfabhängiger Eigenanimation.
+- Neue transparente Glow-PNG für Cyan-Risse, Augen und violette Kristalle. Altes UV-Grundlayout im vergrößerten Atlas erhalten; keine Ressourcen aus fremden Referenzmods kopiert.
+- Bestehende Spawnregeln, Kampf, Filtermasken-Gegenwehr und Gegenstandsbelohnungen bleiben unverändert. Eigenständige Regressionen, Forge-Build, Ressourcen-Paketprüfung und Dedicated-Server-Smoke-Test sind grün.
+- Vollständige Sichtprüfung und weitere Annäherung an die Originalvorlagen im Minecraft-Client bleiben erforderlich.
 
 ## Version 1.92.0 — 3D-Schwanzstachel, Rückenmonolithen und Originaltexturen
 
