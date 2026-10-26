@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.82.0 — gewichtete Laufanimation und bewegliche Tatzen für den Kristallkoloss.**
+**Aktueller Entwicklungsstand: 1.83.0 — seismische Stampfvorwarnung und ausweichbare Kristallwelle.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.83.0
+
+- **Bodenerschütterung mit Vorwarnung:** Der Kristallkoloss erzeugt beim Stampfen drei deutlich sichtbare, ringförmige Warnpulse aus Partikeln. Der normale Radius beträgt 5,8 Blöcke, beim Erwachen 7,2 Blöcke.
+- **Ring entspricht Trefferbereich:** Eine runde Distanzprüfung ersetzt das alte rechteckige Treffergebiet. Wer außerhalb des sichtbaren Warnkreises steht, wird vom Stampfen nicht getroffen.
+- **Ausweichmechanik:** Wer rechtzeitig springt und bei der Auslösung nicht am Boden steht, kann die bodengebundene Erschütterung vermeiden. Schaden und Rückstoß für getroffene Ziele bleiben unverändert.
+- **Aufprall mit zwei Leuchtwellen:** Beim Stampfstoß laufen ein innerer und ein äußerer Kristall-Partikelring über den Boden. Die Umgebung wird nicht abgebaut oder beschädigt.
+- **Technische Qualität:** Nur vorhandene Bossangriffs-Ticks und standardmäßige Minecraft-Partikel; keine Blockänderungen, Chunk-Forceloads oder zusätzlichen Dauer-Ticker. Regression prüft Treffergeometrie, Ausweichmechanik, Warnzeitpunkte und unveränderte Kampfwerte; der Forge-Build und Serverstart prüfen die Integration.
 
 ## Aktueller Entwicklungsschritt — 1.82.0
 
@@ -164,6 +172,15 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.83.0 — Kristallkoloss: seismischer Warnring und Sprung-Kontermöglichkeit
+
+- **Telegraphierter Stampfangriff:** Drei Bodenkreise während der 42-Tick-Stampf- oder 36-Tick-Erwachensvorbereitung zeigen die gefährdete Zone. Ein zusätzlicher Klang warnt kurz vor dem Aufprall.
+- **Klarer Trefferkreis:** Die vorhandene AABB dient nur als grobe Vorauswahl; eine genaue horizontale Kreisprüfung sichert den Radius von 5,8 bzw. 7,2 Blöcken.
+- **Faire Kontermöglichkeit:** Hochspringen kann den Bodenschock abwehren, wenn das Ziel beim Impact nicht auf dem Boden steht. Die Angriffsstärke, Rückstoß- und Verlangsamungswerte bleiben erhalten.
+- **Doppelter Aufprallring:** Zeitgleiche innere und äußere Kristallpartikel erzeugen einen gut sichtbaren Einschlag, ohne Blöcke abzubauen, zu ersetzen oder Chunks zu laden.
+- **Performance:** Warnpulse nur dreimal pro Attacke, begrenzte Partikelanzahl pro Ring und keine dauerhaften Zusatzprüfungen.
+- **Qualitätssicherung:** Neue Regression für Countdown, Partikel, realen Hit-Radius, Sprung-Ausweichen, unveränderte Angriffe, vorhandene Texturen und Version; Forge-Build und dedizierter Serverstart. Auf unebenem Gelände ist ein Minecraft-Client-Sichttest weiter nötig.
 
 ## Version 1.82.0 — Kristallkoloss: Gewicht in jedem Schritt
 
