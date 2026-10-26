@@ -1,8 +1,28 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.104.0 — Zuverlässige Feldchronik und passive Komposter-Farmwache.**
+**Aktueller Entwicklungsstand: 1.105.0 — Echte 3D-Silhouettenkorrekturen an Koloss, Pirscher und Dämmerling.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.105.0
+
+**Ziel:** Keine bloße Stilähnlichkeit mit den Kreaturenreferenzen. Die tatsächliche Minecraft-3D-Geometrie muss in Silhouette, Größe, Kopfprofil, Kristallverteilung und Glow zu den Bildern passen. Dieser Schritt korrigiert reale Abweichungen im bisher erzeugten Modell; die exakte visuelle Gleichheit wird erst nach einem Client-Bildvergleich als abgeschlossen betrachtet.
+
+- **Kristallkoloss:** Der ursprüngliche besonders breite, massive Kopfbereich wurde im echten Forge-ModelLayer durch einen kleineren Felsenschädel mit gestufter Schnauze ersetzt. Dadurch treten sein niedriger, breiter Vierbeinerkörper und die höheren Kristall-/Panzerformen stärker hervor. Alle bisherigen Unterkiefer-, Kristallkronen-, Schwanz-, Klauen-, Resonanz- und Brustblendenmodelle behalten ihre vorhandenen Gelenke.
+- **Kristallpirscher:** Statt einen gewöhnlichen vollen Zombie-Körper unter die Kristallteile zu setzen, werden der eigentliche Kopf, der Brustkörper, beide Arme und beide Beine durch selbst modellierte, schmale, langgliedrige Voxelgeometrie ersetzt. Drei räumlich getrennte Brustpanzerreihen und eine schmale Wirbelsäule mit Seitenleisten erzeugen echte Zwischenräume. Cyan-violette Kristalle, Rückenzacken, Brustresonator und Klauen bleiben animiert und am neuen Körper befestigt.
+- **Dämmerling:** Dieselbe grundlegende Render-Schwachstelle wurde behoben: Keine massiven Zombie-Standardwürfel mehr unter dem Horror-Design. Stattdessen besitzt er einen schmalen Wurzelkörper, schlanke Arme/Beine und einen segmentierten offenen Brustkorb. Seine asymmetrischen Hörner, Wurzelfinger, bewegliche Fraßschnauze, Augen-Glow und sämtliches Feldraid-Verhalten bleiben bestehen.
+- **Texturen bleiben Minecraft-kompatibel:** Originale 128×128-Pixelatlanten für Pirscher und Dämmerling und 256×256 für den Koloss, jeweils mit bestehenden separaten Glow-Texturen. Keine 3D-/Texturressourcen aus Belowland, Wonderland oder anderen Referenzmods übernommen.
+- **Technik geprüft:** 116 erfolgreiche GitHub-Actions-Schritte, einschließlich neuer Tests für tatsächliche nicht-generische Basisgeometrie, Durchbrüche im Torso, korrekt erhaltene Knochen/Animationen, alten Farm- und Mutagenmechaniken, Forge-1.20.1-Kompilierung, installierbarer JAR-Prüfung und Dedicated-Server-Smoke-Test.
+- **Offene Abnahme:** Der Build belegt keine pixel- oder formgenaue Übereinstimmung mit den Ursprungsbildern. Die In-Game-Optik muss weiterhin sichtbar gegen diese Referenzen kontrolliert und bei Abweichungen korrigiert werden.
+
+### Pflicht-Sichttest der drei Kreaturen für 1.105.0
+
+1. Den Kristallkoloss **direkt von vorne, seitlich, von hinten und schräg** fotografieren. Prüfen, dass das Kopfprofil deutlich kleiner als der breite Rumpf wirkt und Kristallmonolithen, vier kräftige Beine, cyanfarbene Klauen, Brustkern und gebogener Skorpionschwanz dieselbe Umrissfunktion wie im ursprünglichen Referenzbild erfüllen.
+2. Kristallpirscher aus 4–8 Blöcken Abstand betrachten: Die Arme sollen nicht mehr wie normale Zombiearme wirken; echte sichtbare Lücken zwischen Brustpanzerstücken und Wirbelsäulenleisten müssen sich aus der Seitenansicht zeigen.
+3. Dämmerling im Dunkeln und während des echten Beetfraßes betrachten: schmaler Wurzelrumpf, unterschiedlich große Rückenwurzeln und ausgestreckte Finger, dazu ein funktionierender Fraßkiefer. Prüfen, dass es unter den Wucherungen keine große unpassende Zombie-Silhouette gibt.
+4. Bei allen dreien Tag-/Nacht-Skin und Glow getrennt überprüfen. Dunkle Basalt- und Wurzelpanzer dürfen nicht großflächig leuchten. Beim Koloss müssen das normale und das emissive Modell übereinanderliegen.
+5. Die tatsächlichen In-Game-Aufnahmen **neben die Originalbilder legen**. Silhouette und Proportionen zuerst abnehmen, danach Farben, Emission und Animationsqualität; verbleibende Abweichungen gelten als offene Modellaufgaben.
+6. Welten neu laden, Server mit Client verbinden, alle drei Monster in Bewegung/Angriff testen. Neue Voxelboxen sind reine Rendereränderungen; Hitboxen und Farm-/Mutagenmechanik sollen unverändert bleiben.
 
 ## Aktueller Entwicklungsschritt — 1.104.0
 
@@ -493,6 +513,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.105.0 — Referenzgebundene echte Kreaturensilhouetten
+
+- Kristallkoloss: verkleinerter, gestufter Schädel statt eines übergroßen rechteckigen Kopfes; gesamte bestehende kristalline Vierbeiner-Anatomie und Bossanimationen bleiben verbunden.
+- Kristallpirscher: echte schmale Langgliedmaßen und räumlich segmentierter Körper ersetzen generische Zombiegrundwürfel. Kristallfächer, Jagdklauen und Brustresonanz bleiben erhalten.
+- Dämmerling: eigenständige schmale Wurzelgrundform und offener Brustkorb statt gefülltem Zombie-Unterkörper, ohne Eingriff in Feldangriff, Leuchtbeeren oder Laternen.
+- 116 grüne GitHub-Actions-Schritte: Regressionstests, Forge 1.20.1, JAR und Serverstart. Bildgenaue Minecraft-Client-Sichtabnahme ist noch offen.
 
 ## Version 1.104.0 — Verlässliche Feldmessungen und Komposter-Farmwache
 
