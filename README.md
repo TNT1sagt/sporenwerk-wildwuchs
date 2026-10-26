@@ -1,8 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.97.0 — Bewegliche Kristallblende und lebendige Mutagenherzen.**
+**Aktueller Entwicklungsstand: 1.98.0 — Korrigierte Leuchtkristalle und sichtbare Koloss-Brustblende.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.98.0
+
+- **13 Minecraft-Modellpixel Versatz behoben:** Ein konkreter Fehler in den vorherigen Koloss-Modellen: Der Body-Ursprung des normalen Modells befand sich bei Y = −4, der separat gebackene Leucht-Layer bei Y = +9. Beide besitzen jetzt exakt denselben Ursprung. Die Korrektur wirkt auf Kopf, Brustkern, Schwanz, Klauen, Kristallmonolithen und die sechs Resonanzrippen.
+- **Kristallblende sitzt endlich vor dem Kern:** Die vier beweglichen Brustplatten aus Version 1.97 besaßen Scharniere bei Z = −28,4, während die leuchtende Vorderkante bis etwa Z = −37,1 reicht. Die Blende wurde nach vorne auf Z = −38,6 versetzt, damit sie aus der Frontansicht nicht hinter dem Kristall verschwindet.
+- **Vier echte zusätzliche Einfassungen:** Rund um den Kristallkern sitzen nun vier dunkel gepanzerte Kristallhalterungen mit schmalen leuchtenden Einlagen. Die Geometrie bleibt in der Skin- und Glow-Schicht identisch an ihren Gelenken verankert, wobei dunkles Gestein nur im normalen Modell liegt.
+- **Sanfte Öffnungsanimation:** Die Aufladebewegung der vier Blenden benutzt jetzt einen glatten, mathematisch begrenzten Übergang (Smoothstep). Die bestehenden synchronisierten Angriffszustände steuern weiterhin alles, ohne neue Netzwerkdaten oder Server-Ticker.
+- **Bestehende Inhalte unberührt:** Keine Änderung an Infektion, Heilung, Maschinen, Pflanzen, Gegner-KI, Trefferzonen oder Boss-Schadenswerten.
+- **Technische Tests:** Zusätzliche Regression für exakte Skin-/Glow-Körperwurzel, Lage der Iris relativ zur vorderen Kristallfläche, vier passende Einfassungen, aktuelle Versionsdaten und unveränderte Kampfanimationen. Forge-1.20.1-Kompilierung und JAR-Verifikation im GitHub-Workflow.
+- **Visuelle Abnahme noch erforderlich:** Auch nach der Geometriekorrektur muss die tatsächliche Minecraft-Client-Darstellung überprüft werden; ein grüner Build ersetzt keine Seiten-, Front- und Kampfansichten.
+
+### Minecraft-Client-Sichttest für Version 1.98.0
+
+1. Kristallkoloss in der Dunkelheit aus Vorder-, Seiten- und Rückansicht prüfen. Leuchtaugen, alle Kristallspitzen und der Brustkern müssen räumlich zu den normalen Stein- und Kristallknochen passen.
+2. Beim Kristallatem beobachten, ob sich die vier Blenden tatsächlich **vor** dem sichtbaren Kern öffnen und seine Farbe freigeben; kein Durchschneiden mit Kopf oder Unterkiefer.
+3. Die verschiedenen Stampf- und Erwachensphasen prüfen: Öffnung und Schließen müssen sanft bleiben und ohne kumulativen Winkelversatz wieder die Ruhepose erreichen.
+4. Vier Eck-Einfassungen und ihre schmalen Kristalladern im Vergleich zu dunklen Basaltplatten überprüfen. Der komplette Steinpanzer darf nicht leuchten.
+5. Mit der Vorversion 1.97 vergleichen, um den korrigierten Höhenversatz und die tatsächliche Wirkung der Kristallblende sichtbar zu bestätigen.
 
 ## Aktueller Entwicklungsschritt — 1.97.0
 
@@ -363,6 +381,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.98.0 — Koloss-Leuchtlayer ausgerichtet und Kristallblende freigelegt
+
+- Fix des historischen 13-Modellpixel-Höhenversatzes zwischen Haut- und Leuchtmodell.
+- Bereits vorhandene vierteilige Blende vor den herausragenden Brustkristall verlegt; geglättete, phasenabhängige Öffnungsanimation.
+- Vier neue ringförmig angeordnete Basaltfassungen mit schmalen selektiv leuchtenden Kristalleinlagen, alle als echte Forge-ModelParts.
+- Zusätzliche strukturelle Regression und Forge-/JAR-/Server-Prüfungen. Kein neuer Boss-Schaden, keine Änderungen am Mutagen-Endgame. Manuelle visuelle Client-Abnahme noch offen.
 
 ## Version 1.97.0 — Koloss-Kristallblende und lebendige Brustkerne
 
