@@ -21,7 +21,6 @@ renderer=txt(SRC/"client/DaemmerlingRenderer.java")
 for signature in (
   "int nearestSpreadDx = 0, nearestSpreadDy = 0, nearestSpreadDz = 0;",
   "int nearestSpreadDistanceSq = -1;",
-  "nearestSpreadDistanceSq,",
   "int nearestSpreadDx, int nearestSpreadDy, int nearestSpreadDz, int nearestSpreadDistanceSq",
   "int deltaY = y - center.getY();",
   "int distSq = dx * dx + dz * dz + deltaY * deltaY;",
