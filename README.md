@@ -1,8 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.106.0 — Ausgerichtete Koloss-Leuchtaugen und eigenständige Kreaturenanatomie.**
+**Aktueller Entwicklungsstand: 1.107.0 — Koloss-Gesichtsproportionen und echte Kristall-/Wurzelfüße.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.107.0
+
+- **Koloss: Gesichtspanzer wirklich zum 1.105-Schädel passend:** Beim Verkleinern des Kopfes waren vier ältere Stirn-/Wangenpanzer und deren zusätzliche Vollhelligkeitswürfel unverändert groß geblieben. Jetzt wurden beide Basaltbrauen, beide Wangen und ihre oberen bzw. unteren Steinkanten in der tatsächlichen Forge-Geometrie zurückgenommen. Die zwei Gesichtsseiten sind spiegelgleich und bleiben innerhalb der neuen Schädelbreite.
+- **Keine großen leuchtenden Basaltplatten mehr:** Die transparenten Emissiv-Modellteile für Stirn und Wange wurden stark verschlankt. Der dunkle Stein bleibt in der regulären Haut; dünne runenähnliche Linien benutzen ausschließlich das vorhandene transparente Glow-Atlas. Die korrekt positionierten Augen aus 1.106 behalten ihre eigenständigen Leuchtteile.
+- **Kristallpirscher: klares Fußprofil statt überbreiter Schienbeine:** Die frühere Kristallschiene war fast doppelt so breit wie das schlanke Bein aus 1.105. Sie wurde verkleinert; jedes der beiden echten laufenden Beine besitzt nun zusätzlich zwei unterschiedlich lange, nach vorn ausgerichtete 3D-Kristallkrallen.
+- **Dämmerling: schmale Wurzelschienbeine und asymmetrische Zehen:** Die breiten Holzschienen wurden auf die schmalen Basisbeine abgestimmt. An jedem Fuß sind zwei getrennte, nach vorne wachsende Wurzelzehen hinzugekommen. Sie folgen direkt den bestehenden Lauf-/Fraßgelenken statt als schwebende Textur oder flaches Partikelsymbol zu erscheinen.
+- **Keine Übernahme fremder Modellressourcen:** Die bisherigen originalen Minecraft-Pixeltexturen (128×128 für Pirscher/Dämmerling, 256×256 für den Koloss) und ihre transparenten Glow-Masken bleiben erhalten. Keine Ressourcen aus Belowland, Wonderland oder anderen Mods wurden übernommen.
+- **Bewusst keine Gameplay-Änderung:** Alle Korrekturen liegen in clientseitigen Voxelboxen und ModelParts. Mutagenkontrolle, Maschinen, Farm-Horror-Gegenmaßnahmen, Koloss-Hitbox, KI, Gesundheit, Angriff und andere Weltsysteme bleiben unverändert.
+- **Technisch verifiziert:** 118 erfolgreiche GitHub-Actions-Schritte. Die neuen Regressionen überprüfen gespiegelt passende Stein- und Rune-Geometrie, physisch separate Kristall- und Wurzelzehen, alte Knochenbewegungen und vollständige Pixelatlanten. Forge 1.20.1 kompiliert und die JAR wurde mitsamt dediziertem Server erfolgreich geprüft.
+
+### Minecraft-Client-Sichttest für 1.107.0
+
+1. **Koloss frontal:** Beide dunklen Brauen und beide Wangen müssen sich sauber an den kleineren Kopf anschließen. Die cyan-/violettleuchtenden Augen sollen erkennbar zwischen den Platten liegen; große, durchgehend leuchtende Steinwürfel oder außerhalb des Kopfes schwebende Leuchtpanzer sind nicht akzeptabel.
+2. **Koloss Seitenansicht und Angriff:** Die Gesichtsplatte soll eine gestufte Basaltschicht bleiben. Kristallkrone, Unterkiefer, Kernblende, Schwanz und Attackeneffekte dürfen durch die Korrektur nicht verschoben sein.
+3. **Kristallpirscher im Stand und beim Jagen:** Jeweils zwei reale Kristallkrallen pro Fuß müssen am Bein sitzen, bei Bewegung mitlaufen und deutlich vor den schmaleren Kristallschienen sichtbar sein. Beide Beine aus Vorder- und Seitenperspektive prüfen.
+4. **Dämmerling bei Tag, nachts und beim Beetfraß:** Die Beine dürfen unter dem neuen Wurzelrumpf nicht wie dicke Standard-Zombiebeine aussehen. Getrennte Wurzelzehen müssen am Boden sichtbar bleiben, auch während der Kiefer und die seitlichen Rumpfwurzeln sich bewegen.
+5. **Originalbild direkt vergleichen:** Aus identischen Blickrichtungen In-Game-Screenshots machen. Silhouette und Größenverhältnis von Körper, Kopf und Gliedmaßen stehen vor Farbe/Glow. Die neue Geometrie ist eine echte Verbesserung, beweist aber noch keine vollständige Bildgleichheit.
 
 ## Aktueller Entwicklungsschritt — 1.106.0
 
@@ -530,6 +548,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.107.0 — Gesichts- und Fußsilhouetten des echten Minecraft-Modells
+
+- Kristallkoloss: 1.105-Schädel und 1.106-Augenkorrektur jetzt auch mit angepassten alten opaken Stirn-/Wangenpanzern und deutlich dünneren, selektiv leuchtenden Linien statt massiven Fullbright-Gesichtsplatten.
+- Kristallpirscher: zu breite Schienbeinplatten verengt, pro beweglichem Bein zwei geometrisch getrennte Kristall-Fußkrallen ergänzt.
+- Dämmerling: überbreite Holzbeine verschlankt, je Fuß zwei eigene Wurzelzehen ergänzt; alle vorherigen Wurzelfasern, Fraß- und Jagdbewegungen bleiben erhalten.
+- 118 GitHub-Actions-Schritte erfolgreich: bisherige und neue Modell-/Gameplaytests, Forge 1.20.1, installierbare JAR sowie dedizierter Serverstart. Tatsächlicher Bildvergleich im Minecraft-Client bleibt offen.
 
 ## Version 1.106.0 — Konkrete Reparaturen an der visuellen Referenztreue
 
