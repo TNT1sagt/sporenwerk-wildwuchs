@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.98.0 — Korrigierte Leuchtkristalle und sichtbare Koloss-Brustblende.**
+**Aktueller Entwicklungsstand: 1.99.0 — Sichtbare Kampfschäden am Koloss und verletzungsabhängige Kristallpirscher-Animationen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.99.0
+
+- **Kristallkoloss: Kampfschaden wird sichtbar:** Die vier vorhandenen Schulter- und Hüftpanzer öffnen sich mit abnehmender Gesundheit zunehmend. Unter 70 % HP beginnt die neue rein optische Phase; bei 25 % HP ist die Panzeröffnung am deutlichsten.
+- **Vier freigelegte Kristallfugen:** Unter den Panzerungen werden originale violett-cyanfarbene Kristalladern als echte Minecraft-Modellgeometrie sichtbar. Jede der vier Fugen besitzt denselben Knochen im normalen Modell und im selektiven Leucht-Layer. Die vorhandenen UV-Texturen werden verwendet, nicht überschrieben.
+- **Kristallpirscher mit optischer Verletzungsphase:** Unter 55 % Gesundheit beginnt er sich leicht asymmetrischer zu bewegen; Kopfkristall und Thoraxresonator zittern bzw. pulsieren stärker. Es werden nur Modellposen und die Stärke des schon vorhandenen Glow-Layers verändert.
+- **Spielmechanik unverändert:** Weder der Koloss noch der Pirscher wird durch diese Optik stärker oder schwächer. Laufgeschwindigkeit, Bossangriffe, Hitboxen, Drops, Mutagenfelder, Schutztechnologie und der vollständige Heilungsweg bleiben gleich. Es entstehen keine zusätzlichen Server-Ticker oder Netzwerkpakete.
+- **Technik verifiziert:** 110 erfolgreiche GitHub-Actions-Schritte, alle bisherigen Regressionen sowie neue Gesundheitsphasen- und Skin/Glow-Modelltests bestanden. Forge 1.20.1 wurde kompiliert, die JAR geprüft und ein dedizierter Minecraft-Server erfolgreich gestartet.
+
+### Minecraft-Client-Test für Version 1.99.0
+
+1. Den Kristallkoloss mit vollen Lebenspunkten aus Front- und Seitenansicht fotografieren und prüfen, ob die vier Rüstungsfugen zunächst verborgen sind.
+2. Seine Gesundheit unter 70 %, 50 % und 25 % senken: Die vier Panzerungen sollten sich zunehmend öffnen und die Kristalladern freigeben, ohne an der Oberflächengeometrie zu verrutschen.
+3. Im Dunkeln die schmalen Kristalladern auf selektives Leuchten prüfen. Der übrige Basaltpanzer darf nicht vollständig leuchten.
+4. Den Kristallpirscher in Ruhe und bei weniger als 55 % bzw. 15 % Gesundheit beobachten: Nur die visuellen Bewegungen sollen sich ändern; Geschwindigkeit und Angriffstakte dürfen nicht beeinflusst werden.
+5. Beide Kreaturen nach Speichern und Neuladen vergleichen. Ihre optischen Phasen müssen sich allein aus dem bestehenden Lebensstand korrekt wiederherstellen, ohne neue Speicherdaten.
+6. Die tatsächliche In-Game-Qualität weiterhin gegen die übermittelten Referenzbilder prüfen; die technische CI ersetzt diesen Sichttest nicht.
 
 ## Aktueller Entwicklungsschritt — 1.98.0
 
@@ -381,6 +398,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.99.0 — Sichtbarer Kristallverschleiß
+
+- Vier animierte Koloss-Schulter-/Hüftpanzer öffnen sich abhängig von seinen bestehenden Lebenspunkten. Darunter kommen schmale, passend mitbewegte und selektiv leuchtende Kristalladern zum Vorschein.
+- Verletzte Kristallpirscher bekommen einen sichtbar unruhigeren Gang, leichtes Zittern der Kopfkristalle und verstärkte Brustkern-Pulsation, ohne Gameplay-Änderungen.
+- Keine fremden Modell-/Texturdaten übernommen, keine Änderungen an Schadenswerten, Hitboxen, Maschinen, Infektion, Heilung oder Drops.
+- 110 GitHub-Actions-Schritte erfolgreich: neue Regressionen, Forge-Build, JAR-Prüfung, dedizierter Server. In-Game-Optik weiterhin gesondert zu bestätigen.
 
 ## Version 1.98.0 — Koloss-Leuchtlayer ausgerichtet und Kristallblende freigelegt
 
