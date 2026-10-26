@@ -142,6 +142,22 @@ require('player.getItemInHand(hand).is(Items.AMETHYST_SHARD)' in station
 require("getChunk(" not in station and "getChunkNow(" not in station,
         "no forced chunk loads are permitted")
 
+# Preserve the 1.76 on-demand station safety invariant. A one-shot tick
+# targeted at the reactivated NODE is allowed, but periodic station ticks are not.
+biodiversity_test = ROOT / "tools/test_fieldstation_biodiversity_176.py"
+if biodiversity_test.is_file():
+    previous = biodiversity_test.read_text(encoding="utf-8")
+    old_contract = '''require("scheduleTick(" not in station and "getTicker(" not in station,
+        "station remains on-demand and must not add periodic work")'''
+    new_contract = '''require("getTicker(" not in station and station.count("scheduleTick(") == 1
+        and "level.scheduleTick(cursor.immutable(), nodeBlock, 1);" in station,
+        "station may only schedule one-shot node cultivation after manual restart")'''
+    if old_contract in previous:
+        biodiversity_test.write_text(previous.replace(old_contract, new_contract, 1),
+                                     encoding="utf-8")
+    else:
+        require(new_contract in previous, "legacy biodiversity ticker invariant changed")
+
 for test in (ROOT / "tools").glob("test_*.py"):
     if test.name == "test_station_safe_restart_187.py":
         continue
