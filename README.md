@@ -1,8 +1,29 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.99.0 — Sichtbare Kampfschäden am Koloss und verletzungsabhängige Kristallpirscher-Animationen.**
+**Aktueller Entwicklungsstand: 1.100.0 — Eigenständiges Dämmerling-Modell und alternative Feldverteidigung.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.100.0
+
+- **Dämmerling endlich als eigenständiges Minecraft-Monster:** Der frühere Vanilla-Zombie-Renderer wurde durch einen eigenen Forge-ModelLayer ersetzt. Ein eingefallener Torso, zwei ungleich große Rückenwurzeln, eine gekrümmte Kopfkrone, längliche Wurzelfinger und mineralisierte Schienen verändern seine tatsächliche 3D-Silhouette.
+- **Lebendige Schattenanatomie:** Seine Rückenwurzeln und Krallen bewegen sich beim Gehen unterschiedlich stark. Während aggressiver Verfolgung beugt sich der Körper vor und verändert die Klauenhaltung. Die vorhandene Zombie-Bewegungsbasis und Dämmerling-KI bleiben erhalten.
+- **Neuer eigener Pixel-Look:** Originaler 128×128-Minecraft-Texturatlas mit erhaltener 64×64-Grundhaut, neuen dunkelgrünen Wurzeloberflächen und einer transparenten zusätzlichen Emissiv-PNG für rote Augen und nur schmale, lebendige Wurzeladern.
+- **Leuchtbeeren lenken den Pflanzenräuber ab:** Wer bei einem tatsächlichen Feldüberfall innerhalb von vier Blöcken Leuchtbeeren hält, kann den Dämmerling kurzfristig vertreiben und die bedrohte reife Pflanze schützen. Das funktioniert nur während des bestehenden langsamen Fraßversuchs, ohne den Gegenstand zu verbrauchen.
+- **Seelenlaterne hat Vorrang:** Wenn ein geeigneter Laternenwächter in der Nähe ist, wird er gegenüber dem Beerenköder bevorzugt. Der alte Nachtwache-Fortschritt wird nur beim echten Laternen-Einsatz vergeben.
+- **Eigene Rückmeldung:** Der Leuchtbeeren-Schutz erzeugt einen anderen Sporenimpuls, einen tieferen Amethystton und eine lokale, zeitlich gedrosselte Meldung auf Deutsch oder Englisch.
+- **Leistung und Sicherheit:** Die beiden Gegenmaßnahmen verwenden gemeinsam den einen bisherigen Spieler-Scan im Fraßziel. Keine zusätzlichen Server-Ticker, Chunk-Ladungen, neuen Spielfiguren-Schäden oder Änderungen am Mutagen-Heilungsweg.
+- **Technisch verifiziert:** 111 erfolgreiche GitHub-Actions-Schritte, einschließlich alter und neuer Regressionen, Forge-1.20.1-Kompilierung, installierbarer JAR-Prüfung und Dedicated-Server-Smoke-Test.
+
+### Minecraft-Client-Sichttest für 1.100.0
+
+1. Einen Dämmerling im Creative-Modus erzeugen und aus allen vier Seiten prüfen: beide Rückenwurzeln, Finger und Kopfwucherung müssen tatsächlich zum Körper gehören und korrekt texturiert sein.
+2. In der Dunkelheit das Leuchten betrachten: Augen und einzelne Adern sollen leuchten, nicht der gesamte Körper.
+3. Den Dämmerling herumwandern und einen Spieler verfolgen lassen. Rückenwurzeln und Finger müssen mit ihren eigenen Gelenken arbeiten, ohne vom Körper abzureißen.
+4. Ein reifes, unbeleuchtetes und nicht zusätzlich geschütztes Beet testen. Kurz vor dem vollständigen Fressen Leuchtbeeren in der Hand halten: Das Beet soll erhalten bleiben und die eigene Köder-Meldung erscheinen.
+5. Den Versuch mit einer Seelenlaterne wiederholen; diese soll weiterhin Vorrang haben und den Nachtwache-Fortschritt erlauben.
+6. Mit Filtermoos und beleuchteten Feldern überprüfen, dass bereits sichere Beete auch ohne die neue Gegenmaßnahme sicher bleiben.
+7. Danach Welt laden, Multiplayer und Performance kontrollieren. Eine grüne Server-CI bestätigt nicht, dass das neue 3D-Modell schon genauso hochwertig wie die Referenzbilder aussieht.
 
 ## Aktueller Entwicklungsschritt — 1.99.0
 
@@ -398,6 +419,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.100.0 — Dämmerling wird eine eigenständige Kreatur
+
+- Neuer echter animierter Forge-Körper statt des generischen Minecraft-Zombiemodells, einschließlich asymmetrischer Wurzelhorn-Anatomie, Finger, Bauchpanzerung, original 128×128-Textur und selektiv leuchtenden Augen.
+- Neuer alternativer Leuchtbeeren-Köder schützt bei einer tatsächlichen langsamen Pflanzenattacke kurzzeitig reife Feldfrüchte. Seelenlaterne bleibt bevorzugte Schutzmaßnahme und exklusiv für Nachtwache-Fortschritt.
+- Keine neuen Welt- oder KI-Ticker, keine neue Scannerpflicht, kein Verbrauch der Verteidigungsitems und keine Änderung an Mutagenheilung, Bosskampf oder Farmwirtschaft.
+- 111 GitHub-Actions-Schritte erfolgreich – Forge 1.20.1, Modell- und Gameplayregressionen, JAR-Paketprüfung sowie Dedicated Server. Minecraft-Client-Sichttest für die endgültige Optik bleibt erforderlich.
 
 ## Version 1.99.0 — Sichtbarer Kristallverschleiß
 
