@@ -32,12 +32,14 @@ def replace_once(path, old, new, purpose):
 # client tick. The existing POWERED, MODE and active-node guards remain ahead of it.
 tick_anchor = """        int mode = state.getValue(MODE);
         if (mode == 0) {
-            MutationField.spreadFromNode(level, pos, random);"""
+            MutationField.spreadFromNode(level, pos, random);
+            MutagenBloom.tryTrigger(level, pos, random);"""
 tick_new = """        int mode = state.getValue(MODE);
         // 1.85 atmosphere belongs to the existing active scheduled tick only.
         emitLivingFieldAmbience(level, pos, random, mode);
         if (mode == 0) {
-            MutationField.spreadFromNode(level, pos, random);"""
+            MutationField.spreadFromNode(level, pos, random);
+            MutagenBloom.tryTrigger(level, pos, random);"""
 replace_once(NODE, tick_anchor, tick_new, "active scheduled-node atmosphere hook")
 
 # The cooldown is stored per player, not statically per JVM: works in multiplayer,
