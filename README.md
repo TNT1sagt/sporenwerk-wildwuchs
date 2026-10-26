@@ -1,8 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.91.0 — Kristallkoloss-Auftritt und aktive Nachtwache.**
+**Aktueller Entwicklungsstand: 1.92.0 — Referenzgerichtete Kristallkoloss-Geometrie direkt im Minecraft-Mod.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.92.0
+
+- **Tatsächliche In-Game-Geometrie:** Das bereits existierende Kristallkoloss-Modell bekommt neue Würfelgeometrie, nicht nur eine Illustration oder zusätzliche Partikel.
+- **Neuer Schwanz-Umriss:** Ein hochgebogener Skorpionschwanz aus den drei bestehenden animierten Schwanzgliedern und einem neuen vierten Gelenk. Am Ende sitzt eine dreizackige, magenta-violette Kristallblüte mit eigenem Bewegungsverhalten während der Kristallatem-Attacke.
+- **Massive Rückenpanzer:** Zwei hohe, seitliche Obsidianmonolithen tragen große Kristallspitzen und kleine bernsteinfarbene Resonanzadern. Bereits bestehende bewegliche Kopfkrone, Brustkern, Glühklauen und Bossangriffe bleiben erhalten.
+- **Getrennte Pixel- und Emissiv-Atlanten:** Originale 256×256-PNG-Texturen mit neuem violett-orangen UV-Bereich. Der dunkle Panzer bleibt unbeleuchtet; neue Kristalle und Adern besitzen eng angepasste Glow-Geometrie.
+- **Animation ohne Fremdabhängigkeiten:** Beide ModelPart-Bäume besitzen deckungsgleiche Ansatzpunkte und bewegen sich über die vorhandene synchronisierte Bossanimation; keine Kopie fremder Mod-Modelle oder Texturen.
+- **Build verifiziert:** 103 erfolgreiche Workflow-Schritte, eigene Modell-/Pixel-Regression, Forge-1.20.1-JAR-Prüfung sowie dedizierter Server-Smoke-Test.
+- **Noch nicht bestätigt:** Das tatsächliche Aussehen im laufenden Minecraft-Client wurde nicht bildlich abgenommen. Die In-Game-Silhouette muss mit den eingesandten Referenzbildern verglichen und nötigenfalls weiter überarbeitet werden.
+
+### Minecraft-Client-Sichttest 1.92.0
+
+1. Den Koloss im Creative-Modus oder über das Bossritual herbeirufen und aus Front-, Seiten- und Rückansicht kontrollieren: Schwanzbogen und Kristallblüte dürfen nicht in den Körper schneiden oder unnatürlich flach bleiben.
+2. Sehen, ob die hohen Rückenmonolithen bei Bewegungen stimmig wirken und die Magenta-Kristalle sowie orange Adern sichtbar sind.
+3. Bei Bewegung und Kristallatem die Synchronisation von dunklem Skin und Glow-Schicht testen; besonders auf versetztes Leuchten oder transparente Texturartefakte achten.
+4. Speicherstand neu laden und Spawn-/Bosskampf sowie die vorhandene Kernöffnung und Stampfphase prüfen.
+5. Gegenüber dem Referenzdesign gezielt noch fehlende Anatomie, Texturdichte und Animation erfassen. Ein grüner Forge-Build ist kein visueller Gleichheitsnachweis.
 
 ## Aktueller Entwicklungsschritt — 1.91.0
 
@@ -260,6 +278,12 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.92.0 — 3D-Schwanzstachel, Rückenmonolithen und Originaltexturen
+
+- Neues echtes Modellmaterial: viergliedriger, hochgebogener Skorpionschwanz mit dreizackigem Kristallende, zwei gepanzerte Rückenmonolithen und überarbeitete violett/bernsteinfarbene Pixeloberflächen.
+- Haut und Leucht-Layer mit identischen Gelenken, Boss-Animationen weiterverwendet, keine zusätzlichen Chunk-Ladungen oder Server-Ticker.
+- Forge-Build, JAR-Verifikation, 103 automatisierte Schritte und Dedicated-Server-Smoke-Test erfolgreich; manuelle Client-Optik noch offen.
 
 ## Version 1.91.0 — Kristallkoloss-Auftritt und echte Nachtwache
 
