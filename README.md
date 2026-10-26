@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.95.0 — Eigenständige Jagdanimationen und reaktive Kolosskristalle.**
+**Aktueller Entwicklungsstand: 1.96.0 — Resonanzrippen für den Koloss und pulsierender Kristallpirscher-Brustkern.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.96.0
+
+- **Sechs echte Seitenrippen am Kristallkoloss:** Drei Basalt-Kristall-Konstruktionen pro Körperseite erweitern die Silhouette der bestehenden vierbeinigen Boss-Entität. Jedes Bauteil hat ein eigenes animierbares Gelenk und einen schmaleren eingelegten Kristallkern.
+- **Resonanz wird sichtbar:** Während der vorhandenen synchronisierten Atem-, Stampf- und Erwachensvorbereitung fächern sich die sechs seitlichen Rippen zeitversetzt auf. Im Leerlauf kehren sie zu ihrer Ausgangslage zurück.
+- **Zwei passende Render-Layer:** Im normalen 256×256-Pixelatlas liegen die Basaltpanzer und violett-cyanfarbenen Kristalle; die separate Leuchtschicht übernimmt nur die schmalen leuchtenden Kernflächen. Die sechs neuen Teile sitzen an den gleichen Gelenken.
+- **Neues Brustorgan des Kristallpirschers:** Ein eigener erhabener Thoraxkristall mit zwei seitlichen Splittern wird unter dem existierenden humanoiden Modellrumpf geführt. Der Brustkern pulsiert bei aggressiver Verfolgung stärker.
+- **Keine Spielmechanik verfälscht:** Mutagenheilung, kontrollierte Infektionsgebiete, Maskenschutz, Boss-Drops, Bewegungsgeschwindigkeit, Gegnerhitboxen und Kampfschaden bleiben unverändert. Neue Animationen benutzen nur bestehende clientseitige Modelländerungen und synchronisierte Angriffsphasen.
+- **Technische Prüfung:** 107 GitHub-Actions-Schritte erfolgreich. Eigene Modell- und PNG-Regressionen, Forge-1.20.1-Kompilierung, installierbare JAR-Prüfung und Dedicated-Server-Smoke-Test bestanden. Die tatsächliche Client-Optik muss weiterhin überprüft werden.
+
+### Minecraft-Client-Abnahme für Version 1.96.0
+
+1. Koloss aus der Front-, Seiten- und Rückansicht betrachten: Sind drei dunkel gefasste Kristallrippen auf jeder Seite sichtbar und ragen sie nicht absurd durch seine Vorder- oder Hinterbeine?
+2. Atemangriff, Stampfen und Erwachensphase testen: Rippen müssen leicht zeitversetzt ausfächern und danach ohne Animationsdrift in die Ruhepose zurückkehren.
+3. Im Dunkeln die Normal- und Leuchtschicht vergleichen: Dunkle Rippensockel dürfen nicht dauerhaft fullbright sein, die violett-cyanfarbenen Kristallkerne aber sichtbar leuchten.
+4. Kristallpirscher in Ruhe und bei aggressiver Verfolgung prüfen: Brustorgan und zwei Splitter sollen mit dem Körper mitgehen und bei Verfolgung deutlich pulsieren.
+5. Multiplayer-Client, Welt neu laden, Boss-Schaden, Hitboxen und Performance testen. Erst danach das Modell mit den gesendeten Referenzbildern vergleichen und verbleibende Form- und Texturabweichungen bewerten.
 
 ## Aktueller Entwicklungsschritt — 1.95.0
 
@@ -329,6 +346,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.96.0 — Kristallresonanz als sichtbare Anatomie
+
+- Kristallkoloss: sechs original modellierte, gestaffelte seitliche Kristallrippen aus Basalt und violett-cyanfarbenen Lichtkernen, für alle drei bestehenden Angriffsphasen animiert und in beiden Modellschichten korrekt gebunden.
+- Kristallpirscher: neues eigenständiges Thoraxorgan mit zwei angehefteten Kristallen und aggressionsabhängigem Pulsieren.
+- Originale Minecraft-Pixeltexturen, kein Kopieren fremder JAR-Modelle und keine Änderungen an der Infektion oder dem Bosskampf.
+- Automatische Regression, Forge-Build, JAR-Validierung und dedizierter Server erfolgreich (107 Prüfschritte); visueller Minecraft-Client-Test steht noch aus.
 
 ## Version 1.95.0 — Kristalljagd und pulsierender Koloss
 
