@@ -75,10 +75,10 @@ b=boss.read_text(encoding="utf-8")
 need("private final ModelPart[] pawCrystalTips;" in b and
      "float crystalTension = Math.max(stompCharge, awakeningCharge);" in b,
      "1.95 cached boss paw/attack rig required")
-patch(b,"    private final ModelPart[] pawCrystalTips;",
+patch(boss,"    private final ModelPart[] pawCrystalTips;",
 """    private final ModelPart[] pawCrystalTips;
     private final ModelPart[] resonanceRibs;""","cache six new ribs")
-patch(b,"        this.spines = new ModelPart[] {",
+patch(boss,"        this.spines = new ModelPart[] {",
 """        // Match both layers. No lookups in render ticks.
         this.resonanceRibs = new ModelPart[] {
                 body.getChild("resonance_rib_left_0"),
@@ -122,7 +122,7 @@ helper="""
     }
 
 """
-patch(b,"    @Override\n    public void setupAnim(MutagenkolossEntity entity, float limbSwing, float limbSwingAmount,",
+patch(boss,"    @Override\n    public void setupAnim(MutagenkolossEntity entity, float limbSwing, float limbSwingAmount,",
       helper+"    @Override\n    public void setupAnim(MutagenkolossEntity entity, float limbSwing, float limbSwingAmount,",
       "original extra dorsal 3D ribs helper")
 b=boss.read_text(encoding="utf-8")
