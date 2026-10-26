@@ -1,8 +1,18 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.85.0 — lebendige Horror- und Kulturfelder mit eigenem Ambiente.**
+**Aktueller Entwicklungsstand: 1.86.0 — Dämmerling mit dynamischem Blickkontakt-Verhalten.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.86.0
+
+- **Dämmerling reagiert auf Blickkontakt:** Wer dem Dämmerling nachts im Dunkeln direkt in die Augen sieht und sein aktuelles Angriffsziel ist, kann ihn kurzzeitig zum Stehen bringen. Der Mob verfolgt den Spieler dabei mit seinem Blick statt sich auf ihn zuzubewegen.
+- **Echte Gefahr nach dem Stillstand:** Spätestens nach 30 Ticks (1,5 Sekunden) endet die Starre; anschließend verhindern 100 Ticks Abklingzeit eine endlose Stilllegung durch ständigen Blickkontakt. Wegschauen beendet die Starre sofort.
+- **Kein unfairer Fernstopp:** Nur Spieler im Abstand von höchstens 12 Blöcken mit echter Sichtlinie und Blickrichtung auf den Mob lösen die Reaktion aus. Kreativ- und Zuschauermodus werden ignoriert.
+- **Horror-Feedback:** Ein kurzer violetter Partikelimpuls, ein tiefes Kristallklirren und eine spielerbezogen gedrosselte Aktionsleistenmeldung machen die Begegnung verständlich, ohne den Bildschirm permanent mit Text zu füllen.
+- **Farm- und Kampfregeln bleiben:** Normales Zombie-Targeting, schwache Dämmerling-Schadenswerte, langsame dunkle Pflanzenangriffe, beleuchtete oder abgeschirmte Beete, Mutagenblüten und Sporenabwehr bleiben unverändert.
+- **Performance und Sicherheit:** Ein priorisiertes Standard-Zombie-KI-Ziel statt eines zusätzlichen Entity-Tickers. Sichttests sind auf den aktuellen Angriffsspieler, 12 Blöcke, 5-Tick-Prüfintervalle und eine kurze Ereignisdauer begrenzt.
+- **Qualität:** Regression prüft KI-Prioritäten, Dot-Product-Sichtprüfung, Zielprüfung, Timeouts, Erhaltung bestehender Ziele und DE/EN-Texte. Der vollständige Forge-Build und dedizierte Serverstart prüfen die Integration.
 
 ## Aktueller Entwicklungsschritt — 1.85.0
 
@@ -189,6 +199,15 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.86.0 — Dämmerling: Starr vor Angst oder auf der Lauer?
+
+- **Eigenständiges Monsterverhalten:** Der Dämmerling bricht seine Jagd kurz ab, wenn sein aktuelles Ziel ihn im Dunkeln direkt anschaut. Sobald der Spieler den Blick abwendet, setzt die Verfolgung wieder ein.
+- **Begrenzte Ausweichmechanik:** Maximal 30 Ticks Starre, dann 100 Ticks Immunität gegen den Effekt. Keine ständige Unterbrechung durch Spieler, die die Kreatur ununterbrochen fixieren.
+- **Faire Sichtprüfung:** Zwölf Blöcke Reichweite, echte Sichtlinie, normiertes Blickrichtungs-Skalarprodukt größer als 0,93, lebende Survival-Spieler und niedrige Umgebungshelligkeit.
+- **Unheimliches Feedback:** Ein Partikelimpuls, gedämpftes Amethystgeräusch und selten eingeblendeter Aktionstext vermitteln, dass die Kreatur den Blick wahrnimmt.
+- **Bestehende Systeme intakt:** Das vorherige CropThreatGoal bleibt auf Priorität 5, Zombie-Angriff und vorhandene Ernte-/Schutzlogik bleiben im Code. Keine neuen Spawnregeln, Chunk-Forceloads oder dauerhaft laufenden Umweltabfragen.
+- **Qualitätsnachweis:** Eigenständige Regression zu Blickkontakt, Cooldown, KI-Interaktion, vorhandenen Pflanzenregeln und Übersetzungen sowie Forge-Kompilierung und dedizierter Serverstart. Eine visuelle Client-Kontrolle steht weiterhin aus.
 
 ## Version 1.85.0 — Lebendige Mutagenfelder bei Nacht
 
