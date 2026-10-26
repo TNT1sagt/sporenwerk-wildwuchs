@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.84.0 — Mutagen-Notabschaltung über die Feldkontrollstation.**
+**Aktueller Entwicklungsstand: 1.85.0 — lebendige Horror- und Kulturfelder mit eigenem Ambiente.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.85.0
+
+- **Lebendige Horror-Mutagenfelder:** Mutagenknoten im SPREAD-Modus können nachts selten einen flüsternden Feldimpuls abgeben. Aufsteigende Sporen, spiralig gesetzte Seelenflammen und rückwärts strömende Portalpartikel erzeugen ein unheimliches Umgebungsbild mit tiefem Resonanzton.
+- **Feldwirtschaft behält ihre Identität:** CULTIVATION erzeugt stattdessen sanfte grüne Partikel, Sporen und leises Kristallklingen, ohne Spieler zu gefährden oder die sicheren Mutagen-Farmregeln zu umgehen.
+- **Echte Ruhe bleibt ruhig:** DORMANT und durch Redstone pausierte Knoten bleiben vollständig still, weil die Effekte nur im bestehenden aktiven, geplanten Server-Tick auftreten.
+- **Multiplayer und Leistung:** Ein gespeicherter Cooldown pro Spieler begrenzt wiederholte Impulse aus dicht nebeneinander stehenden Knoten. Der Knoten prüft die Anwesenheit von Spielern nur nach seltener Zufallsauswahl; es gibt keine zusätzliche Hintergrundtick-Logik und keine Chunk-Forceloads.
+- **Integrierte Atmosphäre:** Die Effekte ergänzen die bereits unterschiedlichen Minecraft-Blockmodelle, Mutagenblüten und Feldwarngeräte. Bestehende Ausbreitungs-, Mutations-, Ernte- und Heilungsmechaniken bleiben unverändert.
+- **Qualitätsprüfung:** Separate Regression prüft die aktiven Knotenmodi, Nachtbedingung, Partikel, Sounds, Multiplayer-Cooldown, Inaktivität und alte Sicherheitsregeln; kompletter Forge-Build und dedizierter Serverstart prüfen die technische Integration.
 
 ## Aktueller Entwicklungsschritt — 1.84.0
 
@@ -180,6 +189,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.85.0 — Lebendige Mutagenfelder bei Nacht
+
+- **Atmosphärische Mutagenquelle:** SPREAD-Knoten können nachts ein kurzes, hörbares und sichtbares Horror-Ereignis auslösen: wirbelnde Sporen, Seelenflammen-Tendrils, Portal-Partikel und ein tiefes Summen.
+- **Sanfter Kulturmodus:** CULTIVATION verwendet stattdessen freundliche Wachstums-Partikel und ein gedämpftes Amethystklingen. Die funktionale Abgrenzung von kontrollierter Farm und gefährlichem Wildfeld ist weiter auch ohne Scanner sichtbar.
+- **Redstone- und Notabschaltung respektiert:** Der vorhandene aktive Knoten-Tick entscheidet über die Effekte. DORMANT-, Redstone- und inaktive Knoten lösen keine Atmosphäre aus.
+- **Vorsichtige Begrenzung:** Seltene serverseitige Trigger, nur bei Spielern in unmittelbarer Nähe, pro Spieler bis zu 22/35 Sekunden Abstand und ein einziger ausgelöster Impuls pro Knotentick. Keine Spawns, Exposition, Terrainveränderung, Scannerpflicht oder zusätzlichen Chunkzugriffe.
+- **Qualitätssicherung:** Neue Regression für Modusverhalten, Nachtfilter, Cooldown, Partikel und Sound, unveränderte Ausbreitung/Kultivierung und Versionsstand sowie vollständiger Forge-Build und dedizierter Serverstart. Die optische Wirkung benötigt zusätzlich einen Minecraft-Client-Sichttest.
 
 ## Version 1.84.0 — Mutagen-Notabschaltung der Feldkontrollstation
 
