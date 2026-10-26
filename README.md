@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.88.0 — Live-Knotenprotokoll für sichere Mutagenanlagen.**
+**Aktueller Entwicklungsstand: 1.89.0 — Kupfererdung für die sichere Knotenrettung.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.89.0
+
+- **Knotenrettung statt bloßer Notabschaltung:** Geduckt mit einem Kupferbarren auf die Mutagen-Feldkontrollstation rechtsklicken, um aktive, ungepauste AUSBREITUNG-Knoten in sicheren ANBAU umzuwandeln. Der Barren bleibt erhalten.
+- **Sterilisierung und Redstone bleiben geschützt:** Gespeicherte inaktive/geheilte Quellen werden nicht wieder eingeschaltet. Pausierte, bereits kultivierende oder ruhende Knoten werden nicht verändert.
+- **Forschung und direkte Spielrückmeldung:** Bei der ersten tatsächlich erfolgreichen Umwandlung wird der Fortschritt „Aus Gefahr wird Wachstum“ freigeschaltet. Grüne Wachstumspartikel, dezente Kristalllichter, Klang und DE/EN-Rückmeldung begleiten die Aktion.
+- **Vier Eingriffe an einer Station:** Rechtsklick = Diagnose, Schleichen = Not-Aus, Schleichen plus Amethyst = Neustart ruhender sicherer Quellen, Schleichen plus Kupfer = gezielte Rettung gefährlicher aktiver Quellen.
+- **Gleiche Sicherheitsgrenzen:** Nur geladene Chunks im Radius 16 / Höhe ±8, maximal 24 betroffene Knoten mit Partikeln, kein Chunk-Forceloading und kein neuer Stations-Ticker. Beide Anbauaktionen teilen eine einzelne geplante Node-Tick-Routine.
+- **Status:** Forge-1.20.1-Build, Regressionen, JAR-Prüfung und Dedicated-Server-Smoke-Test wurden in GitHub Actions erfolgreich abgeschlossen. Ein Minecraft-Client-Sichttest steht weiterhin aus.
 
 ## Aktueller Entwicklungsschritt — 1.88.0
 
@@ -217,6 +226,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.89.0 — Kupfererdung und Mutagen-Knotenrettung
+
+- Kupferbarren + geduckter Rechtsklick wandelt nur tatsächlich aktive, unpausierte Ausbreitungsquellen auf ANBAU um.
+- Vorhandene Forschung, Kulturen, Redstone-Pausen, Welt-Heilung und manuelle Nothalt-/Neustartwege bleiben intakt. Es gibt keine Itemkosten oder Charakter-Nachteile.
+- Erfolgsgebundener Advancement-Fortschritt „Aus Gefahr wird Wachstum“ sowie sichtbares und akustisches Feedback.
+- Eigene Regression für die Quellregistrierung, geladenen Chunks, Forschungsbelohnung, Sprachtexte, Tick-Sicherheit und alte Stationsfunktionen; vollständiger Forge-Build, JAR und Serverstart erfolgreich.
 
 ## Version 1.88.0 — Live-Knotenprotokoll der Mutagen-Kontrollstation
 
