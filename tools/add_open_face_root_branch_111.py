@@ -31,8 +31,30 @@ for name in ("chest_core_mount","chest_core","core_glow"):
     s=s[:end]+'PartPose.offset(0.0F, 10.0F, 14.0F));'+s[end+len('PartPose.ZERO);'):]
     b.write_text(s,encoding="utf8")
 rep(b,'PartPose.offsetAndRotation(x, y, -38.6F, 0.0F, 0.0F, 0.0F));',
-      'PartPose.offsetAndRotation(x, y + 10.0F, -22.6F, 0.0F, 0.0F, 0.0F));',
+      'PartPose.offsetAndRotation(x, y + 10.0F, -24.6F, 0.0F, 0.0F, 0.0F));',
       "all four movable iris leaves follow recessed lower heart")
+# The four corner gems are separately parented to the Colossus body.
+# Their old z=-37.9 would float in front of the real snout after relocation.
+rep(b,'PartPose.offset(sx * 9.4F, sy * 8.6F, -37.9F)',
+      'PartPose.offset(sx * 9.4F, sy * 8.6F + 10.0F, -23.9F)',
+      "realign all four crystal rim corner gems")
+# Update coordinate-only assertions in 1.98's strict original regression.
+# Preserve ALL other attack/geometry and glow alignment assertions.
+old=R/"tools/test_colossus_visual_alignment_198.py"
+qa=old.read_text(encoding="utf8")
+for a,z in (
+    ('PartPose.offset(sx * 9.4F, sy * 8.6F, -37.9F)',
+     'PartPose.offset(sx * 9.4F, sy * 8.6F + 10.0F, -23.9F)'),
+    (r'PartPose\.offsetAndRotation\(x, y, ([-\d.]+)F,',
+     r'PartPose\.offsetAndRotation\(x, y \+ 10\.0F, ([-\d.]+)F,'),
+    ('iris_z <= -38.0 and iris_z > -41.0',
+     'iris_z <= -24.0 and iris_z > -25.2'),
+    ('iris_z < -37.1',
+     'iris_z < (-37.1 + 14.0)'),
+):
+    need(qa.count(a)==1,"old 1.98 hard-coded iris fixture "+a)
+    qa=qa.replace(a,z,1)
+old.write_text(qa,encoding="utf8")
 # The real head muzzle at approximately world-z -36 is now *in front*
 # of the core focal point at about -23, rather than behind its bright slabs.
 p=C/"KristallpirscherModel.java"

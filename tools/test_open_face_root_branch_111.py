@@ -15,11 +15,13 @@ for source,name in ((skin,"chest_core_mount"),(skin,"chest_core"),(glow,"core_gl
     start=source.index('body.addOrReplaceChild("'+name+'"')
     check("PartPose.offset(0.0F, 10.0F, 14.0F));" in source[start:start+1300],
           name+" must be recessed in same local space")
-check('PartPose.offsetAndRotation(x, y + 10.0F, -22.6F, 0.0F, 0.0F, 0.0F)' in b,
+check('PartPose.offsetAndRotation(x, y + 10.0F, -24.6F, 0.0F, 0.0F, 0.0F)' in b,
       "all iris leaves follow core")
 check('PartPose.offset(0.0F, -5.0F, -20.0F)' in skin and
       "addBox(-5.5F, -2.0F, -16.0F, 11.0F, 6.0F, 9.0F)" in skin,
       "visible original muzzle/head rig preserved")
+check('PartPose.offset(sx * 9.4F, sy * 8.6F + 10.0F, -23.9F)' in b,
+      "corner gems and core must be co-located")
 check((-20-16)<(-36.6+14)-10,"geometry: snout must protrude beyond crystal")
 check(all('body.getChild("core_iris_'+x+'")' in b for x in ("left","right","top","bottom")),
       "all four actual movable core shutters preserved")
