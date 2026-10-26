@@ -1,8 +1,27 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.107.0 — Koloss-Gesichtsproportionen und echte Kristall-/Wurzelfüße.**
+**Aktueller Entwicklungsstand: 1.108.0 — Echte Durchbrüche im Kristallrücken, Kolossmonolithen und Wurzelhänden.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.108.0
+
+- **Kristallpirscher: echte getrennte Rückenprismen:** Die zuvor große, kompakte 10×17×5-Voxel-Rückenplatte wurde durch drei unterschiedlich hohe schmale Rückendornen ersetzt. Die neuen Luftspalte sind echte 3D-Durchbrüche, keine bloß dunkel gefärbten Pixel. Das bereits animierte `back_crest`-Gelenk bleibt erhalten, ebenso die zusätzlichen Seitenkristalle, Rückenfinnen, Jagdklauen und der Brustresonator.
+- **Kristallkoloss: aufgebrochene Basaltmonolithen:** Die beiden zuvor massiven Rückenpfeiler bestehen nun aus zwei dunklen Seitenstützen mit dazwischenliegender Lücke, einer rückwärtigen Strebe und einer oberen Kappe. Die alten beweglichen violetten `monolith_prism`-Kristalle und die schmalen glühenden Runen bleiben erhalten. Der separate normal texturierte und der selektiv leuchtende Modellbaum behalten dieselben Knochenhierarchien.
+- **Dämmerling: offen geformte Wurzelhandflächen:** Die bisherigen 4,6×5,6×3,6 breiten Quader-Fäustlinge wurden durch zwei schmale Handwurzelstränge und eine kleine Verbindung bei den Fingern ersetzt. Die bestehenden langen, beweglichen Finger und die vom Server synchronisierte Fraßpose bleiben erhalten.
+- **Erstmals eine aus echtem Modellcode abgeleitete QA-Grafik:** Der CI-Test liest die aktuellen `ModelPart.addBox`-Koordinaten und erstellt orthografische Querschnittszeichnungen für die drei überarbeiteten Partien. Er prüft mathematisch, ob die Lücken mindestens einen Minecraft-Modellpixel breit sind, und verhindert eine Rückkehr der alten ausgefüllten 3D-Blöcke. **Dies ist ausdrücklich kein Minecraft-Screenshot** und noch kein Referenzbild-Vergleich.
+- **Originaltexturen beibehalten:** Das Modell nutzt weiterhin normale Minecraft-Pixelatlanten (128×128 für Pirscher/Dämmerling, 256×256 für Koloss), mit eigenständigen, transparenten Leuchtebenen. Keine übernommenen Texturen oder Modelle aus Belowland oder Wonderland.
+- **Keine Gameplay-Regel geändert:** Mutagenausbreitung und Endgame-Heilung, Farming, Maschinen, Spawns, Bossgegner-KI, Schaden, Kollisionsboxen und Gegenstandserhalt sind unberührt.
+- **Technisch bestätigt:** 120 erfolgreiche GitHub-Actions-Schritte, einschließlich aller alten und neuen Regressionen, Forge-1.20.1-Kompilierung, installierbarer Mod-JAR, eigenständigem Geometrie-Artefakt und erfolgreich gestartetem dediziertem Minecraft-Server.
+
+### Pflichtabnahme im Minecraft-Client für 1.108.0
+
+1. Den Kristallpirscher aus der direkten Rückansicht und aus beiden Seitenansichten betrachten. Drei deutlich getrennte Rückenprismen müssen erkennbar sein; die Zwischenräume dürfen nicht von einer darunter liegenden massiven Kristallplatte verschlossen werden.
+2. Den Koloss seitlich und schräg von hinten prüfen: Beide Rückenmonolithen sollen offene Spalten zwischen dunklen Stützen haben. Die violetten leuchtenden Kristalle müssen mit den Basaltmonolithen mitbewegt werden.
+3. Den Dämmerling bei Tageslicht, bei Dunkelheit und beim tatsächlichen Beetfraß ansehen. Die Hände sollen schmaler, zwischen den Wurzelsträngen offen und mit den alten beweglichen langen Fingern verbunden sein.
+4. Die technischen Querschnitte im neuen Artefakt `sporenwerk-1.108.0-creature-geometry-qa` mit den tatsächlichen Minecraft-Aufnahmen vergleichen. Die technische Grafik stellt nur ausgewählte Quellenwürfel ohne vollständige Rotation/Kindhierarchie dar; sie ersetzt keine In-Game-Abnahme.
+5. Screenshots in ähnlicher Perspektive wie die ursprünglichen Konzeptbilder anfertigen und Silhouette, Proportion, Glow-Verteilung und Bewegungen **direkt nebeneinander** prüfen. Was noch abweicht, gilt weiterhin als unvollständig.
+6. Bewegung, Dunkelheit, Bosskampf, Feldraids sowie dedizierten Mehrspieler-Server testen. Ein erfolgreicher Server-Build beweist nicht, dass die vollständige visuelle Referenz exakt erreicht wurde.
 
 ## Aktueller Entwicklungsschritt — 1.107.0
 
@@ -548,6 +567,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.108.0 — Echte 3D-Zwischenräume und sourcebasierte Silhouettenkontrolle
+
+- Drei getrennte hohe Kristallrücken beim Kristallpirscher statt großer massiver Rückenplatte. Bestehende ModelPart-Animation und kristalline Jagdanatomie bleiben erhalten.
+- Koloss mit zwei durchbrochenen Basaltmonolithen und korrekt erhaltener Normal-/Glow-Hierarchie statt vollständig geschlossener Rückentürme.
+- Dämmerling mit schlanken, offenen Wurzelhandflächen und intakten, beweglichen Wurzelfingern für Beifraß und Jagd.
+- Neues automatisch erzeugtes QA-PNG aus tatsächlichen Java-`addBox`-Koordinaten. **Eine technische Querschnittsansicht, nicht ein Minecraft-Screenshot.**
+- 120 GitHub-Actions-Schritte erfolgreich: neue Silhouetten-Regressionen, alter Forge-Quellstand, JAR, dedizierter Server sowie QA-Artefakte. Exakte Bildtreue bedarf noch eines Client-Tests.
 
 ## Version 1.107.0 — Gesichts- und Fußsilhouetten des echten Minecraft-Modells
 
