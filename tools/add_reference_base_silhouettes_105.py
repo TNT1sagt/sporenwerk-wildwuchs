@@ -147,16 +147,28 @@ need('PartDefinition head = body.addOrReplaceChild("head",' in b
      and 'body.getChild("core_iris_left")' in b
      and 'this.armorFractureVeins = new ModelPart[]' in b,
      "latest 1.104 four-leg Colossus face+tail+crystal model required")
-patch(B,
-"""CubeListBuilder.create().texOffs(100, 32).addBox(-9.0F, -7.0F, -10.0F, 18.0F, 13.0F, 16.0F)
-                        .texOffs(144, 32).addBox(-7.0F, -2.0F, -17.0F, 14.0F, 7.0F, 10.0F)
-                        .texOffs(144, 52).addBox(-6.0F, 3.0F, -15.0F, 12.0F, 3.0F, 10.0F),""",
-"""// 1.105 reference ratio: more massive low body versus a
-                // smaller separated skull, stepped snout and lower jaw.
-                CubeListBuilder.create().texOffs(100, 32).addBox(-7.6F, -6.8F, -9.3F, 15.2F, 12.0F, 15.1F)
+# Earlier reference passes have already sculpted the head cube, so do not
+# assume the initial 1.58 literal dimensions survived. Replace ONLY the
+# parent head mesh block (bounded by the following head-child declaration),
+# preserving its original transform, all 3D children, bones and textures.
+current=B.read_text(encoding="utf-8")
+head_start=current.index('        PartDefinition head = body.addOrReplaceChild("head",')
+head_next=current.index('\n        head.addOrReplaceChild(',head_start)
+head_chunk=current[head_start:head_next]
+need(head_chunk.count("CubeListBuilder.create()")==1,
+     "one sole solid head builder before head children")
+need('PartPose.offset(0.0F, -5.0F, -20.0F)' in head_chunk,
+     "preserve original skull pivot, no changes to existing children")
+head_new="""        PartDefinition head = body.addOrReplaceChild("head",
+                // Smaller head / stepped rock muzzle, keeping armor, jaw,
+                // horns and illuminated eyes parented to this pivot.
+                CubeListBuilder.create().texOffs(100, 32)
+                        .addBox(-7.6F, -6.8F, -9.3F, 15.2F, 12.0F, 15.1F)
                         .texOffs(144, 32).addBox(-5.5F, -2.0F, -16.0F, 11.0F, 6.0F, 9.0F)
-                        .texOffs(144, 52).addBox(-4.8F, 3.0F, -14.8F, 9.6F, 2.5F, 8.5F),""",
-"reduce oversized Colossus muzzle but preserve all head joint children")
+                        .texOffs(144, 52).addBox(-4.8F, 3.0F, -14.8F, 9.6F, 2.5F, 8.5F),
+                PartPose.offset(0.0F, -5.0F, -20.0F));"""
+B.write_text(current[:head_start]+head_new+current[head_next:],encoding="utf-8")
+
 
 # No unpainted atlas UVs and no counterfeit borrowed creature skins.
 t=R/"src/main/resources/assets/sporenwerk/textures/entity"
