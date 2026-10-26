@@ -113,6 +113,22 @@ public final class PflanzenresteTooltipEvents {
 }
 """, encoding="utf-8")
 
+# Keep user-facing instructions in the actual Minecraft resource translations.
+for locale, entries in (
+    ("de_de.json", {
+        "tooltip.sporenwerk.pflanzenreste.refining": "Biomasse-Bioreaktor: 4 Pflanzenreste + 60 FE ergeben 1 Biomasse.",
+        "tooltip.sporenwerk.pflanzenreste.loop": "Biomasse wird dort weiter zu 2 Myzelkompost verarbeitet."
+    }),
+    ("en_us.json", {
+        "tooltip.sporenwerk.pflanzenreste.refining": "Biomass Bioreactor: 4 plant residues + 60 FE refine into 1 Biomass.",
+        "tooltip.sporenwerk.pflanzenreste.loop": "Biomass can then be processed into 2 Mycelium Compost."
+    }),
+):
+    locale_path = ASSETS / "lang" / locale
+    locale_data = json.loads(locale_path.read_text(encoding="utf-8"))
+    locale_data.update(entries)
+    locale_path.write_text(json.dumps(locale_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
 # Move current-version regression contracts forward but keep historical releases intact.
 for test_path in (ROOT / "tools").glob("test_*.py"):
     if test_path.name == "test_bioreactor_residue_loop_179.py":
