@@ -1,8 +1,27 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.100.0 — Eigenständiges Dämmerling-Modell und alternative Feldverteidigung.**
+**Aktueller Entwicklungsstand: 1.101.0 — Synchronisierte Dämmerling-Fraßanimation und sichtbare Mutagen-Modusringe.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.101.0
+
+- **Der Dämmerling frisst jetzt sichtbar:** Ein echtes, vom Server synchronisiertes visuelles Signal lässt das seit Version 1.100 eigenständige 3D-Modell nur bei einem tatsächlichen laufenden Beetangriff in eine besondere Fraßhaltung wechseln. Der Körper krümmt sich vor, die Wurzelkrallen greifen abwechselnd zu und die seitlichen Rückenwurzeln spannen sich an.
+- **Sauberer Rückweg zur Normalanimation:** Sobald er das Beet verlässt, durch eine Seelenlaterne oder Leuchtbeeren abgelenkt wird, den Fraß beendet oder das KI-Ziel verliert, wird der visuelle Status über denselben Serverpfad zurückgesetzt. Andere Horror-, Kampf- und Farm-Animationen bleiben bestehen.
+- **Netzwerksynchronisation mit geringer Belastung:** Ein einziges zusätzliches, nur bei Änderungen synchronisiertes Boolean-EntityData-Feld. Die vorhandene serverseitige Dämmerling-Markierung bleibt für die Feldkontrollstation maßgeblich. Keine neuen AI-Ziele, Spieler- oder Chunk-Scans, keine kontinuierliche Netzwerkübertragung.
+- **Mutagenmodi jetzt unmittelbar sichtbar:** Beim bewussten Umschalten eines Infektionsherds erscheinen kurzzeitig 12 Partikelpositionen als Kreis. Aktive Ausbreitung zeigt größere, violette Portalsporen mit Seelenfeuer; sichere Kultivierung einen ruhigeren grünen Wachstumsring; der Ruhezustand einen kleineren grauen Rauchring.
+- **Keine Scannerpflicht:** Die bestehenden drei in der Welt unterschiedlich texturierten Blockzustände bleiben erhalten und die Ringe zeigen den neuen Modus zusätzlich direkt am Block. Ringe entstehen ausschließlich beim manuellen Moduswechsel und nicht bei zufälligen oder geplanten Blockticks.
+- **Sicherheit bewahrt:** Redstone-Pause, inaktive Knoten, Heilungsweg, geschützte Ernten, Dämmerling-Blickkontakt, Seelenlaterne, Leuchtbeeren und kontrollierte Farmanlagen behalten ihre bisherigen Regeln. Keine neuen Schaden-, Drops- oder Infektionsfolgen.
+- **Technisch verifiziert:** 112 erfolgreich abgeschlossene GitHub-Actions-Schritte mit eigenen Regressionstests, Forge-1.20.1-Kompilierung, JAR-Prüfung und erfolgreichem Dedicated-Server-Smoke-Test.
+
+### Minecraft-Client-Abnahme für Version 1.101.0
+
+1. Dämmerling im Dunkeln zu einem reifen, unbeleuchteten und ungeschützten Beet führen und prüfen, ob er während des Knabberns deutlich gekrümmt mit beiden Wurzelhänden am Boden arbeitet.
+2. Leuchtbeeren und danach eine Seelenlaterne in die Hand nehmen. Beide Abwehrmaßnahmen sollen die bestehende Feldzerstörung stoppen und die visuelle Fraßpose wieder ausschalten.
+3. Fütterungsanimation und normales Gehen aus verschiedenen Perspektiven kontrollieren: Rückenwurzeln und Arme müssen am 3D-Körper bleiben, der rote Augen-Glow darf nicht den ganzen Körper leuchten lassen.
+4. Mutagenknoten manuell mehrfach umschalten: Violett-großer Ausbreitungsring, grün-mittlerer Kulturkreis und kleiner grauer Ruhering müssen optisch klar unterscheidbar sein.
+5. Redstone-pausierte und inaktive Knoten kontrollieren, einschließlich bestehender Texturen, Ernteschutzsysteme und Infektionsbegrenzungen. Es darf keine neue Ausbreitung durch die visuellen Effekte entstehen.
+6. Multiplayer mit mindestens zwei Clients sowie Welt-Neuladen testen. Der automatische Forge-Build bestätigt die technische Integration, ersetzt aber keine Sichtprüfung der tatsächlichen Minecraft-Optik.
 
 ## Aktueller Entwicklungsschritt — 1.100.0
 
@@ -419,6 +438,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.101.0 — Lebendiger Feldhorror und scannerfreie Modusanzeigen
+
+- Neues serverseitig synchronisiertes Dämmerling-Fraßsignal: animierte gekrümmte Beethaltung und abwechselnde Wurzelkrallen nur bei einem tatsächlichen, ungestoppten Feldangriff.
+- Drei unterschiedliche kreisförmige Partikeleffekte beim manuellen Umschalten des Infektionsherds: große Bedrohung, grüne sichere Kultivierung oder kleine ruhende Signatur.
+- Unverändert: KI- und Crop-Schutzregeln, Laternen- und Beerenabwehr, Redstone, Bosskämpfe, Infektionsheilung und Spielerwerte. Keine zusätzlichen Dauer-Ticker oder Scanner.
+- 112 GitHub-Actions-Schritte erfolgreich: Regression, Forge 1.20.1, Mod-JAR, Dedicated Server. Minecraft-Client-Sichttest bleibt noch nötig.
 
 ## Version 1.100.0 — Dämmerling wird eine eigenständige Kreatur
 
