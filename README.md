@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.86.0 — Dämmerling mit dynamischem Blickkontakt-Verhalten.**
+**Aktueller Entwicklungsstand: 1.87.0 — sicherer Wiederanlauf kontrollierter Mutagenfarmen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.87.0
+
+- **Sicherer Wiederanlauf kontrollierter Mutagenanlagen:** Geduckt mit einer Amethystscherbe in der Hand auf die Feldkontrollstation rechtsklicken: Nur bisher ruhende und noch aktive Mutagenknoten innerhalb Radius 16 / Höhe ±8 werden auf ANBAU zurückgestellt.
+- **Not-Abschaltung und Diagnose bleiben intakt:** Geduckter Rechtsklick ohne Amethystscherbe legt wie in 1.84 alle Knoten still; normaler Rechtsklick erstellt weiterhin den vorhandenen Forschungsbericht.
+- **Welt-Heilung wird nicht rückgängig gemacht:** Die Station prüft die gespeicherte aktive Quellenregistrierung. Inaktive beziehungsweise endgültig geheilte Quellen können durch den Neustart nicht wieder eingeschaltet werden.
+- **Nie aggressive Ausbreitung:** Der Neustart setzt ausschließlich den vorhandenen Kultivierungsmodus. Bereits aktive Quellen in anderen Modi werden nicht verändert. Redstone-Pausen bleiben unverändert.
+- **Gute Bedienung:** Die Amethystscherbe wird nicht verbraucht. Eine Zählmeldung, dezente grüne Partikel, Amethystklang und die Anleitung im Stationsbericht erklären den sicheren Vorgang auf Deutsch und Englisch.
+- **Performance:** Ein einmaliger, kreisförmiger Loaded-Chunk-Scan ohne Dauer-Ticker und mit begrenzten Partikeln; vorhandene Anbau-Ticks werden nur bei Redstone-freien Quellen neu geplant.
 
 ## Aktueller Entwicklungsschritt — 1.86.0
 
@@ -199,6 +208,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.87.0 — Wiederanlauf sicherer Mutagenfarmen
+
+- **Drei Betriebswege an derselben Station:** Normaler Rechtsklick untersucht die Anlage, geduckter Rechtsklick stellt sie still, geduckter Rechtsklick mit Amethystscherbe aktiviert ausschließlich sichere Kultivierung.
+- **Kein unkontrolliertes Wiederausbrechen:** Aktive, registrierte und bereits ruhende Knoten können wieder in den Anbaumodus wechseln; niemals in den Ausbreitungsmodus. Knoten aus geheilten Welten bleiben inaktiv.
+- **Technisch schonend:** Unveränderte Redstone-Pausen, keine Itemkosten, nur geladene Chunks, begrenzte Rückmeldungen und kein zusätzliches Hintergrundsystem.
+- **Prüfung:** Neue Regression für Interaktion, Schutzschranken, sichere Feldmodi, Übersetzungen und bestehenden Not-Aus-Pfad, kompletter Forge-Build und dedizierter Serverstart.
 
 ## Version 1.86.0 — Dämmerling: Starr vor Angst oder auf der Lauer?
 
