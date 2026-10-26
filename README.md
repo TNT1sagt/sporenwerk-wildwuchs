@@ -1,8 +1,27 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.103.0 — Tragbare Feldchronik und gestaffelte Dämmerling-Fraßwarnungen.**
+**Aktueller Entwicklungsstand: 1.104.0 — Zuverlässige Feldchronik und passive Komposter-Farmwache.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.104.0
+
+- **Feldchronik mit verlässlichem Messbereich:** Das bisherige Buch mit Feder speichert ab jetzt auch die Anzahl und eine reproduzierbare Signatur der beim Stationsscan geladenen X/Z-Spalten. Nur bei derselben Station derselben Dimension mit demselben Abdeckungsbereich zeigt das Buch Veränderungen an Mutagenboden, Hochmutagenboden, Sporenpflanzen, ausbreitenden und kultivierenden Knoten an.
+- **Keine falschen Heilungsschlüsse:** Wenn zwischen Messungen beispielsweise ein benachbarter Chunk entladen wird, meldet die Chronik eine veränderte Messabdeckung und legt einen neuen Ausgangswert an. Sie zeigt dann bewusst keine irreführenden Differenzen. Bücher aus Version 1.103 ohne die neue Signatur können weiter benutzt werden; bei der ersten erneuten Messung wird ein sicherer aktueller Basisstand gespeichert.
+- **Kein zusätzlicher Stationsscan:** Die Signatur entsteht unmittelbar im bisherigen, geladenen und bereits begrenzten Stations-Scan. Kupfer-Notrettung, Feldkompass, Amethyst-Neustart, Notabschaltung, stabilisierende Maschinen und der Mutagen-Heilungsweg sind funktional unverändert.
+- **Vanilla-Komposter schützt gegen Dämmerling-Fraß:** Ein vollständig gefüllter Vanilla-Komposter (Füllstand 8) im bestehenden 3-Block-Bereich um eine reife Sporenpflanze zählt als passive Schutzstelle gegen den Dämmerling. Er wird dabei nicht geleert; leere oder unvollständige Komposter schützen nicht.
+- **Schon bestehende Feldschutz-KI wiederverwendet:** Dämmerlinge prüfen bei ihrer bisherigen Pflanzenauswahl weiterhin nur bereits geladene Blöcke, Filtermoos-Symbiose und Feldsammler bleiben bestehen. Der zusätzliche Komposterfall nutzt denselben Blockzustand, ohne weitere Weltabfragen oder Mob-Scans auszulösen.
+- **Wichtige Einschränkung:** Der Komposter verhindert nur diesen einen Farm-Horror-Fraßangriff. Er ist keine Mutagenbarriere und heilt keine Infektion. Für Mutagen bleiben die bestehenden Block- und Maschinenwerkzeuge zuständig.
+- **Technisch verifiziert:** 115 erfolgreiche GitHub-Actions-Schritte, einschließlich aller bisherigen Mutagen-, Koloss- und Farm-Horror-Regressionen, neuer Tests zu geladener Flächensignatur, altem Buch-NBT und vollem Komposter sowie Forge-1.20.1-Kompilierung, JAR-Verifikation und Dedicated-Server-Smoke-Test.
+
+### Minecraft-Client-Abnahme für Version 1.104.0
+
+1. Mit Buch und Feder an der Kontrollstation eine Messung speichern, dann im selben geladenen Gebiet einen Mutagenblock oder eine Sporenpflanze verändern und erneut messen. Die zugehörige Feldänderung soll korrekt erscheinen.
+2. In kontrollierter Testwelt gezielt einen Teil des Stationsradius entladen (zum Beispiel durch geänderte Simulations-/Ladebedingungen im Mehrspieler-Test) und das gleiche Buch erneut benutzen. Statt vermeintlicher Heilungsfortschritte soll eine Warnung erscheinen, dass die Messabdeckung nicht vergleichbar ist.
+3. Ein älteres Messbuch aus Version 1.103 verwenden. Es darf nicht fehlschlagen oder sich verlieren, sondern muss eine neue sichere Vergleichsbasis anlegen; danach erneute Messung testen.
+4. Eine reife Sporenpflanze in Dunkelheit mit einem vollen Vanilla-Komposter innerhalb von drei Blöcken gegen den Dämmerling testen. Der Gegner soll diese Pflanze als geschützt behandeln.
+5. Bei unveränderter Pflanze denselben Komposter leeren. Ohne Feldsammler, ausreichende Beleuchtung, Filtermoos oder Spielerschutz muss der Dämmerling wieder ein legitimes Angriffsziel finden.
+6. Welt speichern, neu laden, Buch in eine Kiste legen und erneut herausnehmen; die Chronikdaten und Schutzregeln müssen erhalten bleiben. Das technische CI-Ergebnis ersetzt nicht den Minecraft-Client-Sicht- und Gameplaytest.
 
 ## Aktueller Entwicklungsschritt — 1.103.0
 
@@ -474,6 +493,12 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.104.0 — Verlässliche Feldmessungen und Komposter-Farmwache
+
+- Tragbares Mutagenfeldtagebuch vergleicht fünf bestehende Kennzahlen nur bei exakt übereinstimmender Messabdeckung derselben Station und Dimension. Ändert sich die Abdeckung geladener Chunks oder stammt das Buch aus einem älteren Format, wird eine neue Basis gespeichert.
+- Vollständig befüllte Vanilla-Komposter können reife Sporenpflanzen im bestehenden Farmwachenradius vor Dämmerling-Fraß schützen; ohne Verbrauch und ohne weiteren Tick oder Welt-Scan. Kein Schutz gegen Mutagenausbreitung.
+- 115 GitHub-Actions-Schritte erfolgreich: alte und neue Regressionen, Forge-1.20.1-Kompilierung, JAR-Verifikation und Dedicated-Server-Start. Minecraft-Client-Test und visuelle Prüfung bleiben offen.
 
 ## Version 1.103.0 — Tragbare Feldchronik und bedrohlichere Fraßwarnungen
 
