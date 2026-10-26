@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.93.0 — Eigenes animiertes 3D-Modell für den Kristallpirscher.**
+**Aktueller Entwicklungsstand: 1.94.0 — Bewegliche Kristallanatomie des Pirschers und neue Kolossklauen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.94.0
+
+- **Eigenständiger Kristallpirscher-Umriss:** Zur echten Forge-3D-Kreatur kommen zwei verschieden hohe, gestufte seitliche Rückenflossen mit dunklen Mineraleinfassungen hinzu. Ein neues asymmetrisches Kieferkristallorgan gibt dem Kopf eine zusätzliche nicht-Vanilla-Form.
+- **Animierte Kristallgelenke:** Die beiden Flossen sind echte Modellknochen, schwingen beim Gehen, spreizen sich in aggressiver Haltung und berechnen ihre Ausgangslage für jeden Animationsframe erneut. Auch der Kieferkristall ändert seine Pose beim Angreifen.
+- **Selektiv leuchtende Textur:** Der ursprüngliche Kristallpirscher-Skin und die bisherige 128x128-UV-Struktur bleiben erhalten. Neue violett/cyanfarbene Pixelbereiche auf zuvor freien UV-Flächen werden mit einer schmalen, transparenten Emissivmaske ergänzt.
+- **Zwölf facettierte Klauenspitzen für den Kristallkoloss:** Alle vier beweglichen Pfoten bekommen je drei zusätzliche, zweistufige Minecraft-ModelParts. Die Haupt- und Leuchtmodelle verwenden gleiche Gelenke, damit die neuen Klauen bei der gewichtigen Lauf- und Stampfanimation folgen.
+- **Technisch geprüft:** Der Forge-1.20.1-Build wurde erfolgreich erstellt, die installierbare JAR verifiziert, die eigene Kristallanatomie-Regression zusammen mit allen bisherigen Tests bestanden und ein dedizierter Minecraft-Server erfolgreich gestartet. GitHub Actions: 105 grüne Schritte.
+- **Grenze der Prüfung:** Die In-Game-Darstellung ist noch nicht per echtem Minecraft-Client-Screenshot bewertet. Technische Modellbäume und valide Texturen bedeuten nicht automatisch, dass Form, proportionierte Leuchtbereiche und Animation exakt den hochgeladenen Vorlagen entsprechen.
+
+### Minecraft-Client-Abnahme für 1.94.0
+
+1. Kristallpirscher mit Spawn-Ei erstellen, drei Perspektiven prüfen, vor allem ungleiche Rückenflossen und Kieferkristall.
+2. Herumlaufen und Angriff provozieren: Kristalle dürfen weder starr an der alten Weltposition bleiben noch Körperteile durchschneiden; die Leuchtschicht soll nur die cyan-violetten Adern beleuchten.
+3. Kristallkoloss erstellen: alle vier Pfoten und je drei facettierte neue Klauenspitzen kontrollieren.
+4. Die Lauf- und Stampfanimation und die drei Phasen des Schwanzes prüfen; Texturen dürfen nicht verrutschen und die neue Glow-Geometrie soll am jeweiligen Knochen bleiben.
+5. Erst anhand echter Client-Bilder mit den Referenzen entscheiden, welche Anatomie und Pixeloberflächen weiter verfeinert werden müssen.
 
 ## Aktueller Entwicklungsschritt — 1.93.0
 
@@ -295,6 +312,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.94.0 — Zwei Kreaturen, mehr echte 3D-Kristalldetails
+
+- Kristallpirscher: zwei gestufte, unterschiedlich lange Rückenflossen mit eigener Animation, beweglicher Kieferkristall, neue original bemalte Pixeltextur für die selektive cyan-violette Leuchtschicht.
+- Kristallkoloss: zwölf zusätzliche facettierte Kristallklauen an vier bereits animierten Pfoten, mit passender Haut- und Glow-Geometrie.
+- Unverändert: Forschungsfortschritte, Mutagen-Heilung, Gegner-KI, Spawn-Bedingungen, Verarbeitungs- und Schutzmaschinen sowie Bossangriffe.
+- Prüfung: 105 erfolgreiche GitHub-Actions-Schritte, Forge-Kompilierung, JAR-Verifikation und Dedicated-Server-Smoke-Test. Sicht- und Bewegungsprüfung im laufenden Minecraft-Client bleibt offen.
 
 ## Version 1.93.0 — Kristallpirscher: eigenständige Minecraft-Anatomie
 
