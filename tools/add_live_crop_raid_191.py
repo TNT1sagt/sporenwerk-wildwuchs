@@ -130,6 +130,10 @@ s = s.replace('    "int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(",'
 assert '    "mob -> mob.isAlive()).size();",' in s
 s = s.replace('    "mob -> mob.isAlive()).size();",',
               '    "mob -> mob.isAlive());",', 1)
+assert 'require(crop.count("getEntitiesOfClass(") == 1,' in s
+s = s.replace('require(crop.count("getEntitiesOfClass(") == 1,',
+              'require(crop.count("getEntitiesOfClass(") == 2,', 1)
+
 assert '< report.index("int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(")' in s
 s = s.replace('< report.index("int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(")',
               '< report.index("java.util.List<de.sporenwerk.entity.DaemmerlingEntity> localDaemmerlinge =")', 1)
