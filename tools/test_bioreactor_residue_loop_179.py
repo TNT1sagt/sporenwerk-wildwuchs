@@ -59,14 +59,15 @@ require(machine.index("else if (input.is(ModItems.PFLANZENRESTE.get()))")
         < machine.index("else if (input.is(ModItems.BIOMASSE.get()))"),
         "residue refining must precede the biomass-to-compost stage in the same process chain")
 
-items = read("src/main/java/de/sporenwerk/registry/ModItems.java")
-require("PFLANZENRESTE = ITEMS.register" in items
-        and "new PflanzenresteItem(" in items,
-        "existing plant-residue registry object must use the descriptive item class")
-item = read("src/main/java/de/sporenwerk/item/PflanzenresteItem.java")
-require("tooltip.sporenwerk.pflanzenreste.refining" in item
-        and "tooltip.sporenwerk.pflanzenreste.loop" in item,
-        "plant residue must describe both stages of its automated route")
+tooltip = read("src/main/java/de/sporenwerk/client/PflanzenresteTooltipEvents.java")
+for token in (
+    '@Mod.EventBusSubscriber(modid = "sporenwerk", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)',
+    "public static void onItemTooltip(ItemTooltipEvent event)",
+    "event.getItemStack().is(ModItems.PFLANZENRESTE.get())",
+    'Component.translatable("tooltip.sporenwerk.pflanzenreste.refining")',
+    'Component.translatable("tooltip.sporenwerk.pflanzenreste.loop")',
+):
+    require(token in tooltip, "plant-residue tooltip event is missing " + token)
 for locale, values in (
     ("de_de.json", (
         "4 Pflanzenreste + 60 FE ergeben 1 Biomasse",
