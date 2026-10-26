@@ -134,6 +134,21 @@ for old,new in (
     need(qa.count(old)==1,"obsolete reference fixture count "+old)
     qa=qa.replace(old,new,1)
 old_mesh_qa.write_text(qa,encoding="utf8")
+# Keep the original Survival/AI and boss test fully active, but update its
+# geometry-only fixtures away from the obsolete 40x20x52 shell and short legs.
+old_boss_qa=R/"tools/test_mutagen_colossus.py"
+oldboss=old_boss_qa.read_text(encoding="utf8")
+for old,new in (
+    ("addBox(-20.0F, -8.0F, -26.0F, 40.0F, 20.0F, 52.0F)",
+     "addBox(-17.5F, -9.5F, -23.0F, 35.0F, 10.5F, 23.0F)"),
+    ("addBox(-8.0F, -2.0F, -6.5F, 16.0F, 8.0F, 13.0F)",
+     "addBox(-6.2F, -2.0F, -5.9F, 12.4F, 14.5F, 11.8F)"),
+    ("addBox(-1.8F, 0.0F, -6.8F, 3.6F, 6.2F, 0.9F)",
+     "addBox(-1.8F, 0.0F, -6.8F, 3.6F, 12.0F, 0.9F)"),
+):
+    need(oldboss.count(old)==1,"obsolete Colossus fixture "+old)
+    oldboss=oldboss.replace(old,new,1)
+old_boss_qa.write_text(oldboss,encoding="utf8")
 # Old gait test's measured 6px suspension is intentionally replaced by 12px
 # lowered pads, while its detailed animation/test contract stays intact.
 gait=R/"tools/test_colossus_weighted_gait_182.py"
