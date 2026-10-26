@@ -264,6 +264,19 @@ patch(mob,
 """            if (!berryDecoy && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                 var milestone = level.getServer().getAdvancements().getAdvancement(""",
 "nightwatch advancement belongs to soul lantern only")
+# Preserve the old 1.90 night-watch contract: lantern protection remains,
+# but the persistent cooldown is now selected from two named guard keys.
+legacy=R/"tools/test_daemmerling_nachtwache_190.py"
+old_legacy=legacy.read_text(encoding="utf-8")
+for exact,new_token in (
+    ('getLong("SporenwerkLanternGuardUntil")','getLong(guardKey)'),
+    ('putLong("SporenwerkLanternGuardUntil", now + 140L)','putLong(guardKey, now + 140L)'),
+):
+    need(exact in old_legacy,"1.90 expected old guard cooldown test token missing: "+exact)
+    old_legacy=old_legacy.replace(exact,new_token,1)
+need('getLong(guardKey)' in old_legacy and 'putLong(guardKey, now + 140L)' in old_legacy,
+     "old night-watch regression must still enforce valid guarded cooldown")
+legacy.write_text(old_legacy,encoding="utf-8")
 for lang,msg in (("de_de.json","Deine Leuchtbeeren lenken den Dämmerling vom Beet ab!"),
                  ("en_us.json","Your glow berries distract the Dämmerling from the crops!")):
     path=R/"src/main/resources/assets/sporenwerk/lang"/lang
