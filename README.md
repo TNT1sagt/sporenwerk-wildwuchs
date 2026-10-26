@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.81.0 — beweglicher Kristallkiefer und aufladender Kristallatem.**
+**Aktueller Entwicklungsstand: 1.82.0 — gewichtete Laufanimation und bewegliche Tatzen für den Kristallkoloss.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.82.0
+
+- **Schwere vierbeinige Fortbewegung:** Diagonale Beinpaare des Kristallkolosses laufen in gegenläufigen Phasen; Oberschenkel, Unterschenkel und Tatzen besitzen eigene Bewegungsmuster.
+- **Stand und Schwung statt Pendelgang:** Im Schwung wird eine Tatze leicht angehoben und nach vorn geführt. Während der Standphase bleibt sie näher am Boden. Die bisherigen starren Beinpendel sind ersetzt.
+- **Körpergefühl:** Subtiles seitliches Schulterwiegen, Gegenrotation von Kopf und Kristallkrone sowie zeitversetzte Gegenschwünge in allen drei Schwanzsegmenten.
+- **Kampf bleibt unterscheidbar:** Während des Stampfangriffs werden die Vorderpfoten unabhängig vom Laufschritt stabilisiert. Die bestehenden Biss-, Atem- und Erwachensanimationen sowie die Schadenswerte bleiben erhalten.
+- **Technische Sicherheit:** Haut- und Glow-Modelle teilen sich die vorhandene Beinkette. Kein neuer Mob-Ticker, keine externen Animationsdateien und kein Chunk-Loading. Regressionen und vollständiger Forge-Build prüfen die Integration; ein Sichttest im Client steht aus.
 
 ## Aktueller Entwicklungsschritt — 1.81.0
 
@@ -156,6 +164,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.82.0 — Kristallkoloss: Gewicht in jedem Schritt
+
+- **Neue Laufkinematik:** Vier individuelle Beinpfade mit gegenläufigen Diagonalphasen und differenziertem Schwung für Vorder- und Hinterbeine.
+- **Bewegliche Tatzen:** Knie und Fußwinkel reagieren auf die Schrittphase; eine begrenzte vertikale und horizontale Tatzenkorrektur erzeugt erkennbare Stand-/Schwungphasen.
+- **Verzögerte Masse:** Körperrollbewegung, korrigierende Kopfneigung und dreifach verzögerte Schwanzbewegung geben dem Kristallkoloss mehr körperliche Trägheit.
+- **Saubere Boss-Posen:** Während des gehaltenen Stampfangriffs behalten die Vorderpfoten ihre aufgesetzte Position, statt ungewollt weiterzulaufen. Bestehende Angriffs- und Emissiv-Logik bleibt erhalten.
+- **Prüfung:** Gesonderte Regression für Phasen, bewegte Tatzen, Schwanz, Stampfangriff, ModelPart-Hierarchie und Version; Forge-JAR und dedizierter Serverstart. Die tatsächliche visuelle Qualität erfordert weiterhin Client-Screenshots.
 
 ## Version 1.81.0 — Beweglicher Kristallkiefer und gerichtete Atemladung
 
