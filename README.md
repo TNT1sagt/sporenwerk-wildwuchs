@@ -1,8 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.102.0 — Feldkompass der Mutagen-Kontrollstation und animierter Dämmerling-Kiefer.**
+**Aktueller Entwicklungsstand: 1.103.0 — Tragbare Feldchronik und gestaffelte Dämmerling-Fraßwarnungen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.103.0
+
+- **Tragbare Feldchronik:** Ein normales Buch und Feder in der Haupthand auf die Mutagen-Feldkontrollstation rechtsklicken. Bei der ersten Messung speichert das Buch fünf Kennzahlen im eigenen NBT. Eine erneute Messung an derselben Station derselben Dimension zeigt die Differenzen seit dem letzten Stand. Bücher können aufbewahrt oder unter Spielern weitergegeben werden; vorhandene Buchdaten bleiben erhalten, nichts wird verbraucht.
+- **Fünf vergleichbare Kennzahlen:** Aktuell gezählter Mutagenboden, besonders stark mutierter Boden, lebende Sporenpflanzen, aktive ausbreitende Mutagenknoten und sichere Kultivierungsknoten. Steigt die Zahl aktiver Quellen, erscheint die Vergleichsmeldung rot. Die Dokumentation sagt ausdrücklich, dass die vorhandene Station nur momentan geladene Blöcke in 16 Blöcken Horizontalradius und ±8 Blöcken Höhe berücksichtigt; eine Änderung der Chunk-Ladebedingungen kann den Vergleich ebenfalls beeinflussen.
+- **Station und Dimension sind Teil der Buchmessung:** Beim Gebrauch an einer anderen Station oder in einer anderen Dimension legt das Buch einen neuen Ausgangswert an, statt irreführende Felder miteinander zu vergleichen. Der gespeicherte Stand bleibt auf die jeweils letzte Messung beschränkt.
+- **Dämmerling-Überfälle leichter zu erkennen:** Die bereits bestehenden frühen und späten Vorwarnungen während des echten Pflanzenfraßes erhalten einen kleinen und einen größeren Kreis aus Wurzelsporen bzw. Seelenfeuer-Partikeln direkt am Beet. Er wird ausschließlich bei den vorhandenen Fraßticks 8 und 20 erzeugt; keine Endlos-Partikel, keine zusätzlich geladenen Chunks und kein neuer Schaden.
+- **Bestehendes Gameplay geschützt:** Die eingeführten Buch- und Warneffekte verändern weder Pflanzenwachstum noch die Mutagenheilung, Kupferrettung, Amethyst-Neustart, Feldkompassfunktion, Dämmerling-KI, Seelenlaterne, Leuchtbeeren, Maschinen oder Bosskämpfe.
+- **Technisch verifiziert:** 114 grüne GitHub-Actions-Schritte. Sämtliche Modell-, Feldkontroll- und Farm-Horror-Regressionen bestanden, außerdem Forge-1.20.1-Kompilierung, installierbare JAR-Paketprüfung und Dedicated-Server-Smoke-Test.
+
+### Minecraft-Client-Abnahme für Version 1.103.0
+
+1. Buch und Feder in der Haupthand auf eine Feldkontrollstation rechtsklicken. Prüfen, dass die fünf Basiswerte angezeigt werden und das Buch danach unverbraucht im Inventar liegt.
+2. Im geladenen Radius gezielt Mutagenboden, eine Sporenpflanze oder einen aktiven Knoten verändern und das gleiche Buch erneut verwenden. Die passenden Änderungswerte sollen differenziert erscheinen.
+3. Dieselbe Feldchronik in eine Kiste legen, wieder entnehmen und später erneut verwenden. Der vorige Vergleichsstand muss erhalten bleiben; an einer anderen Station oder in einer anderen Dimension muss stattdessen eine neue Basis erstellt werden.
+4. Ein ungeschütztes reifes Beet in Dunkelheit von einem Dämmerling angreifen lassen. Der erste Kreis soll klein sein, der zweite kurz vor dem tatsächlichen Biss größer. Warnungen sollen aufhören, wenn der Raid endet.
+5. Seelenlaternen und Leuchtbeeren getrennt testen: Die Gegenmaßnahmen müssen weiterhin rechtzeitig funktionieren und die synchronisierte Dämmerling-Fraßpose beenden.
+6. Die Arbeit mit dem Buch darf keine Entlastungs-, Heilungs- oder Mutagenoperation auslösen. Ein grüner Dedicated-Server-Test ersetzt nicht die visuelle Prüfung in Minecraft.
 
 ## Aktueller Entwicklungsschritt — 1.102.0
 
@@ -456,6 +474,12 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.103.0 — Tragbare Feldchronik und bedrohlichere Fraßwarnungen
+
+- Wiederverwendbares Buch und Feder mit NBT-gebundener Feldchronik: fünf Kennzahlen beim Stationsscan speichern und Änderungen später am selben Ort vergleichen. Keine neuen automatischen Weltabfragen, kein Itemverbrauch und keine globalen Heilungsbehauptungen.
+- Die bereits vorhandenen zwei Dämmerling-Vorwarnungen beim tatsächlichen Pflanzenfraß erhalten zwei gestaffelte, sichtbare 12-Punkte-Ringe mit unterschiedlichem Radius und Partikelstil.
+- Kupfer-, Amethyst-, Redstone-, Mutagen- und Farm-Sicherheit bleibt unverändert; Regressionen plus Forge-/JAR-/Serverprüfung mit 114 erfolgreichen GitHub-Actions-Schritten bestätigt. Client-Sichttest bleibt erforderlich.
 
 ## Version 1.102.0 — Mutagen-Quellen finden, echten Horror sehen
 
