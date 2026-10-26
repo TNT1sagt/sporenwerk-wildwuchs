@@ -108,6 +108,32 @@ for creature,dim in (("mutagenkoloss",256),("kristallpirscher",128),("daemmerlin
     for suffix in ("","_glow"):
         with Image.open(R/"src/main/resources/assets/sporenwerk/textures/entity"/(creature+suffix+".png")) as img:
             need(img.size==(dim,dim),"Minecraft UV atlas preserved "+creature+suffix)
+# 1.105 checks formerly pinned the exact obsolete wide primitive boxes.
+# Retain every behavioral/structural assertion but update the positive
+# geometry fixtures to the narrower verified 1.110 Minecraft ModelParts.
+old_mesh_qa=R/"tools/test_reference_base_silhouettes_105.py"
+qa=old_mesh_qa.read_text(encoding="utf8")
+for old,new in (
+    ("addBox(-4.0F, 0.0F, -1.8F, 8.0F, 3.2F, 3.6F)",
+     "addBox(-3.5F, -0.2F, -1.8F, 7.0F, 2.6F, 3.6F)"),
+    ("addBox(-3.5F, 8.1F, -1.4F, 7.0F, 3.9F, 2.8F)",
+     "addBox(-2.55F, 9.1F, -1.3F, 5.1F, 2.9F, 2.6F)"),
+    ("addBox(-1.2F, 3.0F, -1.1F, 2.4F, 6.3F, 2.2F)",
+     "addBox(-0.95F, 2.0F, -1.0F, 1.9F, 8.1F, 2.0F)"),
+    ("addBox(-1.5F, -2.0F, -1.65F, 3.0F, 14.0F, 3.3F)",
+     "addBox(-1.2F, -2.0F, -1.4F, 2.4F, 14.8F, 2.8F)"),
+    ("addBox(-3.25F, -7.5F, -3.4F, 6.5F, 7.6F, 6.8F)",
+     "addBox(-2.7F, -7.8F, -3.2F, 5.4F, 7.8F, 6.4F)"),
+    ("addBox(-3.3F,0.0F,-1.65F,6.6F,3.2F,3.3F)",
+     "addBox(-2.9F,0.0F,-1.45F,5.8F,2.6F,2.9F)"),
+    ("addBox(-1.0F,2.8F,-0.95F,2.0F,7.0F,1.9F)",
+     "addBox(-0.72F,2.2F,-0.85F,1.44F,8.2F,1.7F)"),
+    ("addBox(-20.0F, -8.0F, -26.0F, 40.0F, 20.0F, 52.0F)",
+     "addBox(-17.5F, -9.5F, -23.0F, 35.0F, 10.5F, 23.0F)"),
+):
+    need(qa.count(old)==1,"obsolete reference fixture count "+old)
+    qa=qa.replace(old,new,1)
+old_mesh_qa.write_text(qa,encoding="utf8")
 # Old gait test's measured 6px suspension is intentionally replaced by 12px
 # lowered pads, while its detailed animation/test contract stays intact.
 gait=R/"tools/test_colossus_weighted_gait_182.py"
