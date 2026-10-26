@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.109.0 — Bewegliche Kristalldornen, offene Wurzelhände und atmende Basaltmonolithen.**
+**Aktueller Entwicklungsstand: 1.110.0 — Korrektur der realen Kreaturensilhouetten und des Koloss-Bodenkontakts.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.110.0
+
+- **Koloss mit tragfähiger 3D-Anatomie:** Vier tatsächlich verlängerte Beine mit angepassten Knie-/Fußgelenken. Neutraler ModelPart-Kontakt bei ungefähr Y=24 Minecraft-Modellpixel statt Y=10. Großer durchgehender Kasten-Körper in gestaffelte Hauptmassen umgebaut.
+- **Weniger Lichtflächen:** Die bisherigen vollleuchtenden rechteckigen Koloss-Sohlen sind nur noch schmale Kristalllinien mit bestehenden Klauen und separatem Basalt-Hautlayer.
+- **Bessere Hauptsilhouette:** Sieben vormals überlange Kristallstacheln des Kolosses kürzer und nach Höhe hierarchisiert, ohne die animierten Monolithen oder den Brustkern zu entfernen.
+- **Pirscher:** Drei bereits bewegliche, jetzt viel kürzere Rückenprismen; kleinere Seitenkristalle, neu proportionierter schlanker Rumpf, schmalerer Kopf und Klauenarme.
+- **Dämmerling:** Zu hoch aufragende, gerade Wurzelhörner verkürzt; schmalerer dunkler Torso und absichtlich hängende Arme statt des typischen Zombie-Laufposes. Echte Feldfraßpose bleibt.
+- **Getestete Realität statt Konzeptzeichnung:** Die neue Regression misst Boden-Pivots und kontrolliert tatsächliche Java-Würfelgrößen. Alle Forge-1.20.1-Gameplayfunktionen bleiben unberührt. Die exakte Übereinstimmung mit den Nutzer-Konzeptbildern ist erst nach neuen Minecraft-Client-Screenshots prüfbar.
 
 ## Aktueller Entwicklungsschritt — 1.109.0
 
@@ -576,6 +585,12 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.110.0 — Silhouetten-Rebuild aus echten Minecraft-Screenshots
+
+- Vier lange tragende Bossbeine und neue echte Körperhauptmassen, keine leuchtenden Fußplatten.
+- Physisch kürzere, klarer platzierte Kristall- und Wurzelkronen; schmalerer Pirscher, asymmetrische Dämmerling-Armhaltung.
+- Kein Gameplay-Eingriff; Client-Sichtvergleich steht noch aus.
 
 ## Version 1.109.0 — Individuell animierte Referenzkreaturen
 
