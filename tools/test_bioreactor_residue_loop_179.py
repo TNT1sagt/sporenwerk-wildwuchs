@@ -71,7 +71,7 @@ for token in (
 for locale, values in (
     ("de_de.json", (
         "4 Pflanzenreste + 60 FE ergeben 1 Biomasse",
-        "zu 2 Myzelkompost weiterverarbeitet",
+        "zu 2 Myzelkompost verarbeitet",
     )),
     ("en_us.json", (
         "4 plant residues + 60 FE refine into 1 Biomass",
