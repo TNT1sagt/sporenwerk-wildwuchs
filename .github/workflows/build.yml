@@ -436,7 +436,7 @@ jobs:
           jar tf build/libs/sporenwerk-1.79.0.jar | grep -q 'assets/sporenwerk/lang/en_us.json'
           jar tf build/libs/sporenwerk-1.79.0.jar | grep -q 'de/sporenwerk/block/MutagenResonanceDampenerBlock.class'
                     jar tf build/libs/sporenwerk-1.79.0.jar | grep -q 'de/sporenwerk/block/entity/MachineBlockEntity.class'
-          jar tf build/libs/sporenwerk-1.79.0.jar | grep -q 'de/sporenwerk/item/PflanzenresteItem.class'
+          jar tf build/libs/sporenwerk-1.79.0.jar | grep -q 'de/sporenwerk/client/PflanzenresteTooltipEvents.class'
           unzip -p build/libs/sporenwerk-1.79.0.jar assets/sporenwerk/lang/de_de.json | grep -q 'tooltip.sporenwerk.pflanzenreste.refining'
           unzip -p build/libs/sporenwerk-1.79.0.jar assets/sporenwerk/lang/en_us.json | grep -q 'tooltip.sporenwerk.pflanzenreste.refining'
           jar tf build/libs/sporenwerk-1.79.0.jar | grep -q 'de/sporenwerk/block/MutagenContainmentRelayBlock.class'
