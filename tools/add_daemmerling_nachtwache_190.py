@@ -156,20 +156,19 @@ mature_new = """        private boolean isMatureCrop(BlockPos pos) {
             BlockState state = mob.level().getBlockState(pos);"""
 patch_once(entity_path, mature_old, mature_new, "loaded-chunk guard on mature crop check")
 protected_old = """        private boolean isProtected(BlockPos cropPos) {
-            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;
-            for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),
-                    cropPos.offset(3, 1, 3))) {
-                if (mob.level().getBlockState(pos).is(ModBlocks.FELDSAMMLER.get())) return true;
-            }"""
+            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;"""
 protected_new = """        private boolean isProtected(BlockPos cropPos) {
             if (!mob.level().hasChunkAt(cropPos)) return true;
-            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;
-            for (BlockPos pos : BlockPos.betweenClosed(cropPos.offset(-3, -1, -3),
-                    cropPos.offset(3, 1, 3))) {
-                if (!mob.level().hasChunkAt(pos)) continue;
-                if (mob.level().getBlockState(pos).is(ModBlocks.FELDSAMMLER.get())) return true;
-            }"""
-patch_once(entity_path, protected_old, protected_new, "cross-chunk crop-protection guard")
+            if (mob.level().getMaxLocalRawBrightness(cropPos) >= 7) return true;"""
+patch_once(entity_path, protected_old, protected_new, "loaded-chunk crop head guard")
+# Filtermoos symbiosis protection and the existing per-position loaded-chunk
+# collector check are already installed by earlier patches. Never overwrite
+# either system just to add a crop-head boundary guard.
+entity = entity_path.read_text(encoding="utf-8")
+require("FilterMossSymbiosis.protects(mob.level(), cropPos)" in entity,
+        "1.50 Filtermoos crop defense must survive")
+require("if (!mob.level().hasChunkAt(pos)) continue;" in entity,
+        "existing collector scan chunk guard must survive")
 
 station_path = SRC / "block/MutagenFieldControlStationBlock.java"
 station = station_path.read_text(encoding="utf-8")
