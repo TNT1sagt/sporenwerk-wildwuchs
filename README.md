@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.94.0 — Bewegliche Kristallanatomie des Pirschers und neue Kolossklauen.**
+**Aktueller Entwicklungsstand: 1.95.0 — Eigenständige Jagdanimationen und reaktive Kolosskristalle.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.95.0
+
+- **Kristallpirscher bewegt sich eigenständiger:** Bei aggressiver Verfolgung beugt er den Torso deutlich weiter vor und streckt die beiden Arme asymmetrisch aus. Vier echte Klauenknochen bewegen sich unabhängig mit versetzten Phasen. Der bestehende Rücken- und Kieferkristall bleibt eingebunden.
+- **Saubere Jagd-/Ruhe-Übergänge:** Die vier Klauengelenke und die neue Jagdpose verwenden absolute statt kumulativer Bewegungswinkel. Die gewöhnliche Humanoid-Laufanimation bleibt als Basis erhalten.
+- **Leuchtende Kristalladern:** Der bestehende transparente Cyan-/Magenta-Glow-Layer pulsiert sanft und leuchtet bei Aggression etwas heller, ohne den dunklen Panzer als Ganzes zu beleuchten.
+- **Kristallkoloss mit Angriffs-Telegraphie:** Drei Endstachelspitzen fächern sich während des Kristallatem-Angriffs auseinander. Die beiden hohen Rückenmonolithen spreizen sich bei einem Stampf- oder Erwachens-Windup. Die zwölf echten Klauenspitzen werden während der vorbereiteten Schockwelle dezent animiert.
+- **Performance und Kompatibilität:** Alle neuen animierten Gelenke werden einmalig beim Modellbau gebunden. Zwei Modellschichten benutzen dieselben vorhandenen synchronisierten Angriffsphasen; keine neuen Server-Ticker, Netzwerkpakete, Schadenserhöhungen oder geladenen Chunks.
+- **Teststand:** Zusätzlicher Regressionstest für vier Stalker-Klauen, drei Stacheln, zwölf Boss-Klauen, Monolithen und synchrone Windups. Forge-Build/JAR-Prüfung bestanden. Client-Sichtabnahme folgt weiterhin separat.
+
+### Minecraft-Client-Sichtprüfung für Version 1.95.0
+
+1. Kristallpirscher in Ruhe und beim Verfolgen von Spielern beobachten: Der Torso soll sich nach vorne beugen, die Arme unterschiedlich weit ausgreifen und die vier Talons zurückfedern.
+2. Im Dunkeln kontrollieren, dass nur die Kristalladern pulsieren, nicht die ganzen Panzerflächen.
+3. Den Koloss aus Seiten- und Rückansicht beim Kristallatem beobachten: Drei Stachelspitzen am Schwanz müssen sich öffnen und nach dem Angriff wieder schließen.
+4. Während des Stampf-Windups die Rückenmonolithen und zwölf Klauenspitzen beobachten; anschließend Stand und Bewegung auf Aussetzer, Textursprünge oder versetzte Glow-Ebenen prüfen.
+5. Multiplayer, Weltladen und Schadenswerte testen. Eine erfolgreiche automatische Kompilierung beweist nicht die gewünschte optische Qualität im Minecraft-Client.
 
 ## Aktueller Entwicklungsschritt — 1.94.0
 
@@ -312,6 +329,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.95.0 — Kristalljagd und pulsierender Koloss
+
+- Der Kristallpirscher bekommt eine neue Verfolgungshaltung, vier unabhängige Klauenbewegungen und eine dezente Aggressionspulsation der selektiven Glow-Schicht.
+- Der Kristallkoloss animiert beide Rückenmonolithen, alle zwölf facettierten Klauenspitzen und drei Schwanz-Kristallblätter synchron mit seinen bestehenden Atem-, Stampf- und Erwachensphasen.
+- Vorhandene Spielmechaniken, Boss-Belohnungen, Farm-Horror, Mutagen-Steuerung und sichere Heilpfade bleiben unangetastet.
+- Separater Regressionstest, Forge-1.20.1-Build, installierbare JAR und dedizierter Server-Smoke-Test gehören zur Build-Pipeline; In-Game-Optik bleibt gesondert abzunehmen.
 
 ## Version 1.94.0 — Zwei Kreaturen, mehr echte 3D-Kristalldetails
 
