@@ -53,9 +53,9 @@ for filename in ("mutagenkoloss.png","mutagenkoloss_glow.png"):
     with Image.open(p) as im:
         im=im.convert("RGBA")
         need(im.size==(256,256),filename+" wrong Minecraft atlas resolution")
-        purples=sum(1 for x,y in ((211,233),(215,236),(220,242),(228,248)) if
-                    (lambda c:c[0]>c[2]*0.3 and c[2]>c[1])(im.getpixel((x,y))))
-        need(purples>=2,filename+" missing new crystal purple facets")
+        purples=sum(1 for y in range(228,252) for x in range(210,232)
+                    if (lambda c:c[2]>c[1]+50 and c[0]>c[1]+30)(im.getpixel((x,y))))
+        need(purples>=50,filename+" missing new crystal purple facets")
         amber=[im.getpixel((x,y)) for x,y in ((239,229),(244,237),(249,245))]
         need(all(p[0]>p[2] and p[0]>p[1] for p in amber),
              filename+" missing amber rune UV region")
