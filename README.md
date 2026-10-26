@@ -1,16 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.79.0 — Mutagene Sporen im Biomasse-Bioreaktor veredeln.**
+**Aktueller Entwicklungsstand: 1.79.0 — Automatischer Pflanzenreste-Kreislauf.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
 
 ## Aktueller Entwicklungsschritt — 1.79.0
 
-- **Zweiter Weg zum Mutagenextrakt:** Der Biomasse-Bioreaktor veredelt jetzt vier Mutagene Sporen zu einem Mutagenextrakt für 240 FE. Das ergänzt den seltenen Symbiosemyzel-Prozess mit 180 FE, ersetzt ihn aber nicht.
-- **Feldwirtschaft wird zur industriellen Versorgung:** Mutagene Sporen aus reifen mutagenaktiven Kulturen und Mutagenblüten können in einem kontrollierten Produktionsschritt zu einem Laborzwischenprodukt werden.
-- **Saubere Eingangs-/Ausgangsgrenze:** Weniger als vier Sporen, fehlender Ausgabepuffer oder fehlende Energie lösen keinen Teilverbrauch aus. Der Eingang wird erst entfernt, nachdem die Ausgabekapazität und Energie geprüft und das Produkt eingefügt wurden.
-- **Hilfreiche Item-Erklärung:** Tooltip, deutsche/englische Texte und Release-Notizen nennen Menge, Energiepreis und Zielprodukt.
-- **Qualität:** Neue Regression prüft den Produktionszweig, Reihenfolge der Transaktion, Erhalt des Myzel-Rezepts und alle Release-Metadaten; vollständiger Forge-Build und Serverstart laufen im Workflow.
+- **Automatisierte Verwertung von Pflanzenresten:** Der Biomasse-Bioreaktor wandelt vier Pflanzenreste für 60 FE in eine Biomasse um. Das erweitert die bestehende Verarbeitung von Biomasse zu zwei Myzelkompost für 80 FE.
+- **Geschlossener Farmkreislauf:** Der Feldsammler liefert bei reifen Kulturen gelegentlich Pflanzenreste; der Bioreaktor macht daraus Biomasse und anschließend Dünger. Das ergänzt die Handwerksrezeptur, ohne sie zu entfernen.
+- **Saubere Transaktion:** Weniger als vier Reste, ein voller Ausgabepuffer oder fehlende Energie verbrauchen keine Eingabe. Das Produkt wird eingefügt, bevor die Reste aus dem Eingabestapel entfernt werden.
+- **Erklärtes Item:** Pflanzenreste haben einen deutschen und englischen Tooltip, der Menge, Energiepreis und nächsten Verarbeitungsschritt nennt.
+- **Qualität:** Regression prüft beide Bioreaktor-Stufen, Reihenfolge der Transaktion, Übersetzungen, Itemregistrierung und Release-Metadaten; Forge-Build und dedizierter Serverstart laufen im Workflow.
 
 ## Aktueller Entwicklungsschritt — 1.78.0
 
@@ -141,13 +141,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
 
-## Version 1.79.0 — Mutagene Sporen im Biomasse-Bioreaktor veredeln
+## Version 1.79.0 — Automatischer Pflanzenreste-Kreislauf
 
-- **Alternativer Extraktpfad:** Vier Mutagene Sporen werden für 240 FE zu einem Mutagenextrakt verarbeitet. Das ermöglicht weitere Laborproduktion auch dann, wenn gerade kein Symbiosemyzel verfügbar ist.
-- **Balance zwischen den Pfaden:** Ein Symbiosemyzel liefert weiterhin einen Extrakt für 180 FE; die Sporenroute benötigt eine größere Feldernte und mehr Energie.
-- **Transaktionsschutz:** Bei weniger als vier Sporen, vollem Ausgabepuffer oder fehlender Energie wird kein Eingabestapel verbraucht. Die Verarbeitung nutzt die vorhandenen Maschineninventare und erzeugt keine losen Drop-Entitäten.
-- **Ökologie, Maschine und Forschung:** Mutagenaktive Kulturen und Blüten liefern Feldmaterial, das der Bioreaktor in den vorhandenen Mutagenextrakt-Kreislauf einspeist.
-- **Qualitätssicherung:** Regression prüft Menge, Energie, Reihenfolge von Einfügen und Verbrauch, Erhalt des Symbiosemyzel-Prozesses, Itemhinweise, DE/EN-Texte und Release-Metadaten.
+- **Neue Bioreaktor-Stufe:** Vier Pflanzenreste werden mit 60 FE zu einer Biomasse veredelt.
+- **Weiter zur Düngung:** Die bestehende Biomasse-Verarbeitung erzeugt zwei Myzelkompost für 80 FE. Beide Schritte lassen sich mit dem Feldsammler zu einer automatisierten Rückführung verbinden.
+- **Keine Teilverluste:** Zu kleine Stapel, fehlender Ausgabepuffer oder unzureichende Energie verbrauchen keinen Eingabestapel. Das Ergebnis wird erst eingefügt, bevor vier Reste entfernt werden.
+- **Entdeckbarkeit:** Der Pflanzenreste-Tooltip erklärt den neuen Verarbeitungspfad auf Deutsch und Englisch.
+- **Qualitätssicherung:** Neue Regression prüft das Eingabebündel, Energie, Ausgabereihenfolge, die bestehende Kompoststufe, beide Übersetzungen sowie den vollständigen Forge-Build und Serverstart.
 
 ## Version 1.78.0 — Forschungszweig für abgefangene Mutagenblüten
 
