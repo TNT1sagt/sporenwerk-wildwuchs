@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.108.0 — Echte Durchbrüche im Kristallrücken, Kolossmonolithen und Wurzelhänden.**
+**Aktueller Entwicklungsstand: 1.109.0 — Bewegliche Kristalldornen, offene Wurzelhände und atmende Basaltmonolithen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.109.0
+
+- **Kristallpirscher:** Die drei voneinander getrennten 3D-Kristallspitzen aus 1.108 sind nun drei echte animierte ModelParts. Sie bewegen sich einzeln und ungleichmäßig beim Atmen, Gehen und aggressiven Verfolgen. Ihre Ruhesilhouette, bestehenden Gelenke, langen Klauen, Texturen und Lichtadern bleiben erhalten.
+- **Dämmerling:** Die tatsächlich offenen Wurzelhände bekommen eine seitliche Öffnungsanimation, während die Kreatur wirklich Feldfrüchte frisst. Alle ursprünglichen Finger, Wurzelfasern und Nachtangriffe bleiben unverändert; die Winkel werden in jedem Animationsframe neu gesetzt.
+- **Mutagenkoloss:** Zwei gespaltene Rücken-Basaltmonolithen pendeln geringfügig spiegelbildlich um ihre Y-Achsen; der bestehende synchronisierte Kristallatem-Windup verstärkt diese Bewegung. Haut- und Glow-Schicht nutzen identische Knochen.
+- **Forge statt bloßer Designbilder:** Änderungen werden an tatsächlichen Java-ModelPart-Quellen angewendet und durch den neuen Regressionstest geprüft. Minecraft-128/256-Pixelatlanten bleiben gültig, Third-Party-Texturen bleiben ausgeschlossen.
+- **Keine Gameplay-Folgen:** Bosskampf, Farm-/Horrormechaniken, Infektions-Heilpfade, Redstone, Spieler-Nachteile, KI, Hitboxen und Chunk-Auswertung bleiben unangetastet.
+- **Sichtabnahme:** Erfolgreiches CI ersetzt keinen Client-Test. Die drei verbindlichen Original-Referenzbilder müssen perspektivengleich mit tatsächlichen Minecraft-Screenshots abgeglichen werden.
 
 ## Aktueller Entwicklungsschritt — 1.108.0
 
@@ -567,6 +576,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.109.0 — Individuell animierte Referenzkreaturen
+
+- Drei eigenständig artikulierte Kristallpirscher-Rückendornen, mit unveränderten echten 3D-Lücken in Ruhe.
+- Dämmerling-Wurzelpalmen bewegen sich seitlich abhängig vom tatsächlichen Feldfraß.
+- Basaltmonolithen des Kolosses besitzen symmetrische Atem-Windup-Torsion.
+- Bestehende ModelPart-Animation, Skin/Glow-UV, Bosskampf, Infektionswege und Farmsysteme werden erhalten; Bildgleichheit im Client bleibt als offener Test gekennzeichnet.
 
 ## Version 1.108.0 — Echte 3D-Zwischenräume und sourcebasierte Silhouettenkontrolle
 
