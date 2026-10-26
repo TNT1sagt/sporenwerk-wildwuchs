@@ -95,6 +95,16 @@ new='''        // 1.98 four framed edge pieces surround the existing core apertu
             boolean sideways = part < 2;'''
 replace_once(old,new,"visible framed ring with separate selective glow")
 
+# Historical 1.97 tests tracked the *linear* iris charge expression.
+# The feature still exists, but in 1.98 it is eased, not linearly exposed.
+previous_iris_test=ROOT/"tools/test_crystal_core_iris_197.py"
+old_test=previous_iris_test.read_text(encoding="utf-8")
+old_expression='"float coreOpening = Math.max(breathCharge * 0.78F,"'
+require(old_expression in old_test,"1.97 regression iris expression changed")
+old_test=old_test.replace(old_expression,
+    '"float irisProgress = Math.max(breathCharge * 0.78F,"',1)
+previous_iris_test.write_text(old_test,encoding="utf-8")
+
 # Visual alignment must not alter any historical attack damage, AI, synced
 # packets or server blocks. Only currently-active version assertions roll over.
 for p in (ROOT/"tools").glob("test_*.py"):
