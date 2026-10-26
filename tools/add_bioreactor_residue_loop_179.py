@@ -82,69 +82,36 @@ require("new ItemStack(ModItems.MYZELKOMPOST.get(), 2)" in machine
         and "consumePower(80)" in machine,
         "existing Biomasse -> two Myzelkompost refining stage must remain intact")
 
-# Give the by-product a useful inventory tooltip rather than leaving the new machine recipe hidden.
-items_path = SRC / "registry/ModItems.java"
-items = items_path.read_text(encoding="utf-8")
-import_line = "import de.sporenwerk.item.PflanzenresteItem;"
-if import_line not in items:
-    anchor = "import de.sporenwerk.item.MutageneSporenItem;"
-    require(anchor in items, "could not find the item-registry import anchor")
-    items = items.replace(anchor, anchor + "\n" + import_line, 1)
+# Add a client-side tooltip through Forge's event bus without replacing the already-registered item.
+# The custom residue item ID and its existing item model remain unchanged.
+tooltip_path = SRC / "client/PflanzenresteTooltipEvents.java"
+tooltip_path.parent.mkdir(parents=True, exist_ok=True)
+tooltip_path.write_text("""\
+package de.sporenwerk.client;
 
-if "PFLANZENRESTE = ITEMS.register" not in items:
-    require('register("pflanzenreste"' in items, "could not find the existing Pflanzenreste registration")
-if "new PflanzenresteItem(" not in items:
-    registration = re.search(
-        r'(?s)(public\s+static\s+final\s+RegistryObject<Item>\s+PFLANZENRESTE\s*=\s*ITEMS\.register\("pflanzenreste",.*?new\s+)Item(\s*\([^;]*?\)\s*\);)',
-        items)
-    require(registration is not None,
-            "could not safely adapt the existing Pflanzenreste item registration")
-    updated_registration = registration.group(1) + "PflanzenresteItem" + registration.group(2)
-    items = items[:registration.start()] + updated_registration + items[registration.end():]
-items_path.write_text(items, encoding="utf-8")
-
-item_path = SRC / "item/PflanzenresteItem.java"
-item_path.write_text("""\
-package de.sporenwerk.item;
-
+import de.sporenwerk.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
-import java.util.List;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-/** Crop-waste by-product that can be recovered into Biomass by the Biomass Bioreactor. */
-public final class PflanzenresteItem extends Item {
-    public PflanzenresteItem(Properties properties) { super(properties); }
+/** Shows the two-stage automated residue path on the existing Pflanzenreste inventory item. */
+@Mod.EventBusSubscriber(modid = "sporenwerk", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+public final class PflanzenresteTooltipEvents {
+    private PflanzenresteTooltipEvents() {}
 
-    @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("tooltip.sporenwerk.pflanzenreste.refining")
+    @SubscribeEvent
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        if (!event.getItemStack().is(ModItems.PFLANZENRESTE.get())) return;
+        event.getToolTip().add(Component.translatable("tooltip.sporenwerk.pflanzenreste.refining")
                 .withStyle(ChatFormatting.GREEN));
-        tooltip.add(Component.translatable("tooltip.sporenwerk.pflanzenreste.loop")
+        event.getToolTip().add(Component.translatable("tooltip.sporenwerk.pflanzenreste.loop")
                 .withStyle(ChatFormatting.GRAY));
-        super.appendHoverText(stack, level, tooltip, flag);
     }
 }
 """, encoding="utf-8")
-
-for locale, entries in (
-    ("de_de.json", {
-        "tooltip.sporenwerk.pflanzenreste.refining": "Biomasse-Bioreaktor: 4 Pflanzenreste + 60 FE ergeben 1 Biomasse.",
-        "tooltip.sporenwerk.pflanzenreste.loop": "Biomasse wird dort weiter zu 2 Myzelkompost verarbeitet."
-    }),
-    ("en_us.json", {
-        "tooltip.sporenwerk.pflanzenreste.refining": "Biomass Bioreactor: 4 plant residues + 60 FE refine into 1 Biomass.",
-        "tooltip.sporenwerk.pflanzenreste.loop": "Biomass can then be processed into 2 Mycelium Compost."
-    }),
-):
-    locale_path = ASSETS / "lang" / locale
-    data = json.loads(locale_path.read_text(encoding="utf-8"))
-    data.update(entries)
-    locale_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 # Move current-version regression contracts forward but keep historical releases intact.
 for test_path in (ROOT / "tools").glob("test_*.py"):
