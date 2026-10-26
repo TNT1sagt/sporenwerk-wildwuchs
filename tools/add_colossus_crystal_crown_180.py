@@ -74,13 +74,13 @@ skin = """        // 1.80 crystalline crown: mirror-paired detachable silhouette
                 PartPose.ZERO);
 
         // The jaw needs a solid mineral transition; otherwise the crown looks glued on.
-        head.addOrReplaceChild("cheek_armor_left",
+        head.addOrReplaceChild("crown_cheek_plate_left",
                 CubeListBuilder.create().texOffs(32, 224)
                         .addBox(-3.5F, -4.0F, -7.0F, 7.0F, 6.0F, 11.0F)
                         .texOffs(80, 224)
                         .addBox(-2.6F, -5.5F, -6.0F, 5.2F, 2.0F, 7.0F),
                 PartPose.offsetAndRotation(-9.0F, 0.0F, -2.0F, 0.08F, -0.12F, -0.15F));
-        head.addOrReplaceChild("cheek_armor_right",
+        head.addOrReplaceChild("crown_cheek_plate_right",
                 CubeListBuilder.create().texOffs(32, 224)
                         .addBox(-3.5F, -4.0F, -7.0F, 7.0F, 6.0F, 11.0F)
                         .texOffs(80, 224)
