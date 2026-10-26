@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.105.0 — Echte 3D-Silhouettenkorrekturen an Koloss, Pirscher und Dämmerling.**
+**Aktueller Entwicklungsstand: 1.106.0 — Ausgerichtete Koloss-Leuchtaugen und eigenständige Kreaturenanatomie.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.106.0
+
+- **Koloss-Leuchtaugen an tatsächlichen Schädel angepasst:** Die seit Version 1.105 verkleinerte Kopfgeometrie war schmaler als die älteren Fullbright-Augenteile. Beide Augen liegen nun als echte symmetrische Forge-Cubes innerhalb der neuen Schädelbreite und treffen die Gesichtsebene. Die viel zu breiten emissiven Brauenplatten wurden zugleich verkleinert. Dies behebt eine konkrete Modellabweichung und verhindert frei schwebende Glow-Flächen.
+- **Kristallpirscher mit dreiteiligen Schulterfacetten:** An jedem Arm wurden die alten, großen, einteiligen Kristallwülste durch drei räumlich getrennte Panzerabschnitte ersetzt. Die in 1.105 langgezogenen Gliedmaßen und die vier animierten Jagdklauen werden dadurch weniger verdeckt. Die vorhandenen Cyan-/Magenta-Pixeloberflächen, Dorsalflossen, Kopfkristalle und der pulsierende Brustresonator bleiben erhalten.
+- **Dämmerling mit tatsächlichen beweglichen Wurzelfasern:** Zwei unterschiedlich lange schmale Wurzelknochen hängen jetzt seitlich am offenen Rumpf, schwingen bei der Bewegung gegeneinander und beugen sich beim echten serverseitig synchronisierten Beetfraß zusätzlich nach vorne. Vor jeder Animation werden die Gelenke absolut berechnet, damit keine schleichende Rotationsverschiebung entsteht.
+- **Pixel- und Leuchtlayer unverändert:** Alle drei Kreaturen behalten ihre eigenen Minecraft-Pixel-Atlanten mit 128×128 bzw. 256×256 sowie ihre transparenten selektiven Glow-Masken. Es wurden keine Texturen oder Modelle aus Belowland, Wonderland oder anderen Referenzmods übernommen.
+- **Keine Spieler- oder Weltänderungen:** Der Schritt verändert ausschließlich Geometrie und Animation. Infektionsheilung, kontrollierte Farmanlagen, Dämmerling-Abwehr, Boss-Schadenswerte, Gegenstände, KI und Trefferzonen bleiben unverändert. Keine neuen Server-Ticker oder Chunk-Abfragen.
+- **Technisch verifiziert:** 117 GitHub-Actions-Schritte erfolgreich, einschließlich der neuen exakten Augenkoordinaten-Prüfung und Tests für getrennte Schultercubes, bewegliche Wurzelknochen, alte Monsteranimationen, Forge-1.20.1-Kompilierung, installierbare JAR und dedizierten Serverstart.
+
+### In-Game-Referenzprüfung für Version 1.106.0
+
+1. Kristallkoloss frontal und schräg von vorne betrachten: Beide Leuchtaugen müssen symmetrisch innerhalb des kleineren Schädels liegen; keine überstehenden hellen Brauenteile. Danach geöffneten Unterkiefer, Kristallatem und das Leuchten des Brustkerns kontrollieren.
+2. Kristallpirscher von vorne, von der Seite und in Bewegung betrachten: Die drei getrennten Kristallpanzerstücke je Schulter müssen voneinander unterscheidbar sein. Arme, lange Klauen und durchbrochene Rippen dürfen nicht durch alte massive Würfel versteckt werden.
+3. Dämmerling tagsüber, nachts, beim Gehen und während eines Beetangriffs betrachten: Zwei unterschiedliche herabhängende Wurzelfasern müssen in echter 3D-Tiefe sichtbar sein, nicht nur als Textur. Beim Fraß sollen sie sich zusammen mit dem vorhandenen Kiefer bewegen.
+4. Glow und Körperhaut aller drei getrennt prüfen: Keine vollflächig leuchtenden Stein-/Wurzelpanzer und keine verschobenen Skin-/Glow-Körper.
+5. Screenshots aus den gleichen Blickwinkeln wie die Originalbilder machen und Silhouette, relative Teilgrößen, Farben, Glühbereiche und Animationsform vergleichen. **Ein Build-Erfolg ist kein Nachweis exakter Bildtreue.** Restliche Abweichungen bleiben ausdrücklich offene Modellaufgaben.
 
 ## Aktueller Entwicklungsschritt — 1.105.0
 
@@ -513,6 +530,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.106.0 — Konkrete Reparaturen an der visuellen Referenztreue
+
+- Koloss: Ursprüngliche, nach der Kopfverkleinerung außerhalb des Schädels liegende Leuchtaugen und zu breite emissive Brauen im echten Forge-3D-Modell korrigiert.
+- Kristallpirscher: Massive Kristallschultern durch jeweils drei getrennte Facettenstücke ersetzt, um die langgliedrige und durchbrochene Silhouette besser lesbar zu machen.
+- Dämmerling: Zwei eigene, unterschiedlich lange animierte Wurzelfasern am Körper, mit eigener Bewegung beim Gehen und serverseitig bestätigten Beetfraß.
+- 117 grüne GitHub-Actions-Schritte: Modell- und Gameplayregressionen, Forge-1.20.1-Kompilierung, JAR-Prüfung und Dedicated Server. Minecraft-Client-Bildvergleich muss noch erfolgen.
 
 ## Version 1.105.0 — Referenzgebundene echte Kreaturensilhouetten
 
