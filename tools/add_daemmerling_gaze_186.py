@@ -48,11 +48,13 @@ for statement, anchor in imports:
 entity_path.write_text(entity, encoding="utf-8")
 
 goal_anchor = """        super.registerGoals();
+        this.goalSelector.addGoal(4, new BloomScentGoal(this));
         this.goalSelector.addGoal(5, new CropThreatGoal(this));"""
 goal_new = """        super.registerGoals();
         // 1.86 staring at the Dämmerling briefly interrupts its hostile pursuit.
         // Priority one preempts Zombie melee movement but never replaces targeting.
         this.goalSelector.addGoal(1, new WatchedStillnessGoal(this));
+        this.goalSelector.addGoal(4, new BloomScentGoal(this));
         this.goalSelector.addGoal(5, new CropThreatGoal(this));"""
 insert_once(entity_path, goal_anchor, goal_new,
             "this.goalSelector.addGoal(1, new WatchedStillnessGoal(this))",
