@@ -1,8 +1,26 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.101.0 — Synchronisierte Dämmerling-Fraßanimation und sichtbare Mutagen-Modusringe.**
+**Aktueller Entwicklungsstand: 1.102.0 — Feldkompass der Mutagen-Kontrollstation und animierter Dämmerling-Kiefer.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.102.0
+
+- **Neue freiwillige Feldkompass-Funktion:** Einen normalen Minecraft-Kompass in die Haupthand nehmen und die Mutagen-Feldkontrollstation rechtsklicken. Sie zeigt die relativen X-, Y- und Z-Abstände sowie die ungefähre Entfernung der nächsten tatsächlich aktiven Ausbreitungsquelle an. Der Kompass bleibt erhalten.
+- **Bereits vorhandene, sichere Stationsvermessung:** Die Kompassdaten werden im selben Scan gesammelt, den die Feldkontrollstation beim normalen Rechtsklick verwendet. Der Radius bleibt auf 16 Blöcke horizontal und ±8 Blöcke vertikal begrenzt. Nicht geladene Chunks werden übersprungen. Inaktive, geheilte, kultivierende, ruhende und redstone-pausierte Quellen gelten nicht als aktive Ausbreitungsziele.
+- **Drei Ausgänge – Diagnose ohne Zwang:** Bei Gefahr erscheint eine rote Lage- und Entfernungsnachricht sowie ein kleiner violetter Kreis. Ohne aktive Quelle erscheint eine grüne Meldung samt ruhigem Kreis. Ein kurzer Hinweis erklärt die Minecraft-Koordinaten (+X = Osten, +Z = Süden) und die Einschränkung auf bereits geladene Chunks. Die unverwechselbaren Texturen und sichtbaren Infektionsfelder funktionieren weiterhin ganz ohne Kompass.
+- **Dämmerling mit animiertem Unterkiefer:** Sein bestehender echter 3D-Unterkiefer bekommt beim server-synchronisierten Feldfraß eine rhythmische Beißbewegung. Die selektiv roten Glow-Augen leuchten während des Fraßes etwas stärker; beim Abbruch per Seelenlaterne oder Leuchtbeeren kehren beide in ihre Ausgangslage zurück.
+- **Andere Systeme geschützt:** Die schon vorhandenen Notabschaltung, Kupfer-Rettung, Amethyst-Neustart, Mutagen-Endgame-Heilung, Feldschutzmaschinen und drei Mutagenknotenmodi bleiben erhalten. Der neue Kompass ist nur eine Diagnose; er verändert keine Weltblöcke, KI oder gespeicherten Felder.
+- **Technischer Abschluss:** 113 GitHub-Actions-Schritte erfolgreich. Zusätzliche Regressionen für Quellpriorität, relative Entfernung und geladene Chunks, außerdem Forge-1.20.1-Kompilierung, installierbare JAR-Prüfung und dedizierter Serverstart.
+
+### Minecraft-Client-Abnahme für 1.102.0
+
+1. Eine aktive, ungepauste Ausbreitungsquelle innerhalb des Kontrollstationsradius platzieren, mit Vanilla-Kompass auf die Station klicken und relative Koordinaten sowie die Entfernungsangabe vergleichen.
+2. Quelle in Anbau oder Ruhe schalten und die Messung erneut auslösen: Die Quelle darf nicht mehr als aktive Ausbreitungsgefahr erscheinen. Auch bei Redstone-Pause oder dauerhaft geheilter Quelle darf sie kein falscher Alarm sein.
+3. Mehrere Quellen anordnen und kontrollieren, ob tatsächlich die nächstgelegene, bereits geladene Quelle als Richtung angezeigt wird; nicht geladene Chunks bleiben außerhalb der Aussage.
+4. Mit leerer Hand weiterhin den ausführlichen Bericht abrufen; geduckt mit Kupfer, Amethyst oder ohne Item müssen die bisherigen Kontrollaktionen unverändert bleiben.
+5. Beim Dämmerling einen echten Fraß an reifen Pflanzen beobachten. Sein Unterkiefer und die roten Augen sollen im Rhythmus seiner Wurzelhände reagieren und nach Vertreibung wieder normal aussehen.
+6. Multiplayer, Neuladen und Dunkelheit testen. Die erfolgreiche CI bestätigt technische Kompatibilität, ersetzt aber keine Sichtprüfung der tatsächlichen Minecraft-Optik.
 
 ## Aktueller Entwicklungsschritt — 1.101.0
 
@@ -438,6 +456,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.102.0 — Mutagen-Quellen finden, echten Horror sehen
+
+- Die bestehende Kontrollstation bietet eine neue Kompassdiagnose für den nächsten wirklich aktiven, ungepausten Mutagen-Ausbreitungsherd: relative X/Y/Z-Lage und ungefähre Entfernung, ohne neue Scan-Schleife, ohne Chunk-Nachladen, ohne Kompassverbrauch.
+- Der eigenständige Dämmerling bekommt eine echte, server-synchronisierte Kieferbewegung und bei anhaltendem Pflanzenfraß stärker pulsierende rote Glow-Augen.
+- Infektionsfelder bleiben weiterhin ohne Scanner eindeutig sichtbar; alle bisherigen Schutz-, Heilungs-, Farm- und Bossmechaniken bleiben erhalten.
+- 113 erfolgreiche GitHub-Actions-Schritte: Modell- und Feldkompass-Regressionen, Forge 1.20.1, installierbare JAR und dedizierter Server. Minecraft-Client-Sichtprüfung steht aus.
 
 ## Version 1.101.0 — Lebendiger Feldhorror und scannerfreie Modusanzeigen
 
