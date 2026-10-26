@@ -111,6 +111,9 @@ s = legacy.read_text(encoding="utf-8")
 assert '    "int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(",' in s
 s = s.replace('    "int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(",',
               '    "int lurkingDaemmerlinge = localDaemmerlinge.size();",', 1)
+assert '    "mob -> mob.isAlive()).size();",' in s
+s = s.replace('    "mob -> mob.isAlive()).size();",',
+              '    "mob -> mob.isAlive());",', 1)
 assert '< report.index("int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(")' in s
 s = s.replace('< report.index("int lurkingDaemmerlinge = serverLevel.getEntitiesOfClass(")',
               '< report.index("java.util.List<de.sporenwerk.entity.DaemmerlingEntity> localDaemmerlinge =")', 1)
