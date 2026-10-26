@@ -32,9 +32,25 @@ patch(mob_path, """        public void start() {
             moveToTarget();
         }""", """        public void start() {
             chewTicks = 0;
-            mob.raidingCrops = target != null;
+            // Walking toward a field is not yet a live crop raid.
+            mob.raidingCrops = false;
             moveToTarget();
         }""", "raid start")
+patch(mob_path, """            if (mob.distanceToSqr(tx, ty, tz) <= 2.4D) {
+                mob.getNavigation().stop();""",
+"""            if (mob.distanceToSqr(tx, ty, tz) <= 2.4D) {
+                mob.getNavigation().stop();
+                mob.raidingCrops = true;""", "actual crop nibble")
+patch(mob_path, """            } else {
+                chewTicks = 0;
+                if (mob.getNavigation().isDone()) moveToTarget();
+            }""",
+"""            } else {
+                mob.raidingCrops = false;
+                chewTicks = 0;
+                if (mob.getNavigation().isDone()) moveToTarget();
+            }""", "approach is not actively chewing")
+
 patch(mob_path, """        public void stop() {
             mob.getNavigation().stop();
             target = null;
