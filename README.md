@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.87.0 — sicherer Wiederanlauf kontrollierter Mutagenfarmen.**
+**Aktueller Entwicklungsstand: 1.88.0 — Live-Knotenprotokoll für sichere Mutagenanlagen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.88.0
+
+- **Mutagen-Knotenprotokoll:** Die Feldkontrollstation zählt beim normalen Rechtsklick fünf tatsächlich unterschiedliche Betriebszustände: ungebremste AUSBREITUNG, sicherer ANBAU, RUHE, Redstone-pausierte Quellen und gespeicherte inaktive/sterilisierte Quellen.
+- **Quellen statt Bodenfarben:** Der neue Bericht prüft die echte aktive Knotenregistrierung aus den gespeicherten Welt-Daten. Damit werden endgültig inaktive Quellen nicht fälschlich als aktive Gefahr angezeigt.
+- **Handlungsempfehlung:** Bei aktiv ausbreitenden Knoten erscheint eine deutliche Warnung mit Notabschaltungshinweis. Sind nur kontrollierte Anbauknoten aktiv, wird dies als kontrollierter Betrieb gemeldet; sonst zeigt die Station einen Ruhehinweis.
+- **Sicheres System:** Kein Neustart und keine Blockänderung beim Scan; der bestehende Comparator-Ausgang, Not-Aus per Schleichen und sicherer Neustart mit Amethystscherbe bleiben unverändert. Redstone-Pause und die globale Endspiel-Heilung werden respektiert.
+- **Performance und Sicherheit:** Die fünf Zähler werden innerhalb des bereits bestehenden manuellen Stationsscans erfasst – kein zweiter Flächenscan, kein neuer Dauer-Ticker, keine Chunk-Forceloads. Nur geladene Blöcke im bekannten Radius 16 und Höhe ±8 werden untersucht.
+- **Qualitätsprüfung:** Eigene Regression für alle fünf Kategorien, gespeicherte Aktivität, Warntexte, Loaded-Chunk-Grenzen, bestehende Steuerfunktionen und Versionsdaten; vollständiger Forge-Build und dedizierter Serverstart prüfen die Integration.
 
 ## Aktueller Entwicklungsschritt — 1.87.0
 
@@ -208,6 +217,15 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.88.0 — Live-Knotenprotokoll der Mutagen-Kontrollstation
+
+- **Fünf Betriebszustände:** Die Kontrollstation unterscheidet beim normalen Scan AUSBREITUNG, ANBAU, RUHE, Redstone-Pause und endgültig inaktive Quellen. Die Ergebnisse stammen aus echten Blockzuständen und gespeicherter Quellregistrierung.
+- **Verständlicher Alarm:** Nur tatsächlich aktive, nicht pausierte Ausbreitungsquellen lösen die rote Warnung aus. Anlagen mit ausschließlich sicheren Kulturen bekommen eine grüne Betriebsrückmeldung, stillgelegte Anlagen eine ruhige Diagnose.
+- **Endspiel bleibt geschützt:** Sterilisierte Quellen erscheinen als inaktiv. Diagnose und Anzeige ändern weder gespeicherte Registrierung noch Blockzustände, Stabilisatoren, Ernte oder Sicherheitsmechaniken.
+- **Bereits vorhandener Scan:** Die Auswertung nutzt exakt denselben geladenen 16-Blöcke-Radius/±8-Höhen-Bereich wie Forschung, Biodiversität und Notabschaltung. Ein Comparator löst weiterhin keinen zusätzlichen Scan aus.
+- **Nachvollziehbar auf DE/EN:** Übersetzte Quellenzählung und konkrete Handlungsanweisungen. Notabschaltung (Schleichen) und sicherer Wiederanlauf (Schleichen plus Amethyst) bleiben erhalten.
+- **Regression und Build:** Tests für Kategorisierung, Aktivitätsprüfung, Loaded-Chunk-Guards, Quellenzählung, Warnung, alte Steuermodi und Textressourcen; vollständige Forge-Kompilierung, JAR- und Dedicated-Server-Prüfung.
 
 ## Version 1.87.0 — Wiederanlauf sicherer Mutagenfarmen
 
