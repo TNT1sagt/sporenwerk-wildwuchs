@@ -41,7 +41,7 @@ for token in (
     "float crownBreathing = Mth.sin(ageInTicks * 0.065F)",
 ):
     require(token in model, "missing matched crown rig/animation contract: " + token)
-for name in ("cheek_armor_left", "cheek_armor_right"):
+for name in ("crown_cheek_plate_left", "crown_cheek_plate_right"):
     require(model.count('head.addOrReplaceChild("' + name + '"') == 1,
             "dark cheek plate must be skin-only and anchored to the moving head: " + name)
 require(model.count("PartPose.offsetAndRotation(-12.0F, -3.0F, 3.0F") == 2
