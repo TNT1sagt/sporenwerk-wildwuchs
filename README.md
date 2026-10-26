@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.83.0 — seismische Stampfvorwarnung und ausweichbare Kristallwelle.**
+**Aktueller Entwicklungsstand: 1.84.0 — Mutagen-Notabschaltung über die Feldkontrollstation.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.84.0
+
+- **Notabschaltung an der Kontrollstation:** Geduckter Rechtsklick versetzt sämtliche geladenen Mutagenknoten im bestehenden Scanradius 16 (Höhe ±8) in den RUHE-Modus. Ein normaler Rechtsklick liefert weiterhin den gewohnten Diagnosebericht.
+- **Kein versehentlicher Neustart:** Der RUHE-Modus ist ein bereits vorhandener persistenter Blockzustand. Die vorhandene Spread- und Cultivation-Logik respektiert diesen Zustand sowohl bei geplanten als auch zufälligen Ticks. Die zuvor gewählten Modi werden nur durch manuelles Bedienen einzelner Knoten wieder verändert.
+- **Bestehende Feldinfrastruktur bleibt:** Abschalten ist kein globaler Sterilisierungsprozess. Stabilisatoren, Sporenabwehrsender, Forschungsrelais und kontrollierte Anbauflächen bleiben erhalten; Knotenregistrierung und Redstone-Status bleiben unverändert.
+- **Klare Rückmeldung:** Die Station meldet die tatsächlich stillgelegte Knotenzahl, zeigt begrenzte Rauchpartikel und warnt ausdrücklich vor ungeladenen Chunks. Das normale Stationsprotokoll erklärt die neue Bedienung.
+- **Sicherheit und Performance:** Ein einmaliger, kreisförmiger, höhenbegrenzter Scan mit vorheriger Loaded-Chunk-Prüfung, maximal 24 visuellen Knotenrückmeldungen und keinen neuen Tick-Schleifen. Eigene Regression und vollständiger Forge-Build prüfen die Integration.
 
 ## Aktueller Entwicklungsschritt — 1.83.0
 
@@ -172,6 +180,15 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.84.0 — Mutagen-Notabschaltung der Feldkontrollstation
+
+- **Neue Anlagenfunktion:** Geduckter Rechtsklick auf eine Feldkontrollstation stellt alle geladenen Mutagenknoten im Radius 16 / Höhe ±8 von SPREAD bzw. CULTIVATION auf DORMANT. Die normale Diagnose bleibt verfügbar.
+- **Unveränderter Schutzpfad:** Mutagenknoten behalten ihre Registrierung und ihren Redstone-Zustand. Der bestehende Mode-2-Zweig verhindert sowohl Ausbreitung als auch Kultivierung, bis ein einzelner Knoten gezielt umgestellt wird.
+- **Sicherheit beim Eingriff:** Bereits ruhende Knoten werden nicht verändert. Der Scan überspringt ungeladene Chunks, verwendet nur bestehende Blockzustände und führt keinen dauerhaften Hintergrundticker ein.
+- **Messbare Rückmeldung:** Spieler erhalten eine serverseitige Knotenzahl und einen Hinweis auf die Scanbegrenzung. Maximal 24 betroffene Knoten erzeugen Rauchpartikel; eine stationäre Klangrückmeldung bestätigt die Betätigung.
+- **Kontrollierte Experimente bleiben möglich:** So lassen sich aktivierte Mutagenanlagen gezielt stilllegen, ohne eine Weltheilung auszulösen oder die spätere Wiedernutzung von Infektionsfeldern zu verhindern.
+- **Qualitätskontrolle:** Regressionen für Eingabe, Radius, Loaded-Chunk-Guard, Spielerhinweise, Zustandserhalt, ursprüngliche Knotenticks, Metadaten und Übersetzungen sowie Forge-Kompilierung und dedizierter Serverstart.
 
 ## Version 1.83.0 — Kristallkoloss: seismischer Warnring und Sprung-Kontermöglichkeit
 
