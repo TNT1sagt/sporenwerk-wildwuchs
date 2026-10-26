@@ -148,6 +148,16 @@ old=old.replace(needle,
     '"spreadNodes, cultivatedNodes, dormantNodes, pausedNodes, inactiveNodes, nearestSpreadDx, nearestSpreadDy, nearestSpreadDz, nearestSpreadDistanceSq);"',1)
 legacy.write_text(old,encoding="utf-8")
 
+# Historical 1.88 audit must still check the same SPREAD count. It was
+# previously a single-line conditional, now intentionally a block recording
+# nearest danger in the same loaded-column survey. Preserve both checks.
+old_contract='"nodeMode == 0) spreadNodes++"'
+new_contract='"if (nodeMode == 0) {"'
+legacy_text=legacy.read_text(encoding="utf-8")
+need(old_contract in legacy_text,"old 1.88 spread-node token missing")
+legacy_text=legacy_text.replace(old_contract,new_contract,1)
+legacy.write_text(legacy_text,encoding="utf-8")
+
 # The 1.101 synchronized feeding state is reused (zero new network flags).
 model=MODEL.read_text(encoding="utf-8")
 need('head.addOrReplaceChild("hollow_jaw"' in model and
