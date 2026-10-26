@@ -56,7 +56,8 @@ for side,old,new in (
 # Replace with 3 staggered crystal plates, leaving open gaps and long talons.
 P=C/"KristallpirscherModel.java"
 s=P.read_text(encoding="utf-8")
-need('addOrReplaceChild("crystal_guard"' in s and
+need('addArmGrowth(leftArm, "crystal_guard"' in s and
+     'addArmGrowth(rightArm, "crystal_guard"' in s and
      'this.leftTalonA.xRot' in s and 'this.thoraxResonator.xScale' in s,
      "1.105 articulated crystalline stalker must be present")
 patch(P,
