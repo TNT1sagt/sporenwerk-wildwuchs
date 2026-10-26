@@ -12,7 +12,7 @@ def need(ok,why):
 # Verify both baked body ModelParts have identical position, not merely matching
 # names. Version 1.97's original +9 glow root placed every effect 13 px too low.
 section0,section1=S.split("    public static LayerDefinition createGlowLayer()",1)
-pivot_pat=r'PartDefinition body = root\.addOrReplaceChild\("body",[\s\S]{0,340}?PartPose\.offset\(([-\d.]+)F, ([-\d.]+)F, ([-\d.]+)F\)'
+pivot_pat=r'PartDefinition body = root\.addOrReplaceChild\("body",[\s\S]{0,900}?PartPose\.offset\(([-\d.]+)F, ([-\d.]+)F, ([-\d.]+)F\)'
 m0=re.search(pivot_pat,section0)
 m1=re.search(pivot_pat,section1)
 need(m0 is not None and m1 is not None,"must parse two baked body root poses")
