@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.80.0 — lebendige Kristallkrone für den Kristallkoloss.**
+**Aktueller Entwicklungsstand: 1.81.0 — beweglicher Kristallkiefer und aufladender Kristallatem.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.81.0
+
+- **Beweglicher Unterkiefer:** Der Kristallkoloss erhält ein echtes Kiefergelenk statt einer fest am Schädel liegenden Unterkieferfläche. Die bisherigen Gesteinsplatten wurden an den beweglichen Teil gebunden.
+- **Leuchtende Kristallzähne:** Kleine fangartige Kristalle und das Maulleuchten bewegen sich in einem deckungsgleichen Emissiv-Modell mit dem echten Kiefer.
+- **Erkennbarer Kristallatem:** Über die bestehende, synchronisierte 48-Tick-Angriffsphase öffnet der Boss sein Maul zunehmend. Die bisherigen Atem-Partikel entstehen jetzt vor seiner Schnauze und verdichten sich während des Aufladens, statt im Rumpf zu erscheinen.
+- **Zusätzliche Phasenanimation:** Bei der Verwandlung reißt der Koloss das Maul stoßweise weiter auf; bei Stampfangriffen spannt sich der Kiefer.
+- **Sicherer Ausbau:** Forge-ModelParts ohne zusätzliche Animationsbibliothek, bestehende Schadens- und Reichweitenlogik unverändert, keine neuen Chunkzugriffe, DE/EN-Texturassets beibehalten. Regressionen, Forge-Build und Server-Smoke-Test prüfen die Integration.
 
 ## Aktueller Entwicklungsschritt — 1.80.0
 
@@ -148,6 +156,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.81.0 — Beweglicher Kristallkiefer und gerichtete Atemladung
+
+- **Neues Gelenk:** Die untere Schnauzengeometrie des Kristallkolosses ist nicht länger fest in den Schädel eingebaut. Bestehender Kieferpanzer und neue Kristallzähne bewegen sich gemeinsam.
+- **Synchronisierte Leuchtgeometrie:** Maulleuchten und Zähne folgen dem Kiefer auf dem Full-Bright-Layer, während Wangenpanzer und die Kristallkrone an ihren alten Positionen erhalten bleiben.
+- **Angriffe mit Vorwarnung:** Während der bestehenden 48 Ticks Kristallatem wächst der Maulwinkel von leichter Spannung zur breiten Öffnung. Die Warnpartikel laden sichtbar an der Schnauze auf, bevor der unveränderte Strahl ausgelöst wird.
+- **Weitere Ausdrucksformen:** Ruhige Atembewegung, verstärktes Aufreißen beim Erwachen, angespanntes Maul beim Stampfen.
+- **Technische Prüfung:** Eigene neue Regression für Geometrie, Phasenanimation, Ladungsformel, getrennte Modell-Layer, Assets und Metadaten plus Forge-JAR und dedizierter Serverstart. Eine tatsächliche Client-Bildkontrolle ist weiterhin erforderlich.
 
 ## Version 1.80.0 — Kristallkoloss: lebendige Kristallkrone
 
