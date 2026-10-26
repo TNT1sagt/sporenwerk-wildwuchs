@@ -176,8 +176,10 @@ assert n == 1
 gradle_path.write_text(gradle, encoding="utf-8")
 readme_path = ROOT / "README.md"
 readme = readme_path.read_text(encoding="utf-8")
+old_source_headline = "**Aktueller Entwicklungsstand: 1.90.0 — Dämmerling-Nachtwache und gefährdete Felder.**"
+assert old_source_headline in readme, "source README headline from the 1.90 patch changed unexpectedly"
 readme = readme.replace(
-    "**Aktueller Entwicklungsstand: 1.90.0 — Dämmerling-Nachtwache und bedrohte Farmen.**",
+    old_source_headline,
     "**Aktueller Entwicklungsstand: 1.91.0 — Koloss-Auftritt und lebendige Nachtwache.**", 1)
 current = """## Aktueller Entwicklungsschritt — 1.91.0
 
