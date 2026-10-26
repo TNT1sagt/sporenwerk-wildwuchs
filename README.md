@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.78.0 — Forschungszweig für abgefangene Mutagenblüten.**
+**Aktueller Entwicklungsstand: 1.79.0 — Mutagene Sporen im Biomasse-Bioreaktor veredeln.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.79.0
+
+- **Zweiter Weg zum Mutagenextrakt:** Der Biomasse-Bioreaktor veredelt jetzt vier Mutagene Sporen zu einem Mutagenextrakt für 240 FE. Das ergänzt den seltenen Symbiosemyzel-Prozess mit 180 FE, ersetzt ihn aber nicht.
+- **Feldwirtschaft wird zur industriellen Versorgung:** Mutagene Sporen aus reifen mutagenaktiven Kulturen und Mutagenblüten können in einem kontrollierten Produktionsschritt zu einem Laborzwischenprodukt werden.
+- **Saubere Eingangs-/Ausgangsgrenze:** Weniger als vier Sporen, fehlender Ausgabepuffer oder fehlende Energie lösen keinen Teilverbrauch aus. Der Eingang wird erst entfernt, nachdem die Ausgabekapazität und Energie geprüft und das Produkt eingefügt wurden.
+- **Hilfreiche Item-Erklärung:** Tooltip, deutsche/englische Texte und Release-Notizen nennen Menge, Energiepreis und Zielprodukt.
+- **Qualität:** Neue Regression prüft den Produktionszweig, Reihenfolge der Transaktion, Erhalt des Myzel-Rezepts und alle Release-Metadaten; vollständiger Forge-Build und Serverstart laufen im Workflow.
 
 ## Aktueller Entwicklungsschritt — 1.78.0
 
@@ -132,6 +140,14 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.79.0 — Mutagene Sporen im Biomasse-Bioreaktor veredeln
+
+- **Alternativer Extraktpfad:** Vier Mutagene Sporen werden für 240 FE zu einem Mutagenextrakt verarbeitet. Das ermöglicht weitere Laborproduktion auch dann, wenn gerade kein Symbiosemyzel verfügbar ist.
+- **Balance zwischen den Pfaden:** Ein Symbiosemyzel liefert weiterhin einen Extrakt für 180 FE; die Sporenroute benötigt eine größere Feldernte und mehr Energie.
+- **Transaktionsschutz:** Bei weniger als vier Sporen, vollem Ausgabepuffer oder fehlender Energie wird kein Eingabestapel verbraucht. Die Verarbeitung nutzt die vorhandenen Maschineninventare und erzeugt keine losen Drop-Entitäten.
+- **Ökologie, Maschine und Forschung:** Mutagenaktive Kulturen und Blüten liefern Feldmaterial, das der Bioreaktor in den vorhandenen Mutagenextrakt-Kreislauf einspeist.
+- **Qualitätssicherung:** Regression prüft Menge, Energie, Reihenfolge von Einfügen und Verbrauch, Erhalt des Symbiosemyzel-Prozesses, Itemhinweise, DE/EN-Texte und Release-Metadaten.
 
 ## Version 1.78.0 — Forschungszweig für abgefangene Mutagenblüten
 
