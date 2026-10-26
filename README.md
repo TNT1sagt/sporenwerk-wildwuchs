@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.79.0 — Automatischer Pflanzenreste-Kreislauf.**
+**Aktueller Entwicklungsstand: 1.80.0 — lebendige Kristallkrone für den Kristallkoloss.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.80.0
+
+- **Kristallkoloss: mehr als nur eine Textur:** Zwei weit ausgreifende, dreistufige Kristallkronen flankieren jetzt den Kopf. Dunkle Wangenpanzer verbinden sie sichtbar mit Schädel und Hals.
+- **Getrennte, deckungsgleiche Leuchtschicht:** Die neuen Kristalle besitzen innere Emissiv-Geometrie, während ihre dunklen Gesteinsfassungen unbeleuchtet bleiben. Haupt- und Glow-Layer verwenden dieselben Knochenpositionen.
+- **Bewegte Anatomie:** Beide Kristallflügel atmen subtil im Leerlauf, fächern bei Atemangriffen auf und entfalten sich stärker beim Erwachen. Jede Animation setzt ihre Drehungen neu und wird auf Client und Glow-Layer identisch berechnet.
+- **Eigene Gestaltung:** Die Forge-ModelParts und Bewegungen sind neu für Sporenwerk erstellt. Die beiden hochgeladenen Fremdmods wurden nur hinsichtlich technischer Struktur, Animationsumfang und Texturdichte untersucht; ihre Ressourcen werden nicht übernommen.
+- **Qualität:** Eine eigene Regression prüft beide Modellbäume, Animation, Angriffsphasen, Versionsstand und Ressourcen. Der Forge-Build und der Serverstart sichern die technische Integration; die tatsächliche Bildwirkung muss im Minecraft-Client geprüft werden.
 
 ## Aktueller Entwicklungsschritt — 1.79.0
 
@@ -140,6 +148,15 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.80.0 — Kristallkoloss: lebendige Kristallkrone
+
+- **Neue Silhouette:** Spiegelbildliche, jeweils dreistufige Kristallklingen ragen aus der Kopfpartie und werden durch dunkle Wangenpanzer verankert.
+- **Echte Gelenke:** Beide Kristallkronen besitzen eigene ModelParts und bewegen sich unabhängig vom Kopf. Der bestehende Leucht-Layer ist geometrisch ausgerichtet und beleuchtet nur die inneren Kristallflächen.
+- **Kampfbezogene Animation:** Eine sanfte Idle-Atmung geht bei Kristallatem in ein sichtbares Auffächern und beim Erwachen in eine deutlich größere Kristallresonanz über.
+- **Leistungsbewusst:** Die Animation basiert auf der vorhandenen synchronisierten Boss-Zustandsvariable; es gibt keinen neuen Tick-Loop, kein Shader-Framework und keine zusätzlich erzwungenen Chunks.
+- **Visuelle Referenz:** Belowland und The Wonderland dienten ausschließlich als Analysemaßstab für hochwertige Modelldichte und Animationsstruktur. Keine fremden Modelle, Texturen oder Animationen sind im Mod enthalten.
+- **Prüfung:** Regressionen, Forge-JAR, unabhängige Emissiv-Layer und dedizierter Serverstart; manuelle Sicht- und Kampfprüfung im Client weiterhin erforderlich.
 
 ## Version 1.79.0 — Automatischer Pflanzenreste-Kreislauf
 
