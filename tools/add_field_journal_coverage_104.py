@@ -138,6 +138,16 @@ patch(MOB,
                 }""",
 "fully filled passive composter ward")
 
+# 1.88 mode-audit still enforces the complete constructor argument list.
+# Preserve that assertion and extend it for the two new footprint metrics.
+old_audit=R/"tools/test_station_node_mode_audit_188.py"
+audit=old_audit.read_text(encoding="utf-8")
+old_args="spreadNodes, cultivatedNodes, dormantNodes, pausedNodes, inactiveNodes, nearestSpreadDx, nearestSpreadDy, nearestSpreadDz, nearestSpreadDistanceSq);"
+new_args="spreadNodes, cultivatedNodes, dormantNodes, pausedNodes, inactiveNodes, nearestSpreadDx, nearestSpreadDy, nearestSpreadDz, nearestSpreadDistanceSq, loadedColumns, coverageSignature);"
+need(audit.count(old_args)==1,"1.88 source-mode audit args must still match previous version")
+audit=audit.replace(old_args,new_args,1)
+old_audit.write_text(audit,encoding="utf-8")
+
 # Historical source assertion tests only need to check the equivalent
 # collector safety rule; update exact expression without weakening it.
 for p in (R/"tools").glob("test_*.py"):
