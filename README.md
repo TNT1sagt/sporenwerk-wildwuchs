@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.112.0 — Erkennbare Koloss-Felsenschnauze, skorpionartig gewölbter Stachel, abgeknickte Pirscherbeine und lebendige Wurzelrippen.**
+**Aktueller Entwicklungsstand: 1.113.0 — echter gestaffelter Koloss-Panzer, gespaltene 3D-Jägermaske und bewegliche untere Wurzelglieder.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.113.0
+
+- **Koloss:** Vier echte, abgestuft versetzte Basaltmantel-Knochen links/rechts an den Schultern und der Hüfte. Offen sichtbare Taille statt rechteckig geschlossener Zugkastenform. Die entsprechenden vier Glow-Knochen enthalten ausdrücklich kein vollständig leuchtendes Basalt; Kiefer, Rücken, Schwanz und Kristallkern bleiben animiert.
+- **Pirscher:** Ehemalige einteilige Gesichtsplatte jetzt tatsächlich in zwei Gesichtspangen mit mindestens 2 Modellpixel Luftspalt geteilt. Zwei kleine Kieferfortsätze sitzen direkt auf dem Kopfknochen. Fuß- und Jagd-Animationen bleiben.
+- **Dämmerling:** Untere ungleiche Wurzelarme und echte 3D-Hakenspitzen an den bereits animierten Körperrippen; nicht nur zusätzliche Kopf-Hörner.
+- **Sicherer Forge-1.20.1-Einbau:** Minecraft-Pixel-Atlanten, Boss-Kampfsystem, Farming, Infektion, Endgame-Heilung und Server-KI bleiben erhalten. CI testet tatsächliche Modell-Geometrieabstände statt nur Dateinamen.
+- **Offene Abnahme:** Maßstab bleibt die sichtbare Kreatur aus mehreren Minecraft-Client-Perspektiven; keine Behauptung über exakte Konzeptbild-Gleichheit ohne Screenshots.
 
 ## Aktueller Entwicklungsschritt — 1.112.0
 
@@ -602,6 +610,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.113.0 — Staffelpanzer, offene Jägermaske und wurzelnder Rumpf
+
+- Vier bewegungsverbundene geometrisch getrennte Panzerkörper am vierbeinigen Boss.
+- Physisch getrennte Kristallpirscher-Maskenhälften und eigenständige Kieferprismen.
+- Dämmerling-Wurzeln bewegen sich auch unterhalb des Rumpfs asymmetrisch auf den existierenden Rippenknochen.
+- Alle bisherigen Gameplay- und Renderregressionen erhalten; Ingame-Abgleich ausstehend.
 
 ## Version 1.112.0 — Boss mit markantem Schädel, neue 3D-Gelenk-Silhouetten
 
