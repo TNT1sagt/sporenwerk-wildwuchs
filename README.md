@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.96.0 — Resonanzrippen für den Koloss und pulsierender Kristallpirscher-Brustkern.**
+**Aktueller Entwicklungsstand: 1.97.0 — Bewegliche Kristallblende und lebendige Mutagenherzen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.97.0
+
+- **Kristallkoloss: vierteilige echte 3D-Brustblende.** Vor dem bereits existierenden leuchtenden Kristallkern sitzen vier zusätzliche Basaltpanzer. Zwei seitliche und zwei vertikale Blätter können sich im Kampf synchron öffnen, wodurch die Kristallform eine deutlichere Bewegung bekommt.
+- **Kampfgesten anhand echter Serverzustände.** Die Blende öffnet während der bestehenden Kristallatem-, Stampf- und Erwachensvorbereitung unterschiedlich weit. Jede Animation berechnet ihre Ausgangslage pro Frame neu und kehrt nach dem Kampf in Ruhe zurück.
+- **Originale Haut- und Glow-Schichten.** Beide 256×256-Modellbäume enthalten die gleichen vier Gelenke. Die Basaltplatten erscheinen nur im normalen Modell, während die schmalen eingelegten Kristalladern die separate Leuchtschicht nutzen.
+- **Kristallpirscher: einzeln bewegliche Brustsplitter.** Die zwei Kristalle am bereits vorhandenen pulsierenden Thoraxorgan besitzen jetzt eigenständige Gelenke und spreizen sich bei aggressiver Verfolgung. Im Leerlauf schließen sie sich wieder.
+- **Keine neuen technischen Risiken für die Spielwelt.** Die Veränderungen betreffen ausschließlich die Client-Modellgeometrie und Animation. Boss-Hitboxen, Infektionsheilung, Feldtechnologie, Weltblöcke, Drop-Raten und Kampfschaden bleiben unangetastet.
+- **Tests und Grenzen.** Neue eigene 1.97-Modellregression, Forge-Kompilierung, JAR-Verifikation und dedizierter Serverstart im GitHub-Workflow. Der echte visuelle Minecraft-Client-Test bleibt eine eigenständige Abnahme.
+
+### Minecraft-Sichttest für Version 1.97.0
+
+1. Den Kristallkoloss mit seiner Kristallblende direkt von vorne beobachten: vier Blätter müssen eindeutig vor dem bestehenden Brustkern sichtbar sein.
+2. Kristallatem, Stampfvorbereitung und Erwachensphase auslösen, die unterschiedlichen Öffnungswinkel prüfen und darauf achten, dass die Blende nach jedem Angriff wieder schließt.
+3. Im Dunkeln überprüfen, dass nur die eingelegten Kristalladern leuchten, nicht der massive dunkle Basaltpanzer.
+4. Kristallpirscher aus der Nähe bei Ruhe und Verfolgung betrachten: Das pulsierende Brustorgan und seine zwei einzelnen seitlichen Splitter müssen nachvollziehbar miteinander reagieren.
+5. Multiplayer, Modellbewegungen, Speicherstand und Performance im Minecraft-Client kontrollieren. Erfolgreiches Kompilieren bestätigt die technische Integration, nicht die visuelle Gleichheit mit den Vorlagen.
 
 ## Aktueller Entwicklungsschritt — 1.96.0
 
@@ -346,6 +363,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.97.0 — Koloss-Kristallblende und lebendige Brustkerne
+
+- Vier neue, separat bewegliche 3D-Kristallblenden vor dem Koloss-Brustkern, mit deckungsgleichen Haut-/Emissivknochen und bewegungsabhängiger Öffnung bei den drei bestehenden Bossangriffszuständen.
+- Zwei einzeln animierte Brustkristallsplitter beim Kristallpirscher, die mit dem bisherigen pulsierenden Thoraxorgan zusammenarbeiten.
+- Existierende UV-Flächen werden wiederverwendet statt weitläufig überschrieben; keine Textur- oder 3D-Daten aus fremden Referenzmods kopiert.
+- Keine Änderungen an Kampfwerten, Mutagenfeldern, KI oder Endgame-Heilung. Eigene Regressionen sowie Forge-/JAR-/Server-Prüfung sind im Workflow; der tatsächliche Minecraft-Client-Sichttest muss folgen.
 
 ## Version 1.96.0 — Kristallresonanz als sichtbare Anatomie
 
