@@ -43,18 +43,24 @@ patch(ST,
         int loadedColumns = 0;
         long coverageSignature = 1469598103934665603L;""",
 "initialize loaded-footprint signature in current survey")
-patch(ST,
+# Insert only in the final manual SURVEY, never the existing emergency
+# shutdown, copper conversion or safe-amethyst-restart loops.
+survey_point="    private static Survey survey(ServerLevel level, BlockPos center) {"
+station_code=ST.read_text(encoding="utf-8")
+need(station_code.count(survey_point)==1,"unique survey method for footprint count")
+before_survey,in_survey=station_code.split(survey_point,1)
+anchor="""                if (!level.hasChunkAt(new BlockPos(x, minY, z))) continue;
+                for (int y = minY; y <= maxY; y++) {"""
+need(in_survey.count(anchor)==1,"only one loaded-column check inside final survey")
+in_survey=in_survey.replace(anchor,
 """                if (!level.hasChunkAt(new BlockPos(x, minY, z))) continue;
-                for (int y = minY; y <= maxY; y++) {""",
-"""                if (!level.hasChunkAt(new BlockPos(x, minY, z))) continue;
-                // Exact footprint only: count+ordered hash in the SAME
-                // already-loaded column scan. No new chunk/world requests.
+                // Exact footprint at the moment of the SAME bounded survey.
                 loadedColumns++;
                 coverageSignature = coverageSignature * 1099511628211L
                         ^ (((long) dx + HORIZONTAL_SCAN_RADIUS) << 32
                         | ((long) dz + HORIZONTAL_SCAN_RADIUS));
-                for (int y = minY; y <= maxY; y++) {""",
-"capture loaded x/z footprint before old survey reads")
+                for (int y = minY; y <= maxY; y++) {""",1)
+ST.write_text(before_survey+survey_point+in_survey,encoding="utf-8")
 
 s=ST.read_text(encoding="utf-8")
 constructor=re.compile(r"(?m)^(\s*return new Survey\()([^\n;]+)(\);\s*)$")
