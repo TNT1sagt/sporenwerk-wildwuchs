@@ -1,8 +1,16 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.110.0 — Korrektur der realen Kreaturensilhouetten und des Koloss-Bodenkontakts.**
+**Aktueller Entwicklungsstand: 1.111.0 — sichtbare Koloss-Schnauze, Jagdhände und verzweigte Wurzelhörner.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.111.0
+
+- **Koloss:** Die riesigen Kristall-/Brustkernelemente werden 14 Modellpixel nach hinten und 10 Pixel nach unten versetzt, sodass die bisher stark verdeckte quadrupede Schnauze optisch vor dem glühenden Kern liegt. Beide Skin-/Glow-Renderbäume und vier Iris-Blenden sind an denselben neuen Ort gebunden.
+- **Kristallpirscher:** Arme hängen jetzt in der Ruhe statt in der vom Vanilla-Zombie geerbten nach vorn gestreckten Pose; animierte Jagdklauen bleiben erhalten.
+- **Dämmerling:** Vier echte asymmetrische, angewinkelte Wurzelgabeln sitzen auf den zwei vorhandenen bewegten Wurzelgelenken; keine gemalten Dekorationsstreifen.
+- **Referenzentscheidung:** Quadrupeder Boss und fliegender Kristallkern aus verschiedenen Konzeptbildern sind verschiedene Bauformen. Wir entwickeln zuerst die vorhandene vierbeinige Bosskreatur und behaupten keine Bildgleichheit ohne Client-Aufnahmen.
+- **Keine Änderung an Mutagen, Heilung, Farm, Boss-AI, Spielermechaniken oder externen Assets.** Minecraft-Forge-1.20.1-ModelParts, originaler UV-Atlas und alle bestehenden Regressionen bleiben.
 
 ## Aktueller Entwicklungsschritt — 1.110.0
 
@@ -585,6 +593,12 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.111.0 — Vorderer Schädel statt Kristallkasten
+
+- Nach hinten/unten verschobener animierter zentraler Brustkern macht die bestehende Schnauze sichtbar.
+- Greifhaltung des Pirscherkörpers und echter zweifach verzweigter Dämmerling-Wurzelkamm.
+- Bestehende Minecraft-Pixeltexturen und Mechaniken unverändert; Abnahme im Spiel bleibt erforderlich.
 
 ## Version 1.110.0 — Silhouetten-Rebuild aus echten Minecraft-Screenshots
 
