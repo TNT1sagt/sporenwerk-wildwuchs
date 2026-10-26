@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.89.0 — Kupfererdung für die sichere Knotenrettung.**
+**Aktueller Entwicklungsstand: 1.90.0 — Dämmerling-Nachtwache und bedrohte Farmen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.90.0
+
+- **Dämmerling-Überfall mit Warnsignalen:** Beim Fraß an einer reifen Sporenwerk-Pflanze erscheinen vor dem bisherigen 30-Tick-Biss zwei zeitlich getrennte violette Geistersporen- und Seelenflammenimpulse mit gedämpftem Kristallklang.
+- **Seelenlaterne zur aktiven Verteidigung:** Eine gehaltene Seelenlaterne in Haupt- oder Nebenhand kann innerhalb von ungefähr vier Blöcken einen bereits laufenden Fraßversuch abbrechen. Sie wird nicht verbraucht; der Dämmerling erhält 120 Ticks Pause von der Futtersuche. Seine normale Aggression gegenüber Spielern bleibt bestehen.
+- **Neuer Forschungsschritt:** Für das tatsächliche Retten eines bedrohten Beets wird die Advancement „Licht gegen den Wildwuchs“ vergeben, nie für bloßes Halten einer Laterne.
+- **Nachtwache im Stationsbericht:** Der normale Stationsscan meldet nun lebende Dämmerlinge in der Umgebung und erklärt die mobile Verteidigung. Copper-Rescue, Amethyst-Neustart, Not-Aus und cached Comparator bleiben unberührt.
+- **Sicherheitsgrenzen:** Bereits geladene Chunks, bestehende Filtermoos-Abwehr und Beleuchtung, kein neuer Welt-Ticker oder stationärer Entity-Ticker. Spätere Wiederholungsversuche werden gedrosselt.
+- **Technischer Nachweis:** Alle 101 GitHub-Actions-Schritte, Forge-Kompilierung, JAR-Dateiprüfung und dedizierter Server-Smoke-Test bestanden.
+
+### Manueller Minecraft-Client-Test für 1.90.0
+
+1. Nachts ein dunkles, reifes Sporenwerk-Beet mit einem Dämmerling in der Nähe beobachten; zwei Vorwarnungen vor einem möglichen Fraß prüfen.
+2. Während eines Fraßversuchs eine **Seelenlaterne in der Hand** nahe beim Beet tragen; Abbruch, Partikel, Pause und den ersten Forschungsfortschritt prüfen.
+3. Mit normaler Laterne, leerer Hand und größerer Entfernung vergleichen; danach ein bereits beleuchtetes oder durch Filtermoos geschütztes Beet prüfen.
+4. Die Feldkontrollstation bei an- und abwesenden Dämmerlingen normal anklicken; nachprüfen, dass geduckte Kupfer-, Amethyst- und Not-Aus-Bedienung weiterhin funktionieren.
+5. Multiplayer, Speichern/Neuladen und Minecraft-Dedicated-Server-Verhalten im echten Spiel prüfen. Ein erfolgreicher automatischer Serverstart ersetzt diese Sicht- und Spieltests nicht.
 
 ## Aktueller Entwicklungsschritt — 1.89.0
 
@@ -226,6 +243,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.90.0 — Dämmerling-Nachtwache und bewachte Felder
+
+- **Warnung:** Zweistufige audiovisuelle Fraßvorwarnung, echte Prüfung der Pflanze vor der Zerstörung und Schutz vor Chunk-Entladung.
+- **Gegenwehr:** Eine tragbare Seelenlaterne verhindert unmittelbar bevorstehenden Schaden an reifen Beeten und löst 120 Ticks Abklingzeit der Futtersuche aus, ohne Gegenstandskosten.
+- **Fortschritt:** Der einmalige Forschungsfortschritt „Licht gegen den Wildwuchs“ belohnt erfolgreiche Rettung; der Stationsbericht kann nahe Dämmerlinge anzeigen.
+- **Qualität:** Quellenpatch und Regressionen, Minecraft-Farbtexturen und bestehende Filtermoos-/Ward-Mechaniken im Code erhalten. Automatischer Forge-Build und dedizierter Server erfolgreich; vollständige Client-Optik noch nicht manuell abgenommen.
 
 ## Version 1.89.0 — Kupfererdung und Mutagen-Knotenrettung
 
