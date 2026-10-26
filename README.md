@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.111.0 — sichtbare Koloss-Schnauze, Jagdhände und verzweigte Wurzelhörner.**
+**Aktueller Entwicklungsstand: 1.112.0 — Erkennbare Koloss-Felsenschnauze, skorpionartig gewölbter Stachel, abgeknickte Pirscherbeine und lebendige Wurzelrippen.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.112.0
+
+- **Koloss:** Drei neue echte dunkle 3D-Schädelteile (zwei kantige Wangenknochen, gestufter Nasenkiel) hängen am vorhandenen bewegten Kopf. Das separate emissive Modell besitzt identische leere Basalt-Kinder, sodass nicht wieder der ganze Schädel hellblau leuchtet. Der vierteilige animierte Brustkern bleibt zurückversetzt und unberührt.
+- **Dreigliedriger Skorpionschwanz:** Die drei vorhandenen Knochengelenke werden in der neutralen Haltung stärker nach oben eingerollt. Der ursprüngliche kristalline Endstachel bleibt ein echtes Modellteil, nicht nur Partikel.
+- **Pirscher:** Beide beweglichen Beine tragen jetzt abgewinkelte Fersen- und Knöchelmodelle, ohne die bestehenden Lauf-, Jagd- und Klauenanimationen zu verlieren.
+- **Dämmerling:** Ein asymmetrisches Wurzelpaar wächst jetzt aus den bisher hohlen beweglichen Brust-/Rippenwurzeln heraus. Die vier Zweige aus 1.111 auf dem Rücken bleiben ebenfalls.
+- **Gameplay/Asset-Schutz:** Originale Minecraft-Forge-1.20.1-ModelParts, 128/256-Pixel-UV-Atlanten, KI, Bossangriffe, Farming, Infektion, Heilung und Endgame unverändert.
+- **Echte Sichtabnahme noch ausstehend:** Nur ein neuer Screenshot im Client zeigt, ob die gewollte vierbeinige Referenzform tatsächlich erreicht wurde. Ein Build-Test ist kein Beleg für Bildgleichheit.
 
 ## Aktueller Entwicklungsschritt — 1.111.0
 
@@ -593,6 +602,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.112.0 — Boss mit markantem Schädel, neue 3D-Gelenk-Silhouetten
+
+- Neue matte Fels-Wangen und Nasenkiel am Bosskopf, in beiden ModelPart-Bäumen sauber registriert.
+- Sichtbar stärker eingerollter echter dreigliedriger Schwanz mit lebendem Kristallstachel.
+- Hock-/Fersengeometrie auf beiden bewegten Kristallpirscher-Beinen; zwei echte Wurzelrippen-Auswüchse beim Dämmerling.
+- Komplette bisherige KI-/Boss-/Infektions- und Farmfunktionalität wird in CI überprüft. Exakte visuelle Referenzabnahme offen.
 
 ## Version 1.111.0 — Vorderer Schädel statt Kristallkasten
 
