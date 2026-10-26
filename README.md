@@ -1,8 +1,25 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.90.0 — Dämmerling-Nachtwache und bedrohte Farmen.**
+**Aktueller Entwicklungsstand: 1.91.0 — Kristallkoloss-Auftritt und aktive Nachtwache.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.91.0
+
+- **Dreistufige Koloss-Ankunft:** Die Boss-Entität löst auf ihrem vorhandenen Server-Tick drei nicht-schädliche Resonanzwellen mit wachsenden Kristallringen, schwebenden Sporen und gestaffelten Klängen aus. Spieler in der Nähe werden einmalig gewarnt.
+- **Persistente Ankunft:** Die durchlaufene Auftrittsstufe wird im Boss-NBT gesichert. Bereits vollständig gesehene Auftritte starten beim erneuten Laden des Bosses nicht neu.
+- **Echte Dämmerling-Überfälle:** Bei einer tatsächlich begonnenen Fraßattacke entsteht nun eine Spielerwarnung im Umkreis von 12 Blöcken. Ein 200-Tick-Cooldown pro Spieler verhindert Textspam, wenn mehrere Dämmerlinge gleichzeitig angreifen.
+- **Verbesserte Feldstation:** Der Bericht zeigt nicht nur anwesende Dämmerlinge, sondern warnt separat vor Kreaturen, die gerade tatsächlich an Pflanzen fressen. Die Zähler verwenden dieselbe einzelne manuelle Entity-Abfrage.
+- **Bestehende Systeme erhalten:** Seelenlaterne, Filtermoos, Koloss-Angriffsfenster, Sprung-Ausweichen beim Stampfen, Kupfererdung, Amethystneustart, Not-Aus und die Automationssignale bleiben verfügbar.
+- **Technische Prüfung:** Alle 102 GitHub-Actions-Schritte bestanden: Quellcode-Regressionen, Forge-1.20.1-Build, JAR-Verifikation, dedizierter Serverstart und Artefakt-Paketierung.
+
+### Manueller Minecraft-Client-Test für 1.91.0
+
+1. Den Kristallkoloss über sein Survival-Ritual herbeirufen und prüfen, ob drei getrennte Wellen und die Warnmeldung tatsächlich sichtbar und hörbar sind.
+2. Die Welt nach dem vollständig abgespielten Auftritt speichern und neu laden: Die drei Ankunftswellen dürfen nicht erneut beginnen.
+3. Dämmerlinge an einem dunklen, reifen Beet beobachten: Die Spielerwarnung muss beim Fraß auftreten, nicht bloß beim Herumlaufen.
+4. Mit der Kontrollstation prüfen, ob laufende Fraßattacken gesondert gezählt werden, ohne den normalen Scan oder die Sicherheitsaktionen zu verändern.
+5. Multiplayer-Funktion, Darstellung, Klangreichweite und Serverleistung im Minecraft-Client prüfen. Automatisierte Regressionen ersetzen diesen Sichttest nicht.
 
 ## Aktueller Entwicklungsschritt — 1.90.0
 
@@ -243,6 +260,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.91.0 — Kristallkoloss-Auftritt und echte Nachtwache
+
+- Drei sichtbare und hörbare Kristallring-Wellen für die Ankunft des Bosses, ohne zusätzlichen Schaden, Chunk-Loading oder Kamerazwang.
+- Persistenter NBT-Auftrittsfortschritt und eine einmalige lokale Warnmeldung.
+- Lokale Vorwarnung bei echten Dämmerling-Fraßversuchen; die Feldstation unterscheidet nun anwesende Kreaturen von aktiven Überfällen.
+- Eigenständige Regressionen, Forge-Build und Dedicated-Server-Smoke-Test erfolgreich. Sichttest im Minecraft-Client weiterhin offen.
 
 ## Version 1.90.0 — Dämmerling-Nachtwache und bewachte Felder
 
