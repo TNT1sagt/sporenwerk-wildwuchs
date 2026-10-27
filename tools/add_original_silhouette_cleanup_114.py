@@ -59,8 +59,9 @@ need('head.addOrReplaceChild("face_mandible_left"' in p
      "requires new face/leg and neutral arm rigs")
 replace(P,
 """CubeListBuilder.create().texOffs(64, 48)
-                        .addBox(-3.8F, -4.0F, -2.8F, 7.6F, 10.0F, 6.2F)
-                        .texOffs(96, 48).addBox(-2.5F, 3.0F, -3.6F, 5.0F, 8.0F, 3.0F),""",
+                        .addBox(-3.25F, -3.8F, -2.65F, 6.5F, 3.8F, 5.3F)
+                        .texOffs(64, 48).addBox(-2.35F, 1.05F, -2.3F, 4.7F, 2.8F, 4.6F)
+                        .texOffs(96, 48).addBox(-1.55F, 5.0F, -3.15F, 3.1F, 4.9F, 2.8F),""",
 """CubeListBuilder.create().texOffs(64, 48)
                         // Two exposed mineral ulna/radius ridges with actual
                         // air between them, not a single wide cubic sleeve.
