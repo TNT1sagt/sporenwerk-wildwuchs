@@ -100,6 +100,8 @@ for path, pairs in (
          "addBox(-10.5F, -8.5F, 8.5F, 21.0F, 11.0F, 16.0F)"),
     )),
     ("tools/test_reference_base_silhouettes_105.py",(
+        ("addBox(-17.5F, -9.5F, -23.0F, 35.0F, 10.5F, 23.0F)",
+         "addBox(-12.5F, -9.5F, -23.0F, 25.0F, 10.5F, 23.0F)"),
         ("addBox(-5.2F,-5.0F,-2.6F,10.4F,2.7F,5.2F)",
          "addBox(-3.7F,-5.0F,-2.6F,7.4F,2.7F,5.2F)"),
         ("addBox(-4.5F,0.0F,-2.4F,9.0F,2.0F,4.8F)",
