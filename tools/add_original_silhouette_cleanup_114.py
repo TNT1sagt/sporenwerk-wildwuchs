@@ -99,6 +99,14 @@ for path, pairs in (
         ("addBox(-14.0F, -8.5F, 8.5F, 28.0F, 11.0F, 16.0F)",
          "addBox(-10.5F, -8.5F, 8.5F, 21.0F, 11.0F, 16.0F)"),
     )),
+    ("tools/test_reference_anatomy_106.py",(
+        ("addBox(-3.25F, -3.8F, -2.65F, 6.5F, 3.8F, 5.3F)",
+         "addBox(-3.1F, -3.0F, -2.8F, 2.1F, 8.5F, 3.7F)"),
+        ("addBox(-2.35F, 1.05F, -2.3F, 4.7F, 2.8F, 4.6F)",
+         "addBox(1.0F, -2.7F, -2.8F, 2.1F, 8.2F, 3.7F)"),
+        ("addBox(-1.55F, 5.0F, -3.15F, 3.1F, 4.9F, 2.8F)",
+         "addBox(-1.5F, 3.5F, -3.6F, 3.0F, 7.8F, 2.8F)"),
+    )),
     ("tools/test_reference_base_silhouettes_105.py",(
         ("addBox(-17.5F, -9.5F, -23.0F, 35.0F, 10.5F, 23.0F)",
          "addBox(-12.5F, -9.5F, -23.0F, 25.0F, 10.5F, 23.0F)"),
