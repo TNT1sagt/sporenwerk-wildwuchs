@@ -93,6 +93,10 @@ replace(D,
 # Keep all old regression checks *running*. Only their exact geometry
 # coordinates are updated to match the now deliberately reduced voxels.
 for path, pairs in (
+    ("tools/test_mutagen_colossus.py",(
+        ("addBox(-17.5F, -9.5F, -23.0F, 35.0F, 10.5F, 23.0F)",
+         "addBox(-12.5F, -9.5F, -23.0F, 25.0F, 10.5F, 23.0F)"),
+    )),
     ("tools/test_client_silhouette_rebuild_110.py",(
         ("addBox(-17.5F, -9.5F, -23.0F, 35.0F, 10.5F, 23.0F)",
          "addBox(-12.5F, -9.5F, -23.0F, 25.0F, 10.5F, 23.0F)"),
