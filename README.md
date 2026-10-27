@@ -1,8 +1,17 @@
 # Sporenwerk: Wildwuchs
 
-**Aktueller Entwicklungsstand: 1.113.0 — echter gestaffelter Koloss-Panzer, gespaltene 3D-Jägermaske und bewegliche untere Wurzelglieder.**
+**Aktueller Entwicklungsstand: 1.114.0 — Verkleinerte echte Basiskörper statt mehr aufgesetzter Würfel; schmale Basalt-Taille und offene Kristallarme.**
 
 Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der GitHub-Actions-Workflow den Minecraft-Forge-1.20.1-Mod aus dem Quellstand zusammensetzt. Die installierbare JAR wird durch den Workflow gebaut; automatisierte Prüfungen sind kein Ersatz für einen vollständigen Sichttest im Minecraft-Client.
+
+## Aktueller Entwicklungsschritt — 1.114.0
+
+- **Subtraktiver Geometrieumbau:** Bisher wurden häufig Details addiert, obwohl das ursprüngliche Grundvolumen die sichtbaren Zwischenräume verdeckte. 1.114 reduziert gezielt die bestehenden Hauptquader.
+- **Koloss:** Ursprüngliche Hauptpanzer quer von 35 auf 25 Modellpixel an den Schultern, 24 auf 17 an der Taille und 28 auf 21 am hinteren Körper reduziert. Die vier echten seitlichen Basaltmantel-Schalen aus 1.113 stehen dadurch visuell freier. Ein dünner Wirbelsäulensteg hält die Körpermassen verbunden.
+- **Kristallpirscher:** Die zuvor breite durchgehende Schulterhülle wurde ausgehöhlt: zwei getrennte Mineralstreben mit 2 Pixel Luft und ein schmaler Handgelenk-Steg ersetzen den massiven Ärmel. Die vorhandenen beiden echten Krallen pro Arm und Jagd-Animationen bleiben intakt.
+- **Dämmerling:** Obere und mittlere Rippenbalken sind deutlich schmaler, damit die Wurzelauswüchse und die echten Löcher im Brustkorb hervortreten; das Farming-Horrorverhalten bleibt.
+- **Technik:** Die alten Tests von Version 1.105 und 1.110 bleiben aktiv und wurden nur auf die geänderten positiven Quaderkoordinaten ausgerichtet. Dazu kommt eine neue Vermessung der Taille und der echten offenen Armzwischenräume.
+- **Visueller Status:** Keine Behauptung der exakten Referenzgleichheit ohne Minecraft-Client-Screenshots. Sämtliche bisherigen Mutagen-/Heil-/Farm-/Kampfmechaniken bleiben unberührt.
 
 ## Aktueller Entwicklungsschritt — 1.113.0
 
@@ -610,6 +619,13 @@ Dieses Repository enthält die Patch-Skripte und Regressionstests, mit denen der
 - **Qualitätssicherung:** Der Workflow prüft Modellgeometrie, UV-Farbflächen, Glow-Transparenz und baut die installierbare Forge-JAR.
 
 Der nächste Schritt bleibt die Prüfung eines echten Client-Screenshots gegen das festgelegte Referenzbild; CI-Erfolg allein belegt keine perfekte Bildübereinstimmung.
+
+## Version 1.114.0 — Weniger Klotz, mehr echte Silhouette
+
+- Weniger breiter echter Basalt-Hauptkörper des Kolosses bei unveränderten echten schulterbreiten Panzerplatten, vier Beinen und animiertem Brustkern.
+- Kristallpirscher verliert die überbreiten kristallinen Ärmel zugunsten getrennt sichtbarer dünner Mineralleisten mit erhaltenen echten Klauen.
+- Dämmerling hat einen schmaleren offenen Rumpf; Wurzelhände und Rippenzweige folgen weiter ihren animierten Knochen.
+- Forge-Regressionssuite und dedizierter Serverstart; Client-Bildvergleich noch ausstehend.
 
 ## Version 1.113.0 — Staffelpanzer, offene Jägermaske und wurzelnder Rumpf
 
